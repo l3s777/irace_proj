@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>UI for IRACE</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
+
+    <script src="controllers/SetupController.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../node_modules/angular-route/angular-route.js"></script>
+
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <!-- material icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+
+  <body ng-app="app" ng-controller="ctrl">
+    <md-toolbar style="background: #CCF">
+        <div class="md-toolbar-tools">
+           <h2 class="md-flex">1. Scenario Set Up</h2>
+        </div>
+    </md-toolbar>
+
+     <md-content flex>
+        <div layout="row" layout-align="space-between center">
+          <div layout="row">
+            Insert scenario name:
+            <md-input-container md-no-float>
+              <input ng-model="scenario.name" placeholder="Scenario 1">
+            </md-input-container>
+          </div>
+          <div>
+            <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE</md-button>
+            <!-- <a href = "running.html"><md-button class="md-primary md-raised" ng-click="exportIraceSetup()">RUN</md-button></a> -->
+            <md-button class="md-primary md-raised" ng-click="exportIraceSetup()">RUN</md-button>
+            <a href = "main.html"><md-button class="md-primary md-raised">CLOSE</md-button></a>
+          </div>
+
+        </div>
+     </md-content>
+     <div layout="row" flex>
+         <div layout="column" flex id="content">
+           <md-content layout="column" flex class="md-padding">
+             <div ng-cloak>
+               <md-content>
+                 <md-tabs md-dynamic-height md-border-bottom>
+                 <!--
+
+                   Parameters
+
+                 -->
+                 <md-tab label="Parameters">
+                   <md-content class="md-padding">
+                     <div>
+                       <p>Review your algorithm's parameters in this section...</p>
+                     </div>
+                     <div layout="row" layout-align="space-between center"  style="background: # aaccee">
+                       <div>
+                         <input type="file" id="file" name="file"/>
+                         <md-button class="md-primary" ng-click="importParameters()">Import parameter file</md-button>
+                      </div>
+                       <div>
+                           <md-input-container md-no-float>
+                             <input ng-model="filter.parameters" class="ir-input-border" placeholder="Search..">
+                           </md-input-container>
+                       </div>
+                     </div>
+                     <div class="ir-spacer-20"></div>
+                     <div layout="row" class="ir-bold" layout-wrap>
+                         <div flex="5"></div>
+                         <div flex="20">Name</div>
+                         <div flex="20">Switch</div>
+                         <div flex="15">Category</div>
+                         <div flex="15">Value(s)</div>
+                         <div flex="20">Condition(s)</div>
+                         <div flex="5">Delete</div>
+                     </div>
+                     <div class="ir-spacer-10"></div>
+                     <div class="ir-table-scenario">
+                       <div layout="row" layout-wrap ng-repeat="parameter in scenario.parameters | filter:filter.parameters">
+                           <div flex="5"><md-checkbox ng-model="parameter.active" class="md-primary" aria-label="active parameter?"></md-checkbox>
+                           </div>
+                           <div flex="20">
+                             <md-input-container md-no-float>
+                               <input ng-model="parameter.name" placeholder="Parameter name">
+                             </md-input-container>
+                           </div>
+                           <div flex="20">
+                             <md-input-container md-no-float>
+                               <input ng-model="parameter.switch" placeholder="Parameter switch">
+                             </md-input-container>
+                           </div>
+                           <div flex="15">
+                             <md-select ng-model="parameter.type" placeholder="Pick">
+                               <md-option ng-value="category.value" ng-repeat="category in parameters.categories">{{category.name}}</md-option>
+                             </md-select>
+                           </div>
+                           <div flex="15">
+                             <md-input-container md-no-float>
+                               <input ng-model="parameter.values" placeholder="Parameter value">
+                             </md-input-container></div>
+                           <div flex="20">
+                             <md-input-container md-no-float>
+                               <input ng-model="parameter.conditions" placeholder="-">
+                             </md-input-container>
+                           </div>
+                           <div flex="5" align="center">
+                             <i class="material-icons ir-btn-delete" ng-click="scenario.parameters.splice($index,1)">delete</i>
+                           </div>
+                       </div>
+                     </div>
+                     <div layout="row" layout-align="space-between center">
+                         <div>
+                           <md-button class="md-primary" ng-click="addParam()">Add parameter</md-button>
+                         </div>
+                         <div>
+                           <md-button class="md-primary" ng-click="exportParameters()">Save parameters file</md-button>
+                         </div>
+                     </div>
+                   </md-content>
+                 </md-tab>
+
+                <!--
+
+                   Constraints
+
+                 -->
+                 <md-tab label="Forbidden combinations">
+                     <md-content class="md-padding">
+                         <p>Each constraint must be a logical expression in R syntax.</p>
+                           <div layout="row" layout-align="space-between center">
+                             <div>
+                               <input type="file" id="file_constrains" name="file"/>
+                               <md-button class="md-primary" ng-click="importConstraints()">Import constraints file</md-button>
+                             </div>
+                             <div>
+                               <md-input-container md-no-float>
+                                 <input ng-model="filter.constraints" class="ir-input-border" placeholder="Search..">
+                               </md-input-container>
+                             </div>
+                           </div>
+                           <div class="ir-spacer-20"></div>
+                           <div layout="row" class="ir-bold" layout-wrap>
+                             <div flex="5"></div>
+                             <div flex="90">Expression</div>
+                             <div flex="5"></div>
+                           </div>
+                           <div class="ir-spacer-10"></div>
+                           <div layout="row" layout-wrap ng-repeat="constraint in scenario.constraints | filter:filter.constraints">
+                             <div flex="5">
+                               <md-checkbox class="md-primary" ng-model="constraint.active" aria-label="Is constraint active?">
+                               </md-checkbox>
+                             </div>
+                             <div flex="90">
+                               <md-input-container md-no-float>
+                                 <input ng-model="constraint.expression" placeholder="Constraint expression">
+                               </md-input-container>
+                             </div>
+                             <div flex="5" align="center">
+                               <i class="material-icons ir-btn-delete" ng-click="scenario.constraints.splice($index,1)">delete</i></div>
+                           </div>
+                           <div class="ir-spacer-20"></div>
+                           <div layout="row" layout-align="space-between center">
+                               <div>
+                                 <md-button class="md-primary" ng-click="scenario.constraints.push({'active': true});">Add constraint</md-button>
+                               </div>
+                               <div>
+                                 <md-button class="md-primary" ng-click="exportConstraints()">Save constraint file</md-button>
+                               </div>
+                             </div>
+                     </md-content>
+                   </md-tab>
+
+                   <!--
+
+                       Initial candidates
+
+                   -->
+                   <md-tab label="Initial candidates">
+                     <md-content class="md-padding">
+                       <p>Review the initial candidates for this scenario.</p>
+                       <div layout="row" layout-align="space-between center">
+                         <div>
+                           <input type="file" id="file_candidates" name="file"/>
+                           <md-button class="md-primary" ng-click="importCandidates()">Import candidates file</md-button>
+                         </div>
+                         <div>
+                           <md-input-container md-no-float>
+                             <input ng-model="filter.candidates" class="ir-input-border" placeholder="Search..">
+                           </md-input-container>
+                         </div>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" layout-wrap class="ir-bold-scrollx">
+                         <div flex="5"></div>
+                         <div flex="20">Label</div>
+                         <div ng-repeat="parameter in scenario.candidates.parameters track by $index" flex="10" >{{parameter}}</div>
+                       </div>
+                       <div class="ir-spacer-10"></div>
+                       <div layout="row" layout-wrap ng-repeat="candidate in scenario.candidates.instances | filter:filter.candidates">
+                         <div flex="5">
+                           <md-checkbox class="md-primary" ng-model="candidate.active" aria-label="Is candidate active?">
+                           </md-checkbox>
+                         </div>
+                         <div flex="20">
+                           <md-input-container md-no-float>
+                             <input ng-model="candidate.n" placeholder="Candidate #">
+                           </md-input-container>
+                         </div>
+                         <div flex="10" ng-repeat="value in candidate.values track by $index">
+                           <md-input-container md-no-float>
+                             <input ng-model="value" placeholder="Value" >
+                           </md-input-container>
+                         </div>
+                         <div flex="5" align="center">
+                           <i class="material-icons ir-btn-delete" ng-click="scenario.candidates.instances.splice($index,1)">delete</i>
+                         </div>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" layout-align="space-between center">
+                         <div>
+                           <md-button class="md-primary" ng-click="scenario.candidates.instances.push({'active': true, 'value': hola});">Add candidate</md-button>
+                         </div>
+                         <div>
+                           <md-button class="md-primary" ng-click="exportCandidates()">Save candidates file</md-button>
+                         </div>
+                       </div>
+                     </md-content>
+                   </md-tab>
+
+                   <!--
+
+                     Instances
+
+                   -->
+                   <md-tab label="Instances">
+                     <md-content class="md-padding">
+                       <p>Insert the path for the instances.</p>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div flex="70">Path</div>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" layout-wrap ng-repeat="instance in scenario.instances | filter:filter.constraints">
+                         <div flex="55">
+                           <md-input-container md-no-float>
+                             <input ng-model="instance.expression" placeholder="Path">
+                           </md-input-container>
+                         </div>
+                         <div flex="25">
+                           <input type="file" id="file_instancebrowse" name="file"/>
+                           <md-button class="md-primary" ng-click="browseInstances()">Browse</md-button>
+                         </div>
+                         <div flex="5">
+                           <i class="material-icons ir-btn-delete" ng-click="scenario.instances.splice($index,1)">delete</i>
+                         </div>
+                       </div>
+                       <div layout="row" layout-align="space-between center">
+                         <div>
+                           <md-button class="md-primary" ng-click="scenario.instances.push({})">Add</md-button>
+                         </div>
+                         <div>
+                           <md-button class="md-primary" ng-click="exportInstances()">Save</md-button></div>
+                        </div>
+                      </md-content>
+                  </md-tab>
+
+                   <!--
+
+                       TARGET RUNNER
+
+                   -->
+                   <md-tab label="Target runner">
+                     <md-content class="md-padding">
+                       <p>Please insert the path to your target-runner method.</p>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div flex="80">
+                           <md-input-container md-no-float>
+                             <input ng-model="scenario.targetrunner" placeholder="Path">
+                           </md-input-container>
+                         </div>
+                         <div flex="10">
+                           <input type="file" id="file_targetrunner" name="file"/>
+                           <md-button class="md-primary md-raised" ng-click="browseTargetRunner()">Browse</md-button>
+                         </div><br>
+                         <div class="md-padding" id="popupContainer" ng-cloak>
+                           <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
+                              <md-button class="md-primary md-raised" ng-click="validateTargetRunner($event)">
+                                Validate
+                              </md-button>
+                           </div>
+                         </div>
+                       </div>
+                     </md-content>
+                   </md-tab>
+
+                   <!--
+
+                       IRACE params
+
+                   -->
+                   <md-tab label="IRACE params">
+                     <md-content class="md-padding">
+                       <div>
+                         <label>Set up IRACE params.</label>
+                         <md-button class="md-primary md-raised">Save configuration</md-button>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div> GENERAL OPTIONS</div>
+                       </div>
+                       <div>
+                         <div>
+                           <label>Seed</label>
+                           <md-input-container md-no-float>
+                              <input ng-model="irace_parameters.seed.value" placeholder="1234567">
+                           </md-input-container>
+                         </div>
+                         <div>
+                           <label>Budget with: </label><br>
+                            <!-- <md-radio-group ng-model="group" class="md-primary">
+                               <md-radio-button ng-repeat="d in iraceparamsBudget" ng-value="d.value">
+                                  {{ d.label }}<br/>
+                               </md-radio-button>
+                           </md-radio-group> -->
+
+                           <md-checkbox ng-model="irace_parameters.budgetSelectionNumberIter.value" class="md-primary" aria-label="irace_parameters.budgetSelectionNumberIter.value">number of iterations</md-checkbox>
+                           <input ng-model="irace_parameters.maxExperiments.value" placeholder="Number of iterations">
+                           <br>
+                           <md-checkbox ng-model="irace_parameters.budgetSelectionTime.value" class="md-primary" aria-label="irace_parameters.budgetSelectionTime.value">time for iterations</md-checkbox>
+                           <input ng-model="irace_parameters.maxTime.value" placeholder="Maximum time">
+                           <input ng-model="irace_parameters.budgetEstimation.value" placeholder="Budget stimation">
+
+                         </div>
+                         <div>
+                           <label>Digits</label>
+                           <md-input-container md-no-float>
+                              <input ng-model="irace_parameters.digits.value" placeholder="Insert number">
+                           </md-input-container>
+                         </div>
+                         <div>
+                           <div>
+                             <md-checkbox ng-model="irace_parameters.deterministic.value" class="md-primary" aria-label="irace_parameters.deterministic.value">Enable if the target algorithm is deterministic</md-checkbox>
+                           </div>
+                         </div>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div>ELITIST IRACE</div>
+                       </div>
+                       <div>
+                         <br>
+                         <md-checkbox ng-model="irace_parameters.elitist.value" class="md-primary" aria-label="irace_parameters.elitist.value">Enable ELITIST</md-checkbox>
+                         <div ng-if="irace_parameters.elitist.value">
+                           <label>Elitist New Instances</label>
+                           <md-input-container md-no-float>
+                              <input ng-model="irace_parameters.elitistNewInstances.value" placeholder="Insert number">
+                           </md-input-container>
+                           <label>Elitist Limit</label>
+                           <md-input-container md-no-float>
+                              <input ng-model="irace_parameters.elitistLimit.value" placeholder="Insert number">
+                           </md-input-container>
+                         </div>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div>EXECUTION</div>
+                       </div>
+                       <div>
+                         <br>
+                         <div>
+                           <md-checkbox ng-model="irace_parameters.parallel.value" class="md-primary" aria-label="irace_parameters.parallel.value">Enable PARALLEL execution</md-checkbox>
+                         </div>
+                         <div ng-if="irace_parameters.parallel.value">
+                           <md-checkbox ng-model="irace_parameters.loadBalancing.value" class="md-primary" aria-label="irace_parameters.loadBalancing.value">Enable Load Balancing execution</md-checkbox>
+                           <md-checkbox ng-model="irace_parameters.mpi.value" class="md-primary" aria-label="irace_parameters.mpi.value">Enable MPI</md-checkbox>
+                           <md-checkbox ng-model="irace_parameters.sgeCluster.value" class="md-primary" aria-label="irace_parameters.sgeCluster.value">Enable SGE cluster node</md-checkbox>
+                         </div>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div>TESTING</div>
+                       </div>
+                       <div>
+                         <label>Number of elite configurations</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.testNbElites.value" placeholder="Insert number">
+                         </md-input-container>
+                         <md-checkbox ng-model="irace_parameters.testIterationElites.value" class="md-primary" aria-label="irace_parameters.testIterationElites.value">Enable testing the elite configurations found at each iteration</md-checkbox>
+                         <br><label>Directory where testing instances are located</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.testInstancesDir.value" placeholder="Insert path">
+                         </md-input-container>
+                         <md-button class="md-primary" ng-click="insertPath()">Browse</md-button>
+                         <br><label>File containing a list of test instances</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.testInstancesFile.value" placeholder="Insert path">
+                         </md-input-container>
+                         <md-button class="md-primary" ng-click="insertPath()">Browse</md-button>
+                       </div>
+                       <div class="ir-spacer-20"></div>
+                       <div layout="row" class="ir-bold" layout-wrap>
+                         <div>ADVANCED OPTIONS</div>
+                       </div>
+                       <div><br>
+                         <md-checkbox ng-model="irace_parameters.sampleInstances.value" class="md-primary" aria-label="irace_parameters.sampleInstances.value">Enable the sampling of the training instances</md-checkbox>
+                         <br><label>Number of iterations to be executed</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.nbIterations.value" placeholder="Insert number">
+                         </md-input-container>
+                         <br><label>Number of experiments to execute per iteration</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.nbExperimentsPerIteration.value" placeholder="Insert number">
+                         </md-input-container>
+                         <br><label>Number of configurations that should be sampled and evaluated at each iteration</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.nbConfigurations.value" placeholder="Insert number">
+                         </md-input-container>
+                         <br><label>Number of configurations to be sampled and evaluated at each iteration</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.mu.value" placeholder="mu: insert number">
+                         </md-input-container>
+                         <br><label>Minimum number of configurations needed to continue the execution of a race</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.minNbSurvival.value" placeholder="Insert number">
+                         </md-input-container>
+                         <md-checkbox ng-model="irace_parameters.softRestart.value" class="md-primary" aria-label="irace_parameters.softRestart.value">Enable the soft-restart strategy that avoids premature convergence of the probabilistic mode</md-checkbox>
+                         <br><label>Soft restart threshold value for numerical parameters</label>
+                         <md-input-container md-no-float>
+                            <input ng-model="irace_parameters.softRestartThreshold.value" placeholder="Insert number">
+                         </md-input-container>
+                       </div>
+
+                     </md-content>
+                   </md-tab>
+                 </md-tabs>
+                </md-content>
+              </div>
+             </div>
+    </div>
+  </body>
+</html>

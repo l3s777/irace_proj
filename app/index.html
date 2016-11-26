@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>UI for IRACE</title>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script type="text/javascript" src="../node_modules/angular-route/angular-route.js"></script>
+
+    <!-- build:app scripts/app.js -->
+    <script src="app.js"></script>
+
+    <!-- material icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script type="text/javascript">
+
+         angular.module('app', ['ngMaterial', 'ngRoute']);
+    </script>
+  </head>
+
+  <body ng-app="app" ng-cloak>
+    <div class="irs padding">
+      <md-toolbar style="background: #CCF">
+          <div class="md-toolbar-tools">
+             <h1 class="md-flex">Welcome to IRACE configuration</h1>
+          </div>
+       </md-toolbar>
+       <md-content flex layout-padding>
+          <p>Press "Create new scenario" for starting and you will be able to set up your new project or press "Load scenario" for loading your previous configuration saved.</p>
+          <div>
+            <p>You will be able to: </p>
+            <ol>
+              <li>Scenario Set up</li>
+              <li>Live running scenario</li>
+              <li>Results</li>
+            </ol>
+        </div>
+       </md-content>
+    </div>
+    <br>
+    <div>
+      <div class="md-padding" ng-cloak>
+        <div layout="row" layout-wrap layout-margin layout-align="center">
+            <a href = "#setup">
+              <md-button class="md-primary md-raised">Create new scenario</md-button>
+            </a>
+        </div>
+      </div>
+      <div layout="row" layout-wrap layout-margin layout-align="center">
+        <a href = "#">
+          <md-button class="md-primary md-raised">Load scenario</md-button>
+        </a>
+      </div>
+    </div>
+
+  </body>
+
+  <script>
+    // You can also require other files to run in this process
+    // require('./renderer.js')
+  </script>
+</html>
