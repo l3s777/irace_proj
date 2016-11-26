@@ -1,5 +1,5 @@
 angular.module('app', ['ngMaterial', 'ngRoute'])
-.controller('ctrl', ['$scope', '$mdDialog', '$http', function($scope, $mdDialog, $http) {
+.controller('SetupController', ['$scope', '$mdDialog', '$http', function($scope, $mdDialog, $http) {
   // Initialize the scope variables
   // reading external file for parameteres
   $scope.cfg = {};

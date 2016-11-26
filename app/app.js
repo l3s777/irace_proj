@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var _templateBase = '';
+    var _template = '';
 
     angular.module('app', [
       'ngRoute',
@@ -10,11 +10,10 @@
     .config(['$routeProvider', function ($routeProvider) {
             $routeProvider
             .when('/setup', {
-                templateUrl: _templateBase + '/setup.html',
-                controller: 'ctrl',
+                templateUrl: _template + 'setup/setup.html',
+                controller: 'SetupController',
             })
             .otherwise({ redirectTo: '/' });
         }
     ]);
-
 })();
