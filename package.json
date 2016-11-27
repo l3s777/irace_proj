@@ -11,12 +11,14 @@
     "url": ""
   },
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial"
+    "Electron"
   ],
   "devDependencies": {
     "electron-prebuilt": "^1.2.0"
-  }
+  },
+  "dependencies": {
+    "angular-route": "^1.5.9"
+  },
+  "author": "",
+  "license": "ISC"
 }

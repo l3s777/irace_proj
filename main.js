@@ -1,3 +1,4 @@
+'use strict';
 const electron = require('electron')
 // Module to control application life.
 const app = electron.app
@@ -8,12 +9,17 @@ const BrowserWindow = electron.BrowserWindow
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+function onClosed() {
+	// dereference the window for multiple windows store them in an array
+	mainWindow = null;
+}
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 800, height: 600})
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/app/index.html`)
+  mainWindow.loadURL(`file://${__dirname}/app/setup/setup.html`)
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()

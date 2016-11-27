@@ -1,8 +1,25 @@
 angular.module('app', ['ngMaterial', 'ngRoute'])
-.controller('SetupController', ['$scope', '$mdDialog', '$http', function($scope, $mdDialog, $http) {
+.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
   // Initialize the scope variables
+  var self = $scope;
   // reading external file for parameteres
   $scope.cfg = {};
+
+  // Dependencies
+  // var remote = require('remote');
+  // var dialog = remote.require('dialog');
+  var app2 = require('electron').remote;
+  var dialog = app2.dialog;
+  var fs = require('fs');
+
+  fs.readFile('./app/config.json', 'utf8', function(err, data) {
+    if (err) throw err;
+    cfg = angular.fromJson(data);
+  });
+
+  self.refresh = function() {
+    self.$apply();
+  }
 
   // setting up scenario
   $scope.scenario = {
@@ -183,49 +200,54 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
     });
     console.log(content);
     // TODO when add scenario.parameters, create object by default
+    dialog.showSaveDialog(function(filename) {
+      fs.writeFile(filename, content, function(err) {
+        if(err) alert(err);
+      });
+    });
   };
 
   $scope.importParameters = function() {
-    var params_aux = [];
-    // reading data from file
-    var f = document.getElementById('file').files[0];
-    // verifying file was selected
-    if(f) {
-      var r = new FileReader();
-      r.onloadend = function(e) {
-        var data = e.target.result;
-        console.log(data);
-        //send your binary data via $http or $resource or do anything else with it
-        var lines = data.split('\n');
-        var output = [];
-        var cnt = 0;
-        lines.forEach(function(line) {
-          if(line[0] != "#") {
-            output[cnt]= line;
-            cnt++;
-            var words = line.split("\t");
-            if(words[0]) {
-              if(words[4]) var condition = words[4].split("| ")[1];
-              else var condition = "";
-              var param = {
-                "name": words[0],
-                "switch": words[1],
-                "type": words[2],
-                "values": words[3],
-                "conditions": condition,
-                "active": true
-              };
-              params_aux.push(param);
-            }
-          }
-        });
-        $scope.scenario.parameters = params_aux;
-        $scope.$apply();
-      }
-      r.readAsBinaryString(f);
-    }
+    dialog.showOpenDialog(function(filename) {
+      $scope.scenario.parameters = scanParameters(filename[0]);
+      $scope.$apply();
+    });
   }
 
+  function scanParameters(filename) {
+    var params = [];
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        throw err;
+        console.log(err);
+      }
+      var lines = data.split('\n');
+      var output = [];
+      var cnt = 0;
+      lines.forEach(function(line) {
+        if(line[0] != "#") {
+          output[cnt]= line;
+          cnt++;
+          var words = line.split("\t");
+          if(words[0]) {
+            if(words[4]) var condition = words[4].split("| ")[1];
+            else var condition = "";
+            var param = {
+              "name": words[0],
+              "switch": words[1],
+              "type": words[2],
+              "values": words[3],
+              "conditions": condition,
+              "active": true
+            };
+            params.push(param);
+          }
+        }
+      });
+      $scope.scenario.parameters = params;
+      $scope.$apply();
+    });
+  }
 
   //---------------------
   // Constraints

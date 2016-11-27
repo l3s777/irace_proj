@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var _template = '';
+    var _template = './app';
 
     angular.module('app', [
       'ngRoute',
