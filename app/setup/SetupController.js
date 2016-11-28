@@ -187,30 +187,12 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
     });
   };
 
-  $scope.exportParameters = function() {
-    // exporta parameters set up as independent file
-    console.log("export params");
-    var content = "#name     switch     cat     value     condition\n";
-    $scope.scenario.parameters.forEach(function(param) {
-      if(param.active) {
-        content += param.name + "\t" + param.switch + "\t" + param.type + "\t" + param.values;
-        if(param.condition != "") content += "\t| " + param.conditions;
-        content += "\n";
-      }
-    });
-    console.log(content);
-    // TODO when add scenario.parameters, create object by default
-    dialog.showSaveDialog(function(filename) {
-      fs.writeFile(filename, content, function(err) {
-        if(err) alert(err);
-      });
-    });
-  };
-
   $scope.importParameters = function() {
     dialog.showOpenDialog(function(filename) {
-      $scope.scenario.parameters = scanParameters(filename[0]);
-      $scope.$apply();
+      if(filename) {
+        $scope.scenario.parameters = scanParameters(filename[0]);
+        $scope.$apply();
+      }
     });
   }
 
@@ -249,22 +231,52 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
     });
   }
 
+  $scope.exportParameters = function() {
+    var content = cfg.file_options.parameters_header;
+    $scope.scenario.parameters.forEach(function(param) {
+      if(param.active) {
+        content += param.name + "\t" + param.switch + "\t" + param.type + "\t" + param.values;
+        if(param.condition != "") content += "\t| " + param.conditions;
+        content += "\n";
+      }
+    });
+    dialog.showSaveDialog(function(filename) {
+      fs.writeFile(filename, content, function(err) {
+        if(err) alert(err);
+      });
+    });
+  };
+
   //---------------------
   // Constraints
   //---------------------
+  $scope.addConstraint = function() {
+    $scope.scenario.constraints.push({
+      'active': true,
+      "expression": "new constraint"
+    });
+  };
+
   $scope.importConstraints = function() {
+    dialog.showOpenDialog(function(filename) {
+      if(filename) {
+        $scope.scenario.constraints = scanConstraints(filename[0]);
+        $scope.$apply();
+      }
+    });
+  };
+
+  function scanConstraints(filename) {
     var constraints = [];
-
-    var f = document.getElementById('file_constrains').files[0];
-    var r = new FileReader();
-    r.onloadend = function(e) {
-      var data = e.target.result;
-
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        throw err;
+        console.log(err);
+      }
       var lines = data.split('\n');
       var output = [];
       var cnt = 0;
       lines.forEach(function(line) {
-        console.log(line);
         if(line[0] != "#") {
           output[cnt]= line;
           cnt++;
@@ -277,18 +289,22 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
       });
       $scope.scenario.constraints = constraints;
       $scope.$apply();
-    }
-    r.readAsBinaryString(f);
-  };
+    });
+  }
 
   $scope.exportConstraints = function() {
-    // export parameters set up to an independent file
-    var content = "#constraint\n";
+    var content = cfg.file_options.constraints_header;
     $scope.scenario.constraints.forEach(function(constraint) {
       if(constraint.active) {
         content += constraint.expression + "\n";
       }
-      console.log(content);
+    });
+    dialog.showSaveDialog(function(filename) {
+      if(filename){
+        fs.writeFile(filename, content, function(err) {
+          if(err) alert(err);
+        });
+      }
     });
   };
 
@@ -296,37 +312,61 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   //---------------------
   // Initial candidates
   //---------------------
+  $scope.addCandidateInst = function() {
+    var aux_candidates = [];
+    var aux_cont = 1;
+    while(aux_cont <= $scope.scenario.candidates.pre_instances[0].length) {
+      aux_candidates.push("none");
+      aux_cont++;
+    }
+    $scope.scenario.candidates.instances.push({
+        'n' : "Candidate ",
+        'values': aux_candidates,
+        'active': true
+    });
+  };
+
   $scope.importCandidates = function() {
+    dialog.showOpenDialog(function(filename) {
+      if(filename) {
+          $scope.scenario.candidates = scanCandidates(filename[0]);
+          $scope.$apply();
+      }
+    });
+  };
+
+  function scanCandidates(filename) {
+    var candidates = [];
     var candidates_param = [];
     var candidates_inst = [];
 
-    var f = document.getElementById('file_candidates').files[0];
-    var r = new FileReader();
-
-    r.onloadend = function(e) {
-      var data = e.target.result;
-
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        throw err;
+        console.log(err);
+      }
       var lines = data.split('\n');
       var output = [];
       var cnt = 0;
       lines.forEach(function(line) {
-        if(line[0] != "#") {
-          // first line contains the name of all parameters
+        if(line[0] != "#") { // first line header
           if(cnt == 0) {
             candidates_param = line.split("\t");
-          } else {
+          }
+          else {
             candidates_inst[cnt-1] = line.split("\t");
           }
           cnt++;
         }
       });
       $scope.scenario.candidates = {
-        "parameters": candidates_param,
-        "pre_instances": candidates_inst
+          "parameters": candidates_param,
+          "pre_instances": candidates_inst
       };
       $scope.scenario.candidates.instances = $scope.scenario.candidates.instances || [] ;
       var c = 1;
       $scope.scenario.candidates.pre_instances.forEach(function(pre_instance) {
+        console.log(pre_instance);
         var instance_obj = {
           'n' : "Candidate " + c,
           'values': pre_instance,
@@ -336,15 +376,12 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
         c++;
       });
       $scope.$apply();
-    }
-    r.readAsBinaryString(f);
-
-  };
+    });
+  }
 
   $scope.exportCandidates = function() {
-    console.log("exportCandidates");
 
-    var content = "### Initial candidates \n";
+    var content = cfg.file_options.candidates_header;
     var aux = " ";
 
     $scope.scenario.candidates.parameters.forEach(function(candidate_param) {
@@ -365,14 +402,13 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
         }
       }
     });
-
-    console.log("saving candidates");
-    console.log(content);
-    // electron.dialog.showSaveDialog(function(filename) {
-    //   fs.writeFile(filename, content, function(err) {
-    //     if(err) alert(err);
-    //   });
-    // });
+    dialog.showSaveDialog(function(filename) {
+      if(filename) {
+        fs.writeFile(filename, content, function(err) {
+          if(err) alert(err);
+        });
+      }
+    });
 
 
   };
@@ -382,27 +418,35 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   // Instances
   //---------------------
   $scope.browseInstances = function() {
-    console.log("browse the instance");
-      var instancesPathGroup = [];
-
-      var f = document.getElementById('file_instancebrowse').files[0];
-
-      console.log("f");
-      console.log(f);
-      console.log(f.name);
-
-      var instancePath = {
-        "expression": f.name
-      };
-      instancesPathGroup.push(instancePath);
-
-      $scope.scenario.instances = instancesPathGroup;
-
+    dialog.showOpenDialog(function(filename) {
+      if(filename) {
+        var path = {
+          'value': filename[0]
+        }
+        $scope.scenario.instances.push(path);
+        // TODO whys is it adding new row instead of replacing what we have now?
+        $scope.$apply();
+        console.log($scope.scenario.instances);
+      }
+    });
   };
 
   $scope.exportInstances = function() {
-    console.log("time to export instances");
-    // TODO
+    var content = cfg.file_options.instances_header;
+    $scope.scenario.instances.forEach(function(instance_path) {
+      console.log("for saving:");
+      console.log(instance_path.value);
+      if (instance_path) {
+          content += instance_path.value + "\n";
+      }
+    });
+    dialog.showSaveDialog(function(filename) {
+      if(filename) {
+        fs.writeFile(filename, content, function(err) {
+          if(err) alert(err);
+        });
+      }
+    });
   };
 
 
@@ -410,16 +454,15 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   // Target-runner
   //---------------------
   $scope.browseTargetRunner = function() {
-    console.log("time for targetrunners");
-    var f = document.getElementById('file_targetrunner').files[0];
-    $scope.scenario.targetrunner = f.name;
-    console.log(f.name);
+    dialog.showOpenDialog(function(filename) {
+      $scope.scenario.targetrunner = filename[0];
+      $scope.$apply();
+    });
   };
 
   $scope.validateTargetRunner = function(ev) {
     console.log("validate TargetRunner");
     // TODO validate link to TargetRunner
-
     $mdDialog.show(
       $mdDialog.alert()
         .parent(angular.element(document.querySelector('#popupContainer')))
@@ -437,12 +480,29 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   //---------------------
   $scope.exportIraceSetup = function() {
     // export parameters set up to an independent file
-    var content = "#constraint\n";
-    $scope.scenario.constraints.forEach(function(constraint) {
-      if(constraint.active) {
-        content += constraint.expression + "\n";
+    var content = cfg.file_options.irace_params_header + "\n";
+    content += cfg.file_options.iraceparams_header + "\n";
+
+    var aux_iraceparams = cfg.file_iraceparams;
+    // TODO parse JSON into lines for iracesetup so we can save the data directly in the file.
+
+
+
+
+    // $scope.scenario.constraints.forEach(function(constraint) {
+    //   if(constraint.active) {
+    //     content += constraint.expression + "\n";
+    //   }
+    //   console.log(content);
+    // });
+
+    // choosing file where to save
+    dialog.showSaveDialog(function(filename) {
+      if(filename) {
+        fs.writeFile(filename, content, function(err) {
+          if(err) alert(err);
+        });
       }
-      console.log(content);
     });
   };
 

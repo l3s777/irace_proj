@@ -5,17 +5,10 @@
         "constraints_header": "### Constraints  \n",
         "candidates_header": "### Initial candidates \n",
         "instances_header": "### Instances \n",
-        "irace_params_header": "### iRace configuration parameters \n"
+        "irace_params_header": "### iRace configuration parameters \n",
+        "iraceparams_header": "#name \t type \t short \t long \t default \t description"
     },
     "file_iraceparams": {
-      "header": {
-        "name": "name",
-        "type": "type",
-        "short": "short",
-        "long": "long",
-        "default": "default",
-        "description": "description"
-      },
       "param1": {
         "name": "scenarioFile",
         "type": "p",
