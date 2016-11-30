@@ -37,11 +37,9 @@
           </div>
           <div>
             <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE</md-button>
-            <!-- <a href = "running.html"><md-button class="md-primary md-raised" ng-click="exportIraceSetup()">RUN</md-button></a> -->
             <md-button class="md-primary md-raised" ng-click="exportIraceSetup()">RUN</md-button>
             <a href = "index.html"><md-button class="md-primary md-raised">CLOSE</md-button></a>
           </div>
-
         </div>
      </md-content>
      <div layout="row" flex>
@@ -321,12 +319,6 @@
                          </div>
                          <div>
                            <label>Budget with: </label><br>
-                            <!-- <md-radio-group ng-model="group" class="md-primary">
-                               <md-radio-button ng-repeat="d in iraceparamsBudget" ng-value="d.value">
-                                  {{ d.label }}<br/>
-                               </md-radio-button>
-                           </md-radio-group> -->
-
                            <md-checkbox ng-model="irace_parameters.budgetSelectionNumberIter.value" class="md-primary" aria-label="irace_parameters.budgetSelectionNumberIter.value">number of evaluations</md-checkbox>
                            <input ng-model="irace_parameters.maxExperiments.value" placeholder="Number of iterations">
                            <br>

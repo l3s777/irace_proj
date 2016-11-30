@@ -6,8 +6,6 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   $scope.cfg = {};
 
   // Dependencies
-  // var remote = require('remote');
-  // var dialog = remote.require('dialog');
   var app2 = require('electron').remote;
   var dialog = app2.dialog;
   var fs = require('fs');
@@ -137,12 +135,6 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
       }
   };
 
-  $scope.iraceparamsBudget = [
-     { label: 'Number of evaluations', value: 'iterations' },
-     { label: 'Execution time', value: 'time' }
-  ];
-  $scope.group='iterations';
-
   // Welcome screen
   angular.element(document).ready(function () {
     $scope.scenario.parameters = [{"active": true}];
@@ -241,9 +233,11 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
       }
     });
     dialog.showSaveDialog(function(filename) {
-      fs.writeFile(filename, content, function(err) {
-        if(err) alert(err);
-      });
+      if(filename) {
+        fs.writeFile(filename, content, function(err) {
+          if(err) alert(err);
+        });
+      }
     });
   };
 
@@ -468,7 +462,7 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
         .parent(angular.element(document.querySelector('#popupContainer')))
         .clickOutsideToClose(true)
         .title('Alert!')
-        .textContent('Link validated. State: TRUE')
+        .textContent('Link validated. Result: TRUE')
         .ariaLabel('Alert!')
         .ok('OK')
         .targetEvent(ev)
@@ -485,16 +479,6 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
 
     var aux_iraceparams = cfg.file_iraceparams;
     // TODO parse JSON into lines for iracesetup so we can save the data directly in the file.
-
-
-
-
-    // $scope.scenario.constraints.forEach(function(constraint) {
-    //   if(constraint.active) {
-    //     content += constraint.expression + "\n";
-    //   }
-    //   console.log(content);
-    // });
 
     // choosing file where to save
     dialog.showSaveDialog(function(filename) {
