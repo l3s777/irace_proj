@@ -45,7 +45,7 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
           "value": "c"
         },
         "o": {
-          "name": "Order",
+          "name": "Ordinal",
           "value": "o"
         }
     }
@@ -171,10 +171,10 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   $scope.addParam = function() {
     $scope.scenario.parameters.push({
       'active': true,
-      "name": "param name",
-      "switch": "param switch",
+      "name": "param_name",
+      "switch": "",
       "type": "c",
-      "values": "(1-100)",
+      "values": "(1,2,3)",
       "conditions": ""
     });
   };
@@ -204,11 +204,16 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
           cnt++;
           var words = line.split("\t");
           if(words[0]) {
-            if(words[4]) var condition = words[4].split("| ")[1];
-            else var condition = "";
+            if(words[1]=="undefined") var switchParam="";
+            else var switchParam = words[1];
+            console.log(words[4]);
+            if(words[4]) {
+                if(words[4].includes("undefined")) var condition = "";
+                else var condition = words[4].split("| ")[1];
+            } else var condition = "";
             var param = {
               "name": words[0],
-              "switch": words[1],
+              "switch": switchParam,
               "type": words[2],
               "values": words[3],
               "conditions": condition,
@@ -247,7 +252,7 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   $scope.addConstraint = function() {
     $scope.scenario.constraints.push({
       'active': true,
-      "expression": "new constraint"
+      "expression": "new_constraint"
     });
   };
 
@@ -310,11 +315,11 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
     var aux_candidates = [];
     var aux_cont = 1;
     while(aux_cont <= $scope.scenario.candidates.pre_instances[0].length) {
-      aux_candidates.push("none");
+      aux_candidates.push("");
       aux_cont++;
     }
     $scope.scenario.candidates.instances.push({
-        'n' : "Candidate ",
+        'n' : "new_candidate ",
         'values': aux_candidates,
         'active': true
     });
