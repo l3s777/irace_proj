@@ -67,7 +67,8 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
         "value": false
       },
       "parallel": {
-        "value": false
+        "value": false,
+        "numCores": 2
       },
       "loadBalancing": {
         "value": true
@@ -133,6 +134,317 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
         "value": 4
       }
   };
+
+  $scope.full_iraceparams = [
+    { "name": "scenarioFile",
+      "type": "p",
+      "short": "-s",
+      "long": "--scenario",
+      "default": "./scenario.txt",
+      "description": "File that describes the configuration scenario setup and other irace settings."
+    },
+    { "name": "debugLevel",
+      "type": "i",
+      "short": "",
+      "long": "--debug-level",
+      "default": 0,
+      "description": "A value of 0 silences all debug messages. Higher values provide more verbose debug messages."
+    },
+    { "name": "seed",
+      "type": "i",
+      "short": "",
+      "long": "--seed",
+      "default": "NA",
+      "description": "Seed of the random number generator (must be a positive integer, NA means use a random seed)."
+    },
+    { "name": "execDir",
+      "type": "p",
+      "short": "",
+      "long": "--exec-dir",
+      "default": "./",
+      "description": "Directory where the programs will be run."
+    },
+    { "name": "logFile",
+      "type": "p",
+      "short": "-l",
+      "long": "--log-file",
+      "default": "./irace.Rdata",
+      "description": "File to save tuning results as an R dataset, either absolute path or relative to execDir."
+    },
+    { "name": "elitist",
+      "type": "b",
+      "short": "-e",
+      "long": "--elitist",
+      "default": 1,
+      "description": "Enable/disable elitist irace."
+    },
+    { "name": "elitistNewInstances",
+      "type": "i",
+      "short": "",
+      "long": "--elitist-new-instances",
+      "default": 1,
+      "description": "Number of instances added to the execution list before previous instances in elitist irace."
+    },
+    { "name": "elitistLimit",
+      "type": "i",
+      "short": "",
+      "long": "--elitist-limit",
+      "default": 2,
+      "description": "Limit for the elitist race, number statistical test without elimination peformed. Use 0 for no limit."
+    },
+    { "name": "targetRunner",
+      "type": "p",
+      "short": "",
+      "long": "--target-runner",
+      "default": "./target-runner",
+      "description": "The script called for each configuration that launches the program to be tuned. See templates/."
+    },
+    { "name": "targetRunnerRetries",
+      "type": "i",
+      "short": "",
+      "long": "--target-runner-retries",
+      "default": 0,
+      "description": "Number of times to retry a call to target-runner if the call failed."
+    },
+    { "name": "targetRunnerData",
+      "type": "i",
+      "short": "",
+      "long": "--target-runner-retries",
+      "default": 0,
+      "description": "Number of times to retry a call to target-runner if the call failed."
+    },
+    { "name": "targetRunnerParallel",
+      "type": "x",
+      "short": "",
+      "long": "",
+      "default": "",
+      "description": ""
+    },
+    { "name": "targetEvaluator",
+      "type": "p",
+      "short": "",
+      "long": "--target-evaluator",
+      "default": "",
+      "description": "Optional script that provides a numeric value for each configuration. See templates/target-evaluator.tmpl"
+    },
+    { "name": "deterministic",
+      "type": "b",
+      "short": "",
+      "long": "--deterministic",
+      "default": 0,
+      "description": "If the target algorithm is deterministic, configurations will be evaluated only once per instance."
+    },
+    { "name": "parallel",
+      "type": "i",
+      "short": "",
+      "long": "--parallel",
+      "default": 0,
+      "description": "Number of calls to targetRunner to execute in parallel. 0 or 1 mean disabled."
+    },
+    { "name": "loadBalancing",
+      "type": "b",
+      "short": "",
+      "long": "--load-balancing",
+      "default": 1,
+      "description":  "Enable/disable load-balancing when executing experiments in parallel. Load-balancing makes better use of computing resources, but increases communication overhead. If this overhead is large, disabling load-balancing may be faster."
+    },
+    { "name": "mpi",
+      "type": "b",
+      "short": "",
+      "long": "--mpi",
+      "default": 0,
+      "description":  "Enable/disable MPI. Use Rmpi to execute targetRunner in parallel (parameter parallel is the number of slaves)."
+    },
+    { "name": "sgeCluster",
+      "type": "b",
+      "short": "",
+      "long": "--sge-cluster",
+      "default": 0,
+      "description":  "Enable/disable SGE cluster mode. Use qstat to wait for cluster jobs to finish (targetRunner must invoke qsub)."
+    },
+    { "name": "maxExperiments",
+      "type": "i",
+      "short": "",
+      "long":  "--max-experiments" ,
+      "default": 0,
+      "description": "The maximum number of runs (invocations of targetRunner) that will be performed. It determines the maximum budget of experiments for the tuning."
+    },
+    { "name": "maxTime",
+      "type": "i",
+      "short": "",
+      "long": "--max-time",
+      "default": 0,
+      "description": "Maximum total execution time for the executions of targetRunner (targetRunner must return two values: [cost] [time] )."
+    },
+    { "name": "budgetEstimation",
+      "type": "r",
+      "short": "",
+      "long": "--budget-estimation",
+      "default": 0.02,
+      "description": "Fraction of the budget used to estimate the mean computation time of a configuration."
+    },
+    { "name": "testNbElites",
+      "type": "i",
+      "short": "",
+      "long": "--test-num-elites",
+      "default": 1,
+      "description": "Number of elite configurations returned by irace that will be tested if test instances are provided."
+    },
+    { "name": "testIterationElites",
+      "type": "b",
+      "short": "",
+      "long": "--test-iteration-elites",
+      "default": 0,
+      "description":  "Enable/disable testing the elite configurations found at each iteration."
+    },
+    { "name": "testInstancesDir",
+      "type": "p",
+      "short": "",
+      "long": "--test-instances-dir",
+      "default": "",
+      "description": "Directory where testing instances are located, either absolute or relative to current directory."
+    },
+    { "name": "testInstancesFile",
+      "type": "p",
+      "short": "",
+      "long": "--test-instances-file",
+      "default": "",
+      "description": "File containing a list of test instances and optionally additional parameters for them."
+    },
+    { "name": "sampleInstances",
+      "type": "b",
+      "short": "",
+      "long": "--sample-instances",
+      "default": 1,
+      "description": "Sample the instances or take them always in the same order."
+    },
+    { "name": "nbIterations",
+      "type": "i",
+      "short": "",
+      "long": "--iterations",
+      "default": 0,
+      "description": "Number of iterations."
+    },
+    { "name": "nbExperimentsPerIteration",
+      "type": "i",
+      "short": "",
+      "long": "--experiments-per-iteration",
+      "default": 0,
+      "description": "Number of experiments per iteration."
+    },
+    { "name": "nbConfigurations",
+      "type": "i",
+      "short": "",
+      "long": "--num-configurations",
+      "default": 0,
+      "description": "The number of configurations that should be sampled and evaluated at each iteration."
+    },
+    { "name": "mu",
+      "type": "i",
+      "short": "",
+      "long": "--mu",
+      "default": 5,
+      "description": "This value is used to determine the number of configurations to be sampled and evaluated at each iteration."
+    },
+    { "name": "minNbSurvival",
+      "type": "i",
+      "short": "",
+      "long": "--min-survival",
+      "default": 0,
+      "description": "The minimum number of configurations that should survive to continue one iteration."
+    },
+    { "name": "softRestart",
+      "type": "b",
+      "short": "",
+      "long": "--soft-restart",
+      "default": 1,
+      "description": "Enable/disable the soft restart strategy that avoids premature convergence of the probabilistic model."
+    },
+    { "name": "softRestartThreshold",
+      "type": "r",
+      "short": "",
+      "long": "--soft-restart-threshold",
+      "default": "NA",
+      "description": "Soft restart threshold value for numerical parameters. If NA, it computed as 10^-digits."
+    },
+    { "name": "parameterFile",
+      "type": "p",
+      "short": "-p",
+      "long": "--parameter-file",
+      "default": "./parameters.txt",
+      "description": "File that contains the description of the parameters to be tuned. See the template."
+    },
+    { "name": "digits",
+      "type": "i",
+      "short": "",
+      "long": "--digits",
+      "default": 4,
+      "description": "Indicates the number of decimal places to be considered for the real parameters."
+    },
+    { "name": "forbiddenFile",
+      "type": "p",
+      "short": "",
+      "long": "--forbidden-file",
+      "default": "",
+      "description": "File containing a list of logical expressions that cannot be true for any evaluated configuration. If empty or NULL, do not use a file."
+    },
+    { "name": "configurationsFile",
+      "type": "p",
+      "short": "",
+      "long": "--configurations-file",
+      "default": "",
+      "description": "File containing a list of initial configurations. If empty or NULL do not use a file."
+    },
+    { "name": "trainInstancesDir",
+      "type": "p",
+      "short": "",
+      "long": "--train-instances-dir",
+      "default": "./Instances",
+      "description": "Directory where tuning instances are located; either absolute path or relative to current directory."
+    },
+    { "name": "trainInstancesFile",
+      "type": "p",
+      "short": "",
+      "long": "--train-instances-file",
+      "default": "",
+      "description": "File containing a list of instances and optionally additional parameters for them."
+    },
+    { "name": "testType",
+      "type": "s",
+      "short": "",
+      "long": "--test-type",
+      "default": "F-test",
+      "description": "Specifies the statistical test type: F-test (Friedman test), t-test (pairwise t-tests with no correction), t-test-bonferroni (t-test with Bonferroni's correction for multiple comparisons), t-test-holm (t-test with Holm's correction for multiple comparisons)."
+    },
+    { "name": "firstTest",
+      "type": "i",
+      "short": "",
+      "long": "--first-test",
+      "default": 5,
+      "description": "Specifies how many instances are seen before the first elimination test. It must be a multiple of eachTest."
+    },
+    { "name": "eachTest",
+      "type": "i",
+      "short": "",
+      "long": "--each-test",
+      "default": 1,
+      "description": "Specifies how many instances are seen between elimination tests."
+    },
+    { "name": "confidence",
+      "type": "r",
+      "short": "",
+      "long": "--confidence",
+      "default": 0.95,
+      "description": "Confidence level for the elimination test."
+    },
+    { "name": "recoveryFile",
+      "type": "p",
+      "short": "",
+      "long": "--recovery-file",
+      "default": "",
+      "description": "Previously saved log file to recover the execution of irace, either absolute path or relative to the current directory.  If empty or NULL, recovery is not performed."
+    }
+  ];
 
   // Welcome screen
   angular.element(document).ready(function () {
@@ -420,10 +732,10 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   //---------------------
   // Instances
   //---------------------
-  $scope.browseTrainingInstances = function() {
+  $scope.browseTrainingInstances = function(index) {
     dialog.showOpenDialog(function(filename) {
       if(filename) {
-        $scope.scenario.instances.training[$scope.scenario.instances.training.length-1] = filename[0];
+        $scope.scenario.instances.training[index] = filename[0];
         $scope.$apply();
       }
     });
@@ -501,10 +813,10 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   };
 
-  $scope.browseTestsInstances = function() {
+  $scope.browseTestsInstances = function(index) {
     dialog.showOpenDialog(function(filename) {
       if(filename) {
-        $scope.scenario.instances.tests[$scope.scenario.instances.tests.length-1] = filename[0];
+        $scope.scenario.instances.tests[index] = filename[0];
         $scope.$apply();
       }
     });
@@ -562,9 +874,76 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     var content = cfg.file_options.irace_params_header + "\n";
     content += cfg.file_options.iraceparams_header + "\n";
 
-    var aux_iraceparams = cfg.file_iraceparams;
-    // TODO parse JSON into lines for iracesetup so we can save the data directly in the file.
+    // aux
+    var newInstE, limitE;
 
+
+    $scope.full_iraceparams.forEach(function(value) {
+        if(value.name==="seed") {
+          content += value.name + "\t" + value.type + "\t"
+                  + "\"" + value.short + "\"" + "\t"
+                  + "\"" + value.long + "\"" + "\t"
+                  + $scope.irace_parameters.seed.value + "\t"
+                  + "\"" + value.description + "\"";
+        } else if (value.name === "digits") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                  + "\"" +  value.long + "\"" + "\t"
+                  + $scope.irace_parameters.digits.value + "\t"
+                  + "\"" + value.description + "\"";
+        } else if (value.name==="deterministic") {
+          if($scope.irace_parameters.deterministic.value) var aux = 1
+          else  var aux = 0;
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + aux + "\t" + "\"" + value.description + "\"";
+        } else if(value.name==="elitist") {
+          // only change values if ENABLE
+          if($scope.irace_parameters.elitist.value) {
+            newInstE = $scope.irace_parameters.elitistNewInstances.value;
+            limitE = $scope.irace_parameters.elitistLimit.value;
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" +  value.long + "\"" + "\t"
+                      + 1 + "\t" + "\"" +  value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 0 + "\t" + "\"" + value.description + "\"";
+          }
+        } else if (value.name==="elitistNewInstances") {
+          if($scope.irace_parameters.elitist.value) {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + newInstE + "\t" + "\"" +  value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" +  value.long + "\"" + "\t"
+                      + "\"" + value.default + "\"" +  "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if (value.name==="elitistLimit") {
+          if($scope.irace_parameters.elitist.value) {
+            content += value.name + "\t" + value.type + "\t" +  "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + limitE + "\t" + "\"" + value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + "\"" + value.default + "\"" + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        }
+
+        else {
+          content += value.name + "\t" + value.type + "\t"
+                    + "\"" +  value.short + "\"" + "\t"
+                    + "\""+ value.long + "\""  + "\t"
+                    + "\"" + value.default + "\"" +  "\t"
+                    + "\"" + value.description + "\"";
+        }
+        content += "\n";
+
+
+    });
     // choosing file where to save
     dialog.showSaveDialog(function(filename) {
       if(filename) {
