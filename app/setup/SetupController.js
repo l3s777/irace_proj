@@ -1,5 +1,4 @@
-angular.module('app', ['ngMaterial', 'ngRoute'])
-.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
+app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
   // Initialize the scope variables
   var self = $scope;
   // reading external file for parameteres
@@ -157,7 +156,6 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   // };
 
   $scope.insertPath = function(){
-
   }
 
   // $scope.saveScenario = function() {
@@ -314,15 +312,18 @@ angular.module('app', ['ngMaterial', 'ngRoute'])
   $scope.addCandidateInst = function() {
     var aux_candidates = [];
     var aux_cont = 1;
-    while(aux_cont <= $scope.scenario.candidates.pre_instances[0].length) {
-      aux_candidates.push("");
-      aux_cont++;
-    }
-    $scope.scenario.candidates.instances.push({
-        'n' : "new_candidate ",
-        'values': aux_candidates,
-        'active': true
-    });
+    // TODO adding a control
+    if($scope.scenario.candidates) {
+      while(aux_cont <= $scope.scenario.candidates.pre_instances[0].length) {
+        aux_candidates.push("");
+        aux_cont++;
+      }
+      $scope.scenario.candidates.instances.push({
+          'n' : "new_candidate ",
+          'values': aux_candidates,
+          'active': true
+      });
+    } else console.log("dialog alert");
   };
 
   $scope.importCandidates = function() {
