@@ -44,6 +44,11 @@ md-select {
   overflow-y: scroll;
 }
 
+.ir-table-short {
+  height: 280px;
+  overflow-y: scroll;
+}
+
 input.ir-scenario-name {
   color: #000;
   border: none;

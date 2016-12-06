@@ -24,7 +24,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     "parameters": [],
     "constraints": [],
     "candidates": {},
-    "instances":[],
+    "instances":{},
     "targetrunner": "",
     "irace_params": []
   };
@@ -142,7 +142,10 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
       "parameters": [],
       "instances": [{"active": true}]
     };
-    $scope.scenario.instances = [{}];
+    $scope.scenario.instances = {
+      "training": [""],
+      "tests": [""]
+    };
     $scope.scenario.irace_params = [];
   });
 
@@ -417,29 +420,105 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   //---------------------
   // Instances
   //---------------------
-  $scope.browseInstances = function() {
+  $scope.browseTrainingInstances = function() {
     dialog.showOpenDialog(function(filename) {
       if(filename) {
-        var path = {
-          'value': filename[0]
-        }
-        $scope.scenario.instances.push(path);
-        // TODO whys is it adding new row instead of replacing what we have now?
+        $scope.scenario.instances.training[$scope.scenario.instances.training.length-1] = filename[0];
         $scope.$apply();
-        console.log($scope.scenario.instances);
       }
     });
   };
 
-  $scope.exportInstances = function() {
-    var content = cfg.file_options.instances_header;
-    $scope.scenario.instances.forEach(function(instance_path) {
-      console.log("for saving:");
-      console.log(instance_path.value);
-      if (instance_path) {
-          content += instance_path.value + "\n";
+  $scope.addTrainingInstance = function() {
+    $scope.scenario.instances.training.push("newpath");
+  };
+
+  $scope.addPollTrainingInstances = function() {
+    dialog.showOpenDialog(function(filename) {
+
+      if(filename) {
+        fs.readFile(filename[0], 'utf8', function(err, data) {
+          if (err) {
+            throw err;
+            console.log(err);
+          }
+          var lines = data.split('\n');
+          var output = [];
+          var cnt = 0;
+          lines.forEach(function(line) {
+            if(line[0] != "#") {
+              $scope.scenario.instances.training.push(line);
+            }
+          });
+          $scope.$apply();
+        });
       }
     });
+  };
+
+  $scope.exportTrainingInstances = function() {
+    var content = cfg.file_options.instances_header;
+    content += "#training instances" + "\n";
+    $scope.scenario.instances.training.forEach(function(inst) {
+      if (inst) {
+          content += inst + "\n";
+      }
+    });
+
+    dialog.showSaveDialog(function(filename) {
+      if(filename) {
+        fs.writeFile(filename, content, function(err) {
+          if(err) alert(err);
+        });
+      }
+    });
+  };
+
+  $scope.addTestsInstance = function() {
+    $scope.scenario.instances.tests.push("newpath");
+  };
+
+  $scope.addPollTestsInstances = function() {
+    dialog.showOpenDialog(function(filename) {
+
+      if(filename) {
+        fs.readFile(filename[0], 'utf8', function(err, data) {
+          if (err) {
+            throw err;
+            console.log(err);
+          }
+          var lines = data.split('\n');
+          var output = [];
+          var cnt = 0;
+          lines.forEach(function(line) {
+            if(line[0] != "#") {
+              $scope.scenario.instances.tests.push(line);
+            }
+          });
+          $scope.$apply();
+        });
+      }
+    });
+  };
+
+  $scope.browseTestsInstances = function() {
+    dialog.showOpenDialog(function(filename) {
+      if(filename) {
+        $scope.scenario.instances.tests[$scope.scenario.instances.tests.length-1] = filename[0];
+        $scope.$apply();
+      }
+    });
+  };
+
+  $scope.exportTrainingInstances = function() {
+    var content = cfg.file_options.instances_header;
+    content += "#testing instances" + "\n";
+    $scope.scenario.instances.tests.forEach(function(t) {
+      if (t) {
+          content += t + "\n";
+      }
+    });
+
     dialog.showSaveDialog(function(filename) {
       if(filename) {
         fs.writeFile(filename, content, function(err) {
