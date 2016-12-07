@@ -5,7 +5,7 @@
         "constraints_header": "### Constraints  \n",
         "candidates_header": "### Initial candidates \n",
         "instances_header": "### Instances \n",
-        "irace_params_header": "### IRACE configuration parameters \n",
-        "iraceparams_header": "#name \t type \t short \t long \t default \t description"
+        "irace_params_header": "### Configuration for Iterated Race (iRace). \n",
+        "iraceparams_header": "#variable \t valor \n"
     }
 }

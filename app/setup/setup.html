@@ -35,7 +35,7 @@
             </md-input-container>
           </div>
           <div>
-            <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE</md-button>
+            <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE SCENARIO</md-button>
              <!-- RUN shows a summary -->
             <!-- <md-button class="md-primary md-raised">RUN</md-button> -->
             <div class="md-padding" id="popupContainer" ng-cloak>
@@ -471,10 +471,12 @@
                             <input ng-model="irace_parameters.minNbSurvival.value" placeholder="Insert number">
                          </md-input-container>
                          <md-checkbox ng-model="irace_parameters.softRestart.value" class="md-primary" aria-label="irace_parameters.softRestart.value">Enable the soft-restart strategy that avoids premature convergence of the probabilistic mode</md-checkbox>
-                         <br><label>Soft restart threshold value for numerical parameters</label>
-                         <md-input-container md-no-float>
-                            <input ng-model="irace_parameters.softRestartThreshold.value" placeholder="Insert number">
-                         </md-input-container>
+                         <div ng-if="irace_parameters.softRestart.value">
+                           <label>Soft restart threshold value for numerical parameters</label>
+                           <md-input-container md-no-float>
+                              <input ng-model="irace_parameters.softRestartThreshold.value" placeholder="Insert number">
+                           </md-input-container>
+                         </div>
                        </div>
 
                      </md-content>
