@@ -407,7 +407,7 @@
                          <div ng-if="irace_parameters.parallel.value">
                            <label>Number of cores:</label>
                            <md-input-container md-no-float>
-                              <input ng-model="irace_parameters.parallel.numCores" placeholder="Insert number">
+                              <input ng-model="irace_parameters.parallel.numCores" placeholder="Cores from 2 and on">
                            </md-input-container><br>
                            <md-checkbox ng-model="irace_parameters.loadBalancing.value" class="md-primary" aria-label="irace_parameters.loadBalancing.value">Enable Load Balancing execution</md-checkbox>
                            <md-checkbox ng-model="irace_parameters.mpi.value" class="md-primary" aria-label="irace_parameters.mpi.value">Enable MPI</md-checkbox>
@@ -428,12 +428,12 @@
                          <md-input-container md-no-float>
                             <input ng-model="irace_parameters.testInstancesDir.value" placeholder="Insert path">
                          </md-input-container>
-                         <md-button class="md-primary" ng-click="insertPath()">Browse</md-button>
+                         <md-button class="md-primary" ng-click="insertPathTestInstancesDir()">Browse</md-button>
                          <br><label>File containing a list of test instances</label>
                          <md-input-container md-no-float>
                             <input ng-model="irace_parameters.testInstancesFile.value" placeholder="Insert path">
                          </md-input-container>
-                         <md-button class="md-primary" ng-click="insertPath()">Browse</md-button>
+                         <md-button class="md-primary" ng-click="insertPathTestInstancesFile()">Browse</md-button>
                        </div>
                        <div class="ir-spacer-20"></div>
                        <div layout="row" class="ir-bold" layout-wrap>

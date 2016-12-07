@@ -470,9 +470,6 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   //   console.log("when it opens");
   // };
 
-  $scope.insertPath = function(){
-  }
-
   // $scope.saveScenario = function() {
   //   // save all the scenario
   //   console.log("time to save info");
@@ -876,7 +873,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
 
     // aux
     var newInstE, limitE;
-
+    var loadBalE, mpiE, sgecE;
 
     $scope.full_iraceparams.forEach(function(value) {
         if(value.name==="seed") {
@@ -884,6 +881,24 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
                   + "\"" + value.short + "\"" + "\t"
                   + "\"" + value.long + "\"" + "\t"
                   + $scope.irace_parameters.seed.value + "\t"
+                  + "\"" + value.description + "\"";
+        } else if (value.name==="maxExperiments") {
+          content += value.name + "\t" + value.type + "\t"
+                  + "\"" + value.short + "\"" + "\t"
+                  + "\"" + value.long + "\"" + "\t"
+                  + $scope.irace_parameters.maxExperiments.value + "\t"
+                  + "\"" + value.description + "\"";
+        } else if (value.name==="maxTime") {
+          content += value.name + "\t" + value.type + "\t"
+                  + "\"" + value.short + "\"" + "\t"
+                  + "\"" + value.long + "\"" + "\t"
+                  + $scope.irace_parameters.maxTime.value + "\t"
+                  + "\"" + value.description + "\"";
+        } else if (value.name==="budgetEstimation") {
+          content += value.name + "\t" + value.type + "\t"
+                  + "\"" + value.short + "\"" + "\t"
+                  + "\"" + value.long + "\"" + "\t"
+                  + $scope.irace_parameters.budgetEstimation.value + "\t"
                   + "\"" + value.description + "\"";
         } else if (value.name === "digits") {
           content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
@@ -931,8 +946,155 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
                       + "\"" + value.default + "\"" + "\t"
                       + "\"" + value.description + "\"";
           }
-        }
+        } else if (value.name==="parallel") {
+          if($scope.irace_parameters.parallel.value) {
+            // if value ENABLE change other values as well
+            loadBalE = $scope.irace_parameters.loadBalancing.value;
+            mpiE = $scope.irace_parameters.mpi.value;
+            mpiE = $scope.irace_parameters.sgeCluster.value;
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" +  value.long + "\"" + "\t"
+                      + 1 + "\t" + "\"" +  value.description + "\"";
+          } else {
+            loadBalE = $scope.irace_parameters.loadBalancing.value;
+            mpiE = $scope.irace_parameters.mpi.value;
+            sgecE = $scope.irace_parameters.sgeCluster.value;
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 0 + "\t" + "\"" + value.description + "\"";
+          }
 
+        } else if(value.name==="loadBalancing") {
+          if (loadBalE) var aux = 1;
+          else var aux = 0;
+          if($scope.irace_parameters.parallel.value) {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + aux + "\t" + "\"" +  value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" +  value.long + "\"" + "\t"
+                      + aux + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if(value.name==="mpi") {
+          if (mpiE) var aux = 1;
+          else var aux = 0;
+          if($scope.irace_parameters.parallel.value) {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + aux + "\t" + "\"" +  value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" +  value.long + "\"" + "\t"
+                      + aux + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if(value.name==="sgeCluster") {
+          if (sgecE) var aux = 1;
+          else var aux = 0;
+          if($scope.irace_parameters.parallel.value) {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + aux + "\t" + "\"" +  value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" +  value.long + "\"" + "\t"
+                      + aux + "\t" + "\"" + value.description + "\"";
+          }
+        } else if(value.name === "testNbElites") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.testNbElites.value + "\t" + "\"" + value.description + "\"";
+        } else if(value.name==="testIterationElites") {
+          if($scope.irace_parameters.testIterationElites.value){
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 1 + "\t" + "\"" + value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 0 + "\t" + "\"" + value.description + "\"";
+          }
+        } else if(value.name==="testInstancesDir") {
+          if($scope.irace_parameters.testInstancesDir.value) { //if there is a new path
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + "\"" + $scope.irace_parameters.testInstancesDir.value + "\"" + "\t"
+                      + "\"" + value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + "\"" + $scope.irace_parameters.testInstancesDir.value + "\"" + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if(value.name==="testInstancesFile") {
+          if($scope.irace_parameters.testInstancesFile.value) { //if there is a new path
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + "\"" + $scope.irace_parameters.testInstancesFile.value + "\"" + "\t"
+                       + "\"" + value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + "\"" + $scope.irace_parameters.testInstancesFile.value + "\"" + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if (value.name === "sampleInstances") {
+          if($scope.irace_parameters.sampleInstances.value) {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 1 + "\t"
+                      + "\"" + value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 0 + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if (value.name === "nbIterations") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.nbIterations.value + "\t"
+                    + "\"" + value.description + "\"";
+        } else if (value.name === "nbExperimentsPerIteration") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.nbExperimentsPerIteration.value + "\t"
+                    + "\"" + value.description + "\"";
+        } else if (value.name === "nbConfigurations") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.nbConfigurations.value + "\t"
+                    + "\"" + value.description + "\"";
+        } else if (value.name === "mu") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.mu.value + "\t"
+                    + "\"" + value.description + "\"";
+        } else if (value.name === "minNbSurvival") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.minNbSurvival.value + "\t"
+                    + "\"" + value.description + "\"";
+        } else if (value.name === "softRestart") {
+          if($scope.irace_parameters.softRestart.value) {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 1 + "\t"
+                      + "\"" + value.description + "\"";
+          } else {
+            content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                      + "\"" + value.long + "\"" + "\t"
+                      + 0 + "\t"
+                      + "\"" + value.description + "\"";
+          }
+        } else if (value.name === "softRestartThreshold") {
+          content += value.name + "\t" + value.type + "\t" + "\"" + value.short + "\"" + "\t"
+                    + "\"" + value.long + "\"" + "\t"
+                    + $scope.irace_parameters.softRestartThreshold.value + "\t"
+                    + "\"" + value.description + "\"";
+        }
         else {
           content += value.name + "\t" + value.type + "\t"
                     + "\"" +  value.short + "\"" + "\t"
@@ -953,5 +1115,23 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
       }
     });
   };
+
+  $scope.insertPathTestInstancesDir = function() {
+    dialog.showOpenDialog(function(filename) {
+      if(filename) {
+        $scope.irace_parameters.testInstancesDir.value = filename[0];
+        $scope.$apply();
+      }
+    });
+  }
+
+  $scope.insertPathTestInstancesFile = function() {
+    dialog.showOpenDialog(function(filename) {
+      if(filename) {
+        $scope.irace_parameters.testInstancesFile.value = filename[0];
+        $scope.$apply();
+      }
+    });
+  }
 
 }]);
