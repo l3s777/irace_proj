@@ -466,14 +466,101 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   //----------------------
 
   // TODO
-  // self.openScenario = function() {
+  // $scope.openScenario = function() {
   //   console.log("when it opens");
   // };
 
-  // $scope.saveScenario = function() {
-  //   // save all the scenario
-  //   console.log("time to save info");
-  // };
+  $scope.saveScenario = function() {
+    // save all the scenario
+    console.log("time to save info");
+    if($scope.scenario.name) {
+      if($scope.scenario.parameters) { //if there are parameters to save
+        if($scope.scenario.constraints) {
+          if($scope.scenario.candidates) {
+            if($scope.scenario.instances) {
+              if($scope.scenario.targetrunner) {
+                if($scope.scenario.irace_params) {
+
+                  console.log("passed validations");
+
+                  // all data is ready to be saved
+                  var contentParameters = $scope.prepareExportParams();
+                  var contentConstrains = $scope.prepareExportConstrains();
+                  var contentCandidates = $scope.prepareExportCandidates();
+                  var contentTargetRunner = $scope.scenario.targetrunner;
+                  var contentIraceParams = $scope.prepareExportIraceSetup();
+
+                  // save it locally
+                  // create folder and add all files
+                  // TODO extract users home path
+                  var path = "/Users/lesly/irace";
+                  if (!fs.existsSync(path)){
+                      fs.mkdirSync(path);
+                  }
+
+                  fs.writeFile(path+"/params.txt", contentParameters, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(path+"/constraints.txt", contentConstrains, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(path+"/candidates.txt", contentCandidates, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(path+"/targetrunner.txt", contentTargetRunner, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(path+"/iracesetup.txt", contentIraceParams, function(err) {
+                    if(err) alert(err);
+                  });
+
+                  // save for user
+                  var userPath = dialog.showOpenDialog({
+                      properties: ['openDirectory']
+                  });
+                  // saving data in user provided path
+                  fs.writeFile(userPath+"/params.txt", contentParameters, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath+"/constraints.txt", contentConstrains, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath+"/candidates.txt", contentCandidates, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath+"/targetrunner.txt", contentTargetRunner, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath+"/iracesetup.txt", contentIraceParams, function(err) {
+                    if(err) alert(err);
+                  });
+
+                } else dialog.showErrorBox("File save error", "It cannot save with empty irace parameters");
+              } else dialog.showErrorBox("File save error", "It cannot save with empty target runner path");
+            } else dialog.showErrorBox("File save error", "It cannot save with empty instances");
+          } else dialog.showErrorBox("File save error", "It cannot save with empty initial candidates");
+        } else dialog.showErrorBox("File save error", "It cannot save with empty forbidden combinations");
+      } else dialog.showErrorBox("File save error", "It cannot save with empty parameters");
+    } else {
+      // show alert to introduce name for the scenario
+      console.log("intro name");
+      dialog.showErrorBox("File save error", "Please, insert a name for the scenario");
+    }
+
+  };
+
+  $scope.summaryBeforeRun = function(ev) {
+    // TODO validate link to TargetRunner
+    $mdDialog.show(
+      $mdDialog.alert()
+        .parent(angular.element(document.querySelector('#popupContainer')))
+        .clickOutsideToClose(true)
+        .title('Summary')
+        .textContent('Review the values before launching application')
+        .ok('OK')
+        .targetEvent(ev)
+    );
+  };
 
   //---------------------
   // Params
@@ -516,7 +603,6 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
           if(words[0]) {
             if(words[1]=="undefined") var switchParam="";
             else var switchParam = words[1];
-            console.log(words[4]);
             if(words[4]) {
                 if(words[4].includes("undefined")) var condition = "";
                 else var condition = words[4].split("| ")[1];
@@ -538,7 +624,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   }
 
-  $scope.exportParameters = function() {
+  $scope.prepareExportParams = function() {
     var content = cfg.file_options.parameters_header;
     $scope.scenario.parameters.forEach(function(param) {
       if(param.active) {
@@ -547,14 +633,22 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
         content += "\n";
       }
     });
+    return content;
+  }
+
+  $scope.exportParameters = function() {
+    var content = $scope.prepareExportParams();
+    // choose where to save
     dialog.showSaveDialog(function(filename) {
       if(filename) {
+        console.log(filename)
         fs.writeFile(filename, content, function(err) {
           if(err) alert(err);
         });
       }
     });
   };
+
 
   //---------------------
   // Constraints
@@ -601,13 +695,18 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   }
 
-  $scope.exportConstraints = function() {
+  $scope.prepareExportConstrains = function () {
     var content = cfg.file_options.constraints_header;
     $scope.scenario.constraints.forEach(function(constraint) {
       if(constraint.active) {
         content += constraint.expression + "\n";
       }
     });
+    return content;
+  };
+
+  $scope.exportConstraints = function() {
+    var content = $scope.prepareExportConstrains();
     dialog.showSaveDialog(function(filename) {
       if(filename){
         fs.writeFile(filename, content, function(err) {
@@ -691,8 +790,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   }
 
-  $scope.exportCandidates = function() {
-
+  $scope.prepareExportCandidates = function() {
     var content = cfg.file_options.candidates_header;
     var aux = " ";
 
@@ -714,6 +812,13 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
         }
       }
     });
+
+    return content;
+  };
+
+  $scope.exportCandidates = function() {
+    var content = $scope.prepareExportCandidates();
+
     dialog.showSaveDialog(function(filename) {
       if(filename) {
         fs.writeFile(filename, content, function(err) {
@@ -754,6 +859,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
           var lines = data.split('\n');
           var output = [];
           var cnt = 0;
+          // TODO review why it charges from second line
           lines.forEach(function(line) {
             if(line[0] != "#") {
               $scope.scenario.instances.training.push(line);
@@ -765,7 +871,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   };
 
-  $scope.exportTrainingInstances = function() {
+  $scope.prepareExportTrainingInstances = function() {
     var content = cfg.file_options.instances_header;
     content += "#training instances" + "\n";
     $scope.scenario.instances.training.forEach(function(inst) {
@@ -773,6 +879,11 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
           content += inst + "\n";
       }
     });
+    return content;
+  }
+
+  $scope.exportTrainingInstances = function() {
+    var content = $scope.prepareExportTrainingInstances()
 
     dialog.showSaveDialog(function(filename) {
       if(filename) {
@@ -783,6 +894,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   };
 
+  // Testing Instances
   $scope.addTestsInstance = function() {
     $scope.scenario.instances.tests.push("newpath");
   };
@@ -819,7 +931,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     });
   };
 
-  $scope.exportTrainingInstances = function() {
+  $scope.prepareExportTestingInstances = function() {
     var content = cfg.file_options.instances_header;
     content += "#testing instances" + "\n";
     $scope.scenario.instances.tests.forEach(function(t) {
@@ -827,6 +939,11 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
           content += t + "\n";
       }
     });
+    return content;
+  }
+
+  $scope.exportTestingInstances = function() {
+    var content =   $scope.prepareExportTestingInstances();
 
     dialog.showSaveDialog(function(filename) {
       if(filename) {
@@ -866,7 +983,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   //---------------------
   // IRACE params
   //---------------------
-  $scope.exportIraceSetup = function() {
+  $scope.prepareExportIraceSetup = function() {
     // export parameters set up to an independent file
     var content = cfg.file_options.irace_params_header + "\n";
     content += cfg.file_options.iraceparams_header + "\n";
@@ -1106,6 +1223,12 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
 
 
     });
+
+    return content;
+  };
+
+  $scope.exportIraceSetup = function() {
+    var content = $scope.prepareExportIraceSetup();
     // choosing file where to save
     dialog.showSaveDialog(function(filename) {
       if(filename) {

@@ -36,7 +36,15 @@
           </div>
           <div>
             <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE</md-button>
-            <md-button class="md-primary md-raised" ng-click="exportIraceSetup()">RUN</md-button>
+             <!-- RUN shows a summary -->
+            <!-- <md-button class="md-primary md-raised">RUN</md-button> -->
+            <div class="md-padding" id="popupContainer" ng-cloak>
+              <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
+                 <md-button class="md-primary md-raised" ng-click="summaryBeforeRun($event)">
+                   RUN
+                 </md-button>
+              </div>
+            </div>
             <a href= "../index.html"><md-button class="md-primary md-raised">HOME</md-button></a>
           </div>
         </div>
@@ -268,6 +276,7 @@
                        </div>
                        <div class="ir-spacer-20"></div>
                        <div class="ir-spacer-20"></div>
+                       <!-- Testing instances -->
                        <div layout="row" class="ir-bold" layout-wrap>
                          <div flex="70">Test set instances</div>
                        </div>
@@ -293,7 +302,7 @@
                              <md-button class="md-primary" ng-click="addPollTestsInstances()">Add poll</md-button>
                            </div>
                            <div>
-                             <md-button class="md-primary" ng-click="exportTrainingInstances()">Save</md-button></div>
+                             <md-button class="md-primary" ng-click="exportTestingInstances()">Save</md-button></div>
                           </div>
                        </div>
                       </md-content>
