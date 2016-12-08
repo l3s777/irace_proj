@@ -39,6 +39,12 @@ md-select {
   border:1px solid rgb(84, 93, 100) !important;
 }
 
+.ir-table-runninglive {
+  border:1px solid;
+  height: 200px;
+  overflow-y: scroll;
+}
+
 .ir-table-scenario {
   height: 310px;
   overflow-y: scroll;

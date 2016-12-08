@@ -25,6 +25,7 @@
   </md-toolbar>
   <div class="md-padding">
     <p>Scenario Name: {{scenario.name}}</p>
+    <md-button class="md-primary" ng-click="readData()"> Refresh</md-button>
   </div>
   <div class="md-padding" layout="row">
     <div flex="50">
@@ -39,6 +40,37 @@
       Number of instances: <strong>{{task_data.numberInstances}}</strong><br>
       Number of evaluation: <strong>{{task_data.numberEvaluations}}</strong><br>
     </div>
+  </div>
+  <div class="ir-spacer-10"></div>
+  <div layout="row" layout-wrap class="md-padding">
+    <div class="ir-bold" flex="20">Instance</div>
+    <div class="ir-bold" flex="20">Candidates</div>
+    <div class="ir-bold" flex="20">Mean</div>
+    <div class="ir-bold" flex="20">Time</div>
+    <div class="ir-bold" flex="20">w</div>
+  </div>
+  <!-- reading the values from the output -->
+  <div class="ir-table-runninglive">
+    <div class="md-padding" layout="row" layout-wrap ng-repeat="value in task_detail | filter:filter.value">
+      <div flex="20">
+        <label>{{value.numberInstance}}</label>
+      </div>
+      <div flex="20">
+        <label>{{value.numberCandidate}}</label>
+      </div>
+      <div flex="20">
+        <label>{{value.mean}}</label>
+      </div>
+      <div flex="20">
+        <label>{{value.time}}</label>
+      </div>
+      <div flex="20">
+        <label>{{value.w}}</label>
+      </div>
+    </div>
+  </div>
+  <div>
+
   </div>
 
   <!-- Modules -->
