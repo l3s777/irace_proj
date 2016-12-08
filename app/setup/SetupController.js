@@ -629,7 +629,8 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     $scope.scenario.parameters.forEach(function(param) {
       if(param.active) {
         content += param.name + "\t" + param.switch + "\t" + param.type + "\t" + param.values;
-        if(param.condition != "") content += "\t| " + param.conditions;
+        if(param.conditions) content += "\t| " + param.conditions;
+        else content += "\t"
         content += "\n";
       }
     });
@@ -641,7 +642,6 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     // choose where to save
     dialog.showSaveDialog(function(filename) {
       if(filename) {
-        console.log(filename)
         fs.writeFile(filename, content, function(err) {
           if(err) alert(err);
         });

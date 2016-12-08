@@ -20,7 +20,6 @@
          angular.module('app', ['ngMaterial', 'ngRoute']);
     </script> -->
   </head>
-s
   <body ng-app="app" ng-cloak>
     <div class="irs padding">
       <md-toolbar style="background: #CCF">
@@ -45,9 +44,10 @@ s
     <div>
       <div class="md-padding" ng-cloak>
         <div layout="row" layout-wrap layout-margin layout-align="center">
-            <a href = "#setup">
+          <a href="#setup">new scenario </a>
+            <!-- <a href = "#setup">
               <md-button class="md-primary md-raised">Create new scenario</md-button>
-            </a>
+            </a> -->
         </div>
       </div>
       <div layout="row" layout-wrap layout-margin layout-align="center">
@@ -56,6 +56,8 @@ s
         </a>
       </div>
     </div>
+
+    <ng-view></ng-view>
 
     <!-- Modules -->
     <script src="app.js"></script>
