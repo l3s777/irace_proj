@@ -20,7 +20,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
 
   // setting up scenario
   $scope.scenario = {
-    "name": '',
+    "name": 'holamundo',
     "parameters": [],
     "constraints": [],
     "candidates": {},
