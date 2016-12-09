@@ -10,9 +10,9 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   var fs = require('fs');
 
   // Execute commands
-  // var sys = require('sys')
-  // var exec = require('child_process').exec;
-  // var child;
+  var sys = require('util');
+  var exec = require('child_process').exec;
+  var child;
 
   fs.readFile('./app/config.json', 'utf8', function(err, data) {
     if (err) throw err;
@@ -1143,16 +1143,15 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     // running proccess from HomeController
     // var exec = require('child_process').exec, child;
 
-    // child = exec(execCommand,
-    //     function (error, stdout, stderr) {
-    //         console.log('stdout: ' + stdout);
-    //         console.log('stderr: ' + stderr);
-    //         if (error !== null) {
-    //              console.log('exec error: ' + error);
-    //         }
-    //     }
-    // );
-    // child();
+    child = exec(execCommand,
+        function (error, stdout, stderr) {
+            console.log('stdout: ' + stdout);
+            console.log('stderr: ' + stderr);
+            if (error !== null) {
+                 console.log('exec error: ' + error);
+            }
+        }
+    );
   };
 
   $scope.insertPathTestInstancesDir = function() {
