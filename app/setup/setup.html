@@ -1,25 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>UI for IRACE</title>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
-
-    <!-- angular-route -->
-    <script type="text/javascript" src="../../node_modules/angular-route/angular-route.js"></script>
-
-    <link rel="stylesheet" href="../../assets/css/style.css" />
-    <!-- material icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  </head>
-
-  <body ng-app="app" ng-controller="SetupController">
+<div ng-controller="SetupController" id="popupContainer">
     <md-toolbar style="background: #CCF">
         <div class="md-toolbar-tools">
            <h2 class="md-flex">1. IRACE scenario set up</h2>
@@ -36,16 +15,12 @@
           </div>
           <div>
             <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE SCENARIO</md-button>
-             <!-- RUN shows a summary -->
-            <!-- <md-button class="md-primary md-raised">RUN</md-button> -->
-            <div class="md-padding" id="popupContainer" ng-cloak>
-              <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
-                 <md-button class="md-primary md-raised" ng-click="summaryBeforeRun($event)">
-                   RUN
-                 </md-button>
+            <div class="md-padding" ng-cloak>
+              <div layout="row" layout-wrap layout-margin layout-align="center">
+                 <md-button class="md-primary md-raised" ng-click="summaryBeforeRun($event)">RUN</md-button>
               </div>
             </div>
-            <a href= "../index.html"><md-button class="md-primary md-raised">HOME</md-button></a>
+            <a href= "#home"><md-button class="md-primary md-raised">HOME</md-button></a>
           </div>
         </div>
      </md-content>
@@ -486,10 +461,4 @@
               </div>
              </div>
     </div>
-
-    <!-- Modules -->
-    <script src="../app.js"></script>
-    <script src="SetupController.js" type="text/javascript"></script>
-
-  </body>
-</html>
+</div>

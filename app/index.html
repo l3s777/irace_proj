@@ -16,54 +16,28 @@
 
     <!-- material icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- <script type="text/javascript">
-         angular.module('app', ['ngMaterial', 'ngRoute']);
-    </script> -->
   </head>
+
   <body ng-app="app" ng-cloak>
-    <div class="irs padding">
+    <div>
       <md-toolbar style="background: #CCF">
           <div class="md-toolbar-tools">
-             <h1 class="md-flex">Welcome to IRACE configuration</h1>
+             <h1 class="md-flex">IRACE configuration</h1>
           </div>
+          <!-- <a href = "#setup">
+            <md-button class="md-primary md-raised">Create new scenario</md-button>
+          </a> -->
        </md-toolbar>
        <md-content flex layout-padding>
-          <p>Press "Create new scenario" for starting and you will be able to set up your new project
-            or press "Load scenario" for loading your previous configuration saved.</p>
-          <div>
-            <p>You will be able to: </p>
-            <ol>
-              <li>IRACE scenario set up</li>
-              <li>Running IRACE online</li>
-              <li>Results</li>
-            </ol>
-        </div>
+         <ng-view> </ng-view>
        </md-content>
-    </div>
-    <br>
-    <div>
-      <div class="md-padding" ng-cloak>
-        <div layout="row" layout-wrap layout-margin layout-align="center">
-            <a href = "#setup">
-              <md-button class="md-primary md-raised">Create new scenario</md-button>
-            </a>
-        </div>
-      </div>
-      <div layout="row" layout-wrap layout-margin layout-align="center">
-        <a href = "#">
-          <md-button class="md-primary md-raised">Load scenario</md-button>
-        </a>
-      </div>
-    </div>
-
-    <ng-view></ng-view>
+     </div>
 
     <!-- Modules -->
     <script src="app.js"></script>
-  </body>
+    <script src="home/HomeController.js" type="text/javascript"></script>
+    <script src="setup/SetupController.js" type="text/javascript"></script>
+    <script src="run/RunController.js" type="text/javascript"></script>
 
-  <script>
-    // You can also require other files to run in this process
-    // require('./renderer.js')
-  </script>
+  </body>
 </html>

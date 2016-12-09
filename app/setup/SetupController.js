@@ -9,6 +9,11 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   var dialog = app2.dialog;
   var fs = require('fs');
 
+  // Execute commands
+  // var sys = require('sys')
+  // var exec = require('child_process').exec;
+  // var child;
+
   fs.readFile('./app/config.json', 'utf8', function(err, data) {
     if (err) throw err;
     cfg = angular.fromJson(data);
@@ -490,30 +495,6 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
                   var contentTargetRunner = $scope.scenario.targetrunner;
                   var contentIraceParams = $scope.prepareExportIraceSetup();
 
-                  // save it locally
-                  // create folder and add all files
-                  // TODO extract users home path
-                  // var path = "/Users/lesly/irace";
-                  // if (!fs.existsSync(path)){
-                  //     fs.mkdirSync(path);
-                  // }
-                  //
-                  // fs.writeFile(path+"/params.txt", contentParameters, function(err) {
-                  //   if(err) alert(err);
-                  // });
-                  // fs.writeFile(path+"/constraints.txt", contentConstrains, function(err) {
-                  //   if(err) alert(err);
-                  // });
-                  // fs.writeFile(path+"/candidates.txt", contentCandidates, function(err) {
-                  //   if(err) alert(err);
-                  // });
-                  // fs.writeFile(path+"/targetrunner.txt", contentTargetRunner, function(err) {
-                  //   if(err) alert(err);
-                  // });
-                  // fs.writeFile(path+"/iracesetup.txt", contentIraceParams, function(err) {
-                  //   if(err) alert(err);
-                  // });
-
                   // save for user
                   var userPath = dialog.showOpenDialog({
                       properties: ['openDirectory']
@@ -550,7 +531,8 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   };
 
   $scope.summaryBeforeRun = function(ev) {
-    // TODO validate link to TargetRunner
+    var content;
+    // TODO check if all configuration has been saved
     $mdDialog.show(
       $mdDialog.alert()
         .parent(angular.element(document.querySelector('#popupContainer')))
@@ -1006,14 +988,14 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
       } else if(value.name==="configurationsFile") {
         content += value.name + " = " + "\"" + path+"/candidates.txt" + "\"" + "\n";
       } else if(value.name==="targetRunner") {
-        content += value.name + " = " + "\"" + $scope.scenario.targetrunner + "\"" +  "\n"; // TODO check this dif candidatsFile
+        content += value.name + " = " + "\"" + $scope.scenario.targetrunner + "\"" +  "\n";
       } else if(value.name==="targetRunnerParallel") {
         content += value.name + " = " + "NULL" +  "\n";
       } else if(value.name === "targetEvaluator") {
         content += value.name + " = " + "\"" + "" + "\"" + "\n";
       } else if(value.name === "maxExperiments") {
         //TODO check if $scope given value is NULL if so, just retreive from default values
-        if($scope.irace_parameters.maxExperiments.value===0) content += value.name + " = " + 10 + "\n";
+        if($scope.irace_parameters.maxExperiments.value===0) content += value.name + " = " + 100 + "\n";
         else content += value.name + " = " + $scope.irace_parameters.maxExperiments.value + "\n";
       } else if(value.name === "maxTime") {
         content += value.name + " = " + $scope.irace_parameters.maxTime.value + "\n";
@@ -1155,6 +1137,22 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     //     });
     //   }
     // });
+
+    var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/irace-setup/result.txt";
+
+    // running proccess from HomeController
+    // var exec = require('child_process').exec, child;
+
+    // child = exec(execCommand,
+    //     function (error, stdout, stderr) {
+    //         console.log('stdout: ' + stdout);
+    //         console.log('stderr: ' + stderr);
+    //         if (error !== null) {
+    //              console.log('exec error: ' + error);
+    //         }
+    //     }
+    // );
+    // child();
   };
 
   $scope.insertPathTestInstancesDir = function() {

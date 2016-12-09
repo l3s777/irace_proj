@@ -1,5 +1,5 @@
 app.controller('RunController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
-  // console.log($scope);
+
   // TODO set up $scope + important data from it
   console.log(__dirname);
   var app2 = require('electron').remote;
@@ -21,21 +21,16 @@ app.controller('RunController', ['$scope', '$mdDialog', function($scope, $mdDial
   $scope.task_detail = [{}];
 
   // check the minimum value for alive candidates
-  $scope.currentAliveCandidatess = function() {
-
-  };
+  $scope.currentAliveCandidatess = function() {};
 
   // check the maximum instances in execution
-  $scope.currentNumberInstances = function() {
-
-  };
+  $scope.currentNumberInstances = function() {};
 
   // experiments so far / current bugdet
-  $scope.currentNumberEvaluations = function() {
-
-  };
+  $scope.currentNumberEvaluations = function() {};
 
   $scope.readData = function() {
+    // TODO get from working path the files for outputs
     $scope.iteration_data = scanIterationData("/Users/lesly/Desktop/testrunning/iteration_data.iout.txt");
     $scope.task_data = scanTaskData('/Users/lesly/Desktop/testrunning/task_data.iout.txt');
     $scope.task_detail = scanTaskDetail('/Users/lesly/Desktop/testrunning/task_detail.cvs.txt');
