@@ -457,7 +457,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     $scope.scenario.constraints = [{"active": true}];
     $scope.scenario.candidates = {
       "parameters": [],
-      "instances": [{"active": true}]
+      "instances": []
     };
     $scope.scenario.instances = {
       "training": [""],
@@ -569,6 +569,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
 
   function scanParameters(filename) {
     var params = [];
+    var auxparams = [];
     fs.readFile(filename, 'utf8', function(err, data) {
       if (err) {
         throw err;
@@ -598,19 +599,25 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
               "active": true
             };
             params.push(param);
+            auxparams.push(param.name);
           }
         }
       });
       $scope.scenario.parameters = params;
       $scope.$apply();
     });
+
+    // save same params in candidates
+    $scope.scenario.candidates.parameters = auxparams;
   }
 
   $scope.prepareExportParams = function() {
     var content = cfg.file_options.parameters_header;
     $scope.scenario.parameters.forEach(function(param) {
       if(param.active) {
-        content += param.name + "\t" + param.switch + "\t" + param.type + "\t" + param.values;
+        if(param.switch) var aux = param.switch;
+        else var aux = "\"" + " " + "\"";
+        content += param.name + "\t" + aux + "\t" + param.type + "\t" + param.values;
         if(param.conditions) content += "\t| " + param.conditions;
         else content += "\t"
         content += "\n";
@@ -705,9 +712,8 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   $scope.addCandidateInst = function() {
     var aux_candidates = [];
     var aux_cont = 1;
-    // TODO adding a control
-    if($scope.scenario.candidates) {
-      while(aux_cont <= $scope.scenario.candidates.pre_instances[0].length) {
+    if($scope.scenario.candidates.parameters.length > 1) {
+      while(aux_cont <= $scope.scenario.candidates.parameters.length) {
         aux_candidates.push("");
         aux_cont++;
       }
@@ -716,7 +722,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
           'values': aux_candidates,
           'active': true
       });
-    } else console.log("dialog alert");
+    } else dialog.showErrorBox("Cannot add candidate", "First add labels.");
   };
 
   $scope.importCandidates = function() {
