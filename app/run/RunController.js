@@ -1,10 +1,20 @@
-app.controller('RunController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
+app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($rootScope, $scope, $mdDialog) {
+
+  $scope.scenarioname = $rootScope.scenario;
 
   // TODO set up $scope + important data from it
   console.log(__dirname);
+  console.log($scope.scenarioname);
   var app2 = require('electron').remote;
   var dialog = app2.dialog;
   var fs = require('fs');
+
+  // parallel coordinates
+  // var d3 = require("d3");
+  // var jsdom = require("jsdom");
+  //
+  // var document = jsdom.jsdom(),
+  // var svg = d3.select(document.body).append("svg");
 
   $scope.iteration_data = {
     "iteration": 1,
@@ -121,5 +131,20 @@ app.controller('RunController', ['$scope', '$mdDialog', function($scope, $mdDial
       $scope.$apply();
     });
   }
+
+  // parallel coordinates
+  var data = [
+    [0,-0,0,0,0,3 ],
+    [1,-1,1,2,1,6 ],
+    [2,-2,4,4,0.5,2],
+    [3,-3,9,6,0.33,4],
+    [4,-4,16,8,0.25,9]
+  ];
+
+  var pc = d3.parcoords()("#example")
+    .data(data)
+    .render()
+    .createAxes();
+
 
 }]);

@@ -1,4 +1,4 @@
-app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDialog) {
+app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function($rootScope, $scope, $mdDialog) {
   // Initialize the scope variables
   var self = $scope;
   // reading external file for parameteres
@@ -25,7 +25,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
 
   // setting up scenario
   $scope.scenario = {
-    "name": 'holamundo',
+    "name": '',
     "parameters": [],
     "constraints": [],
     "candidates": {},
@@ -33,6 +33,8 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
     "targetrunner": "",
     "irace_params": []
   };
+
+  $rootScope.scenario = $scope.scenario.name;
 
   $scope.parameters = {
     "categories": {
@@ -531,14 +533,15 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
   };
 
   $scope.summaryBeforeRun = function(ev) {
-    var content;
+    var content = $scope.prepareExportIraceSetup();
     // TODO check if all configuration has been saved
+    console.log(content);
     $mdDialog.show(
       $mdDialog.alert()
         .parent(angular.element(document.querySelector('#popupContainer')))
         .clickOutsideToClose(true)
         .title('Summary')
-        .textContent('Review the values before launching application')
+        .textContent(content)
         .ok('OK')
         .targetEvent(ev)
     );
@@ -553,7 +556,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
       "name": "param_name",
       "switch": "",
       "type": "c",
-      "values": "(1,2,3)",
+      "          ": "(1,2,3)",
       "conditions": ""
     });
   };
@@ -814,7 +817,6 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
         });
       }
     });
-
 
   };
 
@@ -1133,17 +1135,7 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
       if(err) alert(err);
     });
 
-    // saving local file generated as contentIraceSetup
-    // var content = $scope.prepareExportIraceSetup();
-    // // choosing file where to save
-    // dialog.showSaveDialog(function(filename) {
-    //   if(filename) {
-    //     fs.writeFile(filename, content, function(err) {
-    //       if(err) alert(err);
-    //     });
-    //   }
-    // });
-
+    // executing
     var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/irace-setup/result.txt";
 
     // running proccess from HomeController
@@ -1151,8 +1143,9 @@ app.controller('SetupController', ['$scope', '$mdDialog', function($scope, $mdDi
 
     child = exec(execCommand,
         function (error, stdout, stderr) {
-            console.log('stdout: ' + stdout);
-            console.log('stderr: ' + stderr);
+            // console.log('stdout: ' + stdout);
+            // console.log('stderr: ' + stderr);
+            dialog.showErrorBox("Error", stderr);
             if (error !== null) {
                  console.log('exec error: ' + error);
             }
