@@ -4,17 +4,15 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
   // TODO set up $scope + important data from it
   console.log(__dirname);
-  console.log($scope.scenarioname);
+  // console.log($scope.scenarioname);
   var app2 = require('electron').remote;
   var dialog = app2.dialog;
   var fs = require('fs');
 
   // parallel coordinates
-  var d3 = require('d3');
-  // var jsdom = require("jsdom");
-  //
-  // var document = jsdom.jsdom(),
-  // var svg = d3.select(document.body).append("svg");
+  // var d3 = require('d3');
+  var d3 = require("d3");
+  // const svg = d3.select('#the-graph');
 
   $scope.iteration_data = {
     "iteration": 1,
@@ -133,61 +131,54 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
   }
 
   // parallel coordinates
-  // const {ipcRenderer} = require("electron");
-  // var color = d3.scaleOrdinal(d3.schemeCategory20);
-  // var svg = d3.select("#svg");
-  // var svg_height = svg.attr("height");
-  // var svg_width = svg.attr("width");
-  // graph = ipcRenderer.sendSync("actionGetData", "JSON");
-  // var simulation = d3.forceSimulation()
-  //     .force("link", d3.forceLink().id(function(d) { return d.name; }))
-  //     .force("charge", d3.forceManyBody())
-  //     .force("center", d3.forceCenter(svg_width / 2, svg_height / 2));
-  // var link = svg.append("g")
-  //     .attr("class", "links")
-  //     .selectAll("line")
-  //     .data(graph.connections)
-  //     .enter().append("line")
-  //     .attr("stroke-width", function(d) { return 1; });
-  // var links = svg.append("g")
-  //     .attr("class", "links")
-  //     .selectAll("line")
-  //     .data(graph.connections)
-  //     .enter().append("line");
-  // var node = svg.append("g")
-  //     .attr("class", "nodes")
-  //     .selectAll("circle")
-  //     .data(graph.ifs)
-  //     .enter().append("circle")
-  //     .attr("r", 5)
-  //     .attr("fill", function(d) {
-  //         var vlan = 0;
-  //         if (d.vlan !== null)
-  //         {
-  //             for (var i = 1; i - 1 < graph.vlans.length; i += 1)
-  //             {
-  //                 if (graph.vlans[i - 1].name === d.vlan)
-  //                 {
-  //                     vlan = i;
-  //                     break;
-  //                 }
-  //             }
-  //         }
-  //         return color(vlan);
-  //     });
-  // node.append("title").text(function(d) { return d.name; });
-  // simulation.nodes(graph.ifs).on("tick", ticked);
-  // simulation.force("link").links(graph.connections);
-  // function ticked() {
-  //     link
-  //         .attr("x1", function(d) { return d.source.x; })
-  //         .attr("y1", function(d) { return d.source.y; })
-  //         .attr("x2", function(d) { return d.target.x; })
-  //         .attr("y2", function(d) { return d.target.y; });
-  //     node
-  //         .attr("cx", function(d) { return d.x; })
-  //         .attr("cy", function(d) { return d.y; });
-  // }
 
 
+  // bars
+  var svg = d3.select("svg"),
+    margin = {top: 5, right: 5, bottom: 5, left: 5},
+    width = +svg.attr("width") - margin.left - margin.right,
+    height = +svg.attr("height") - margin.top - margin.bottom;
+
+  var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+      y = d3.scaleLinear().rangeRound([height, 0]);
+
+  var g = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  d3.tsv("data.tsv", function(d) {
+    console.log("value in d");
+    console.log(d.frequency);
+    d.value = +d.frequency;
+    return d;
+  }, function(error, data) {
+      if (error) throw error;
+      console.log(data);
+
+      // x.domain(data.map(function(d) { return d.letter; }));
+      // y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+      //
+      // g.append("g")
+      //     .attr("class", "axis axis--x")
+      //     .attr("transform", "translate(0," + height + ")")
+      //     .call(d3.axisBottom(x));
+      //
+      // g.append("g")
+      //     .attr("class", "axis axis--y")
+      //     .call(d3.axisLeft(y).ticks(10, "%"))
+      //   .append("text")
+      //     .attr("transform", "rotate(-90)")
+      //     .attr("y", 6)
+      //     .attr("dy", "0.71em")
+      //     .attr("text-anchor", "end")
+      //     .text("Frequency");
+      //
+      // g.selectAll(".bar")
+      //   .data(data)
+      //   .enter().append("rect")
+      //     .attr("class", "bar")
+      //     .attr("x", function(d) { return x(d.letter); })
+      //     .attr("y", function(d) { return y(d.frequency); })
+      //     .attr("width", x.bandwidth())
+      //     .attr("height", function(d) { return height - y(d.frequency); });
+    });
 }]);

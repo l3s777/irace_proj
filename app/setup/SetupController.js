@@ -25,7 +25,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   // setting up scenario
   $scope.scenario = {
-    "name": '',
+    "name": 'hi',
     "parameters": [],
     "constraints": [],
     "candidates": {},
@@ -542,7 +542,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         .clickOutsideToClose(true)
         .title('Summary')
         .textContent(content)
-        .ok('OK')
+        .ok('RUN')
         .targetEvent(ev)
     );
   };
@@ -556,7 +556,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       "name": "param_name",
       "switch": "",
       "type": "c",
-      "          ": "(1,2,3)",
+      "switch": "(1,2,3)",
       "conditions": ""
     });
   };
@@ -1035,14 +1035,14 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         content += value.name + " = "+ "\"" + "F-test"+ "\"" + "\n";
       } else if(value.name==="firstTest") {
         // TODO put real value from "default"
-        content += value.name + " = " + 5 + "\n";
+        content += value.name + " = " + value.default + "\n";
         console.log(value.name);
         console.log(value.default);
       } else if(value.name === "eachTest" ) {
         // TODO put real value from "default"
         console.log(value.name);
         console.log(value.default);
-        content += value.name + " = " + 1 + "\n";
+        content += value.name + " = " + value.default + "\n";
       } else if(value.name === "minNbSurvival") {
         content += value.name + " = " + $scope.irace_parameters.minNbSurvival.value + "\n";
       } else if(value.name==="nbConfigurations") {
@@ -1138,9 +1138,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     // executing
     var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/irace-setup/result.txt";
 
-    // running proccess from HomeController
-    // var exec = require('child_process').exec, child;
-
+    // running proccess
     child = exec(execCommand,
         function (error, stdout, stderr) {
             // console.log('stdout: ' + stdout);

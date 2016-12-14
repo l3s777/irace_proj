@@ -10,12 +10,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
 
-  <!-- parallel coordinates -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.9/angular-nvd3.min.js"></script> -->
-  <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
-  <!-- <script src="d3.parcoords.js"></script> -->
-
-
   <!-- angular-route -->
   <script type="text/javascript" src="../../node_modules/angular-route/angular-route.js"></script>
 
@@ -29,10 +23,12 @@
          <h2 class="md-flex">2 Running IRACE online</h2>
       </div>
   </md-toolbar>
-  <div class="md-padding">
+  <div class="md-padding" layout="row">
+    <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
+    <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
     <p>Scenario Name: {{scenario.name}}</p>
-    <md-button class="md-primary" ng-click="readData()"> Refresh</md-button>
   </div>
+  <!-- intro summary -->
   <div class="md-padding" layout="row">
     <div flex="50">
       <div>
@@ -47,6 +43,7 @@
       Number of evaluation: <strong>{{task_data.numberEvaluations}}</strong><br>
     </div>
   </div>
+  <!-- intro summary -->
   <div class="ir-spacer-10"></div>
   <div layout="row" layout-wrap class="md-padding">
     <div class="ir-bold" flex="20">Instance</div>
@@ -76,13 +73,32 @@
     </div>
   </div>
   <div class="ir-spacer-10"></div>
+  <!-- candidates summary -->
+  <br>
   <div>
-    <label class="ir-bold">Candidate details</label> total {{task_data.aliveCandidates}}
+    <label class="ir-bold">Candidate details</label> Total {{task_data.aliveCandidates}}
+    <div class="ir-table-runninglive">parallel coordinates</div>
+    <br>
+    <label class="ir-bold">Candidate diversity</label>
+    <div class="ir-table-runninglive">box plots</div>
+    <br>
+    <label class="ir-bold">Candidates values</label>
+    <div class="ir-table-runninglive">
+      bars for each param.name
+      <svg width="250" height="250"></svg>
+    </div>
+    <br>
+  </div>
+  <!-- instances summary -->
+  <br>
+  <div>
+    <label class="ir-bold">Used instances</label>
+    <div class="ir-table-shortsummary">used instances</div>
+    <br>
+    <label class="ir-bold">Kendal w</label>
+    <div class="ir-table-shortsummary">www</div>
 
   </div>
-  <br>
-  <!-- <div id="example" class="parcoords" style="width:360px;height:150px"></div> -->
-  <svg id="svg" width="960" height="600"></svg>
 
   <!-- Modules -->
   <script src="../app.js"></script>

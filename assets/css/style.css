@@ -45,6 +45,12 @@ body {
   overflow-y: scroll;
 }
 
+.ir-table-shortsummary {
+  border:1px solid;
+  height: 100px;
+  overflow-y: scroll;
+}
+
 .ir-table-scenario {
   height: 310px;
   overflow-y: scroll;
@@ -68,6 +74,14 @@ input.ir-scenario-name {
   color:#000;
 }
 .ir-btn-delete:hover {
+  color:rgb(230, 100, 100);
+  cursor: pointer;
+}
+
+.ir-btn-refresh {
+  color:#000;
+}
+.ir-btn-refresh:hover {
   color:rgb(230, 100, 100);
   cursor: pointer;
 }
@@ -169,3 +183,16 @@ input.ir-scenario-name {
   user-select: none;
   background-color: white;
 }*/
+
+/* bars */
+.bar {
+  fill: steelblue;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis--x path {
+  display: none;
+}
