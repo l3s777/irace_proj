@@ -110,14 +110,14 @@ input.ir-scenario-name {
 
 
 /* parallel candidates */
-.links line {
+/*.links line {
     stroke: #999;
     stroke-opacity: 0.6;
 }
 .nodes circle {
     stroke: #fff;
     stroke-width: 1.5px;
-}
+}*/
 
 /*svg {
   font: 10px sans-serif;
@@ -185,7 +185,7 @@ input.ir-scenario-name {
 }*/
 
 /* bars */
-.bar {
+/*.bar {
   fill: steelblue;
 }
 
@@ -195,4 +195,4 @@ input.ir-scenario-name {
 
 .axis--x path {
   display: none;
-}
+}*/

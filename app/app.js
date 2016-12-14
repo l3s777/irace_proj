@@ -11,6 +11,10 @@ app.config(['$routeProvider',
         templateUrl: 'setup/setup.html',
         controller: 'SetupController'
       }).
+      when('/run', {
+        templateUrl: 'run/run.html',
+        controller: 'RunController'
+      }).
       when('/', {
         templateUrl: 'home/home.html',
         controller: 'HomeController'

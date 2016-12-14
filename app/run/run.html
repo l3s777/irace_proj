@@ -1,28 +1,10 @@
-<!DOCTYPE html>
-<head>
-  <meta charset="UTF-8">
-  <title>UI for IRACE</title>
-  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-route.min.js"></script>
-
-  <!-- angular-route -->
-  <script type="text/javascript" src="../../node_modules/angular-route/angular-route.js"></script>
-
-  <link rel="stylesheet" href="../../assets/css/style.css" />
-  <!-- material icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body ng-app="app" ng-controller="RunController">
-  <md-toolbar style="background: #CCF">
+<div ng-controller="RunController">
+  <h2 class="ir-bold">2. Running IRACE online</h2>
+  <!-- <md-toolbar style="background: #CCF">
       <div class="md-toolbar-tools">
          <h2 class="md-flex">2 Running IRACE online</h2>
       </div>
-  </md-toolbar>
+  </md-toolbar> -->
   <div class="md-padding" layout="row">
     <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
     <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
@@ -99,8 +81,4 @@
     <div class="ir-table-shortsummary">www</div>
 
   </div>
-
-  <!-- Modules -->
-  <script src="../app.js"></script>
-  <script src="RunController.js" type="text/javascript"></script>
-</body>
+</div>

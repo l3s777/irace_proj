@@ -535,17 +535,33 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   $scope.summaryBeforeRun = function(ev) {
     var content = $scope.prepareExportIraceSetup();
     // TODO check if all configuration has been saved
-    console.log(content);
-    $mdDialog.show(
-      $mdDialog.alert()
-        .parent(angular.element(document.querySelector('#popupContainer')))
-        .clickOutsideToClose(true)
-        .title('Summary')
-        .textContent(content)
-        .ok('RUN')
-        .targetEvent(ev)
-    );
+    // console.log(content);
+
+    $mdDialog.show({
+      controller: DialogController,
+      templateUrl: 'setup/dialgo1.tmpl.html',
+      parent: angular.element(document.body),
+      targetEvent: ev,
+      clickOutsideToClose:true
+    })
+    .then(function(answer) {
+      console.log(answer);
+    });
   };
+
+  function DialogController($scope, $mdDialog) {
+    $scope.hide = function() {
+      $mdDialog.hide();
+    };
+
+    $scope.cancel = function() {
+      $mdDialog.cancel();
+    };
+
+    $scope.answer = function(answer) {
+      $mdDialog.hide(answer);
+    };
+  }
 
   //---------------------
   // Params
