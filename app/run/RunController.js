@@ -1,8 +1,6 @@
 app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($rootScope, $scope, $mdDialog) {
 
-  console.log($rootScope.scenario);
   $scope.scenarioname = $rootScope.scenario;
-  console.log($scope.scenarioname);
 
   // TODO set up $scope + important data from it
   console.log(__dirname);
@@ -46,7 +44,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
     $scope.task_detail = scanTaskDetail('/Users/lesly/Desktop/testrunning/task_detail.cvs.txt');
 
     // read data for PARALLEL COORDINATES
-    $scope.d3ParallelCoordinatesPlotData = "bestCandidates.csv"; //'bestCandidates.csv';
+    $scope.d3ParallelCoordinatesPlotData = "run/testParallel.csv"; //'bestCandidates.csv';
 
   };
 
