@@ -1,6 +1,8 @@
 app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($rootScope, $scope, $mdDialog) {
 
+  console.log($rootScope.scenario);
   $scope.scenarioname = $rootScope.scenario;
+  console.log($scope.scenarioname);
 
   // TODO set up $scope + important data from it
   console.log(__dirname);
@@ -9,7 +11,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
   var dialog = app2.dialog;
   var fs = require('fs');
 
-  // parallel coordinates
+  // graphics controls
   var d3 = require("d3");
 
   $scope.iteration_data = {
@@ -26,6 +28,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
   $scope.task_detail = [{}];
 
+  $scope.d3ParallelCoordinatesPlotData = '';
+
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
 
@@ -40,6 +44,10 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
     $scope.iteration_data = scanIterationData("/Users/lesly/Desktop/testrunning/iteration_data.iout.txt");
     $scope.task_data = scanTaskData('/Users/lesly/Desktop/testrunning/task_data.iout.txt');
     $scope.task_detail = scanTaskDetail('/Users/lesly/Desktop/testrunning/task_detail.cvs.txt');
+
+    // read data for PARALLEL COORDINATES
+    $scope.d3ParallelCoordinatesPlotData = "bestCandidates.csv"; //'bestCandidates.csv';
+
   };
 
   function scanIterationData(filename) {
@@ -132,53 +140,4 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
 
   // bars
-  var svg = d3.select("svg"),
-    margin = {top: 5, right: 5, bottom: 5, left: 5},
-    width = +svg.attr("width") - margin.left - margin.right,
-    height = +svg.attr("height") - margin.top - margin.bottom;
-
-  var g = svg.append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  // var x = d3.scale.ordinal().rangeRound([0, width]).padding(0.1);
-  var x = d3.scale.ordinal().domain([10, 0]);
-  var y = d3.scale.linear().rangeRound([height, 0]);
-
-  d3.tsv("run/data.tsv", function(d) {
-    console.log("value in d");
-    console.log(d.frequency);
-    d.value = +d.frequency;
-    return d;
-  }, function(error, data) {
-      if (error) throw error;
-      console.log(data);
-
-      x.domain(data.map(function(d) { return d.letter; }));
-      y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-
-      g.append("g")
-          .attr("class", "axis axis--x")
-          .attr("transform", "translate(0," + height + ")")
-          // .call(d3.axisBottom(x));
-          .call(d3.svg.axis().scale(x).orient("bottom"));
-
-      g.append("g")
-          .attr("class", "axis axis--y")
-          .call(d3.axisLeft(y).ticks(10, "%"))
-        .append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", "0.71em")
-          .attr("text-anchor", "end")
-          .text("Frequency");
-
-      g.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-          .attr("class", "bar")
-          .attr("x", function(d) { return x(d.letter); })
-          .attr("y", function(d) { return y(d.frequency); })
-          .attr("width", x.bandwidth())
-          .attr("height", function(d) { return height - y(d.frequency); });
-    });
 }]);

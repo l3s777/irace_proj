@@ -59,16 +59,17 @@
   <br>
   <div>
     <label class="ir-bold">Candidate details</label> Total {{task_data.aliveCandidates}}
-    <div class="ir-table-runninglive">parallel coordinates</div>
+    <div class="ir-table-runninglive">parallel coordinates
+      <div style="min-width: 100%; overflow-x: auto;">
+        <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
+      </div>
+    </div>
     <br>
     <label class="ir-bold">Candidate diversity</label>
     <div class="ir-table-runninglive">box plots</div>
     <br>
     <label class="ir-bold">Candidates values</label>
-    <div class="ir-table-runninglive">
-      bars for each param.name
-      <svg width="250" height="250"></svg>
-    </div>
+    <div class="ir-table-runninglive"> bars for each param.name </div>
     <br>
   </div>
   <!-- instances summary -->

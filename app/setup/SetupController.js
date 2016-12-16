@@ -25,7 +25,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   // setting up scenario
   $scope.scenario = {
-    "name": 'hi',
+    "name": '',
     "parameters": [],
     "constraints": [],
     "candidates": {},
@@ -33,8 +33,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     "targetrunner": "",
     "irace_params": []
   };
-
-  $rootScope.scenario = $scope.scenario.name;
 
   $scope.parameters = {
     "categories": {
@@ -536,6 +534,9 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     // if(validateParamsReady()) {
       var content = $scope.prepareExportIraceSetup();
+
+      // passing scenario name
+      $rootScope.scenario = $scope.scenario.name;
 
       $mdDialog.show({
         controller: DialogController,
