@@ -10,9 +10,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
   var fs = require('fs');
 
   // parallel coordinates
-  // var d3 = require('d3');
   var d3 = require("d3");
-  // const svg = d3.select('#the-graph');
 
   $scope.iteration_data = {
     "iteration": 1,
@@ -139,13 +137,14 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom;
 
-  var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
-      y = d3.scaleLinear().rangeRound([height, 0]);
-
   var g = svg.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  d3.tsv("data.tsv", function(d) {
+  // var x = d3.scale.ordinal().rangeRound([0, width]).padding(0.1);
+  var x = d3.scale.ordinal().domain([10, 0]);
+  var y = d3.scale.linear().rangeRound([height, 0]);
+
+  d3.tsv("run/data.tsv", function(d) {
     console.log("value in d");
     console.log(d.frequency);
     d.value = +d.frequency;
@@ -154,31 +153,32 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
       if (error) throw error;
       console.log(data);
 
-      // x.domain(data.map(function(d) { return d.letter; }));
-      // y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-      //
-      // g.append("g")
-      //     .attr("class", "axis axis--x")
-      //     .attr("transform", "translate(0," + height + ")")
-      //     .call(d3.axisBottom(x));
-      //
-      // g.append("g")
-      //     .attr("class", "axis axis--y")
-      //     .call(d3.axisLeft(y).ticks(10, "%"))
-      //   .append("text")
-      //     .attr("transform", "rotate(-90)")
-      //     .attr("y", 6)
-      //     .attr("dy", "0.71em")
-      //     .attr("text-anchor", "end")
-      //     .text("Frequency");
-      //
-      // g.selectAll(".bar")
-      //   .data(data)
-      //   .enter().append("rect")
-      //     .attr("class", "bar")
-      //     .attr("x", function(d) { return x(d.letter); })
-      //     .attr("y", function(d) { return y(d.frequency); })
-      //     .attr("width", x.bandwidth())
-      //     .attr("height", function(d) { return height - y(d.frequency); });
+      x.domain(data.map(function(d) { return d.letter; }));
+      y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+      g.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + height + ")")
+          // .call(d3.axisBottom(x));
+          .call(d3.svg.axis().scale(x).orient("bottom"));
+
+      g.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3.axisLeft(y).ticks(10, "%"))
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", "0.71em")
+          .attr("text-anchor", "end")
+          .text("Frequency");
+
+      g.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", function(d) { return x(d.letter); })
+          .attr("y", function(d) { return y(d.frequency); })
+          .attr("width", x.bandwidth())
+          .attr("height", function(d) { return height - y(d.frequency); });
     });
 }]);

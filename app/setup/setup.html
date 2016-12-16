@@ -5,15 +5,12 @@
         <div layout="row" layout-align="space-between center">
           <div layout="row">
             Insert scenario name:
-            <md-input-container md-no-float>
+            <!-- <md-input-container md-no-float> -->
               <input ng-model="scenario.name" placeholder="Scenario 1">
-            </md-input-container>
+            <!-- </md-input-container> -->
           </div>
           <div>
-            <!-- <i class="material-icons" ng-click="saveScenario()">save</i>
-            <a href= "#home"><i class="material-icons">home</i></a> -->
             <md-button class="md-primary md-raised" ng-click="saveScenario()">SAVE</md-button>
-            <!-- <a href= "#run"><md-button class="md-primary md-raised">RUN</md-button></a> -->
             <md-button class="md-primary md-raised" ng-click="summaryBeforeRun($event)">RUN</md-button>
             <a href= "#home"><md-button class="md-primary md-raised">HOME</md-button></a>
           </div>

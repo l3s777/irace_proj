@@ -1,28 +1,26 @@
-<md-dialog aria-label="Mango (Fruit)">
+<md-dialog aria-label="Summary" ng-controller="SetupController">
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>Mango (Fruit)</h2>
+        <h2>Summary IRACE setup</h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <i class="material-icons">cancel</i>
-          <!-- <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon> -->
         </md-button>
       </div>
     </md-toolbar>
 
     <md-dialog-content>
       <div class="md-dialog-content">
-        <h2>Summary IRACE set up</h2>
-        <p>
-          Summary
-        </p>
+        <!-- {{full_iraceparams}} -->
+        <div ng-repeat="a in full_iraceparams">
+          <p> {{a.name}} : {{a.default}}</p>
+        </div>
       </div>
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <!-- <md-button ng-click="answer('go')">Run</md-button> -->
-      <md-button href="#run"> RUN </md-button>
+      <md-button href="#run" ng-click="cancel()"> RUN </md-button>
       <!-- <span flex></span> -->
       <md-button ng-click="answer('cancel')">Cancel</md-button>
     </md-dialog-actions>
