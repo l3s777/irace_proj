@@ -1,4 +1,4 @@
-angular.factory('d3', [function () {
+app.factory('d3', [function () {
   var d3 = require('d3');
   return d3;
 }]).directive('d3ParallelCoordinatesPlot', ['d3', function (d3) {
