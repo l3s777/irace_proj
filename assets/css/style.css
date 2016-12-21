@@ -34,14 +34,13 @@ body {
   margin-right: 2px !important;*/
 }
 
-
 .ir-input-border {
   border:1px solid rgb(84, 93, 100) !important;
 }
 
 .ir-table-runninglive {
   border:1px solid;
-  height: 200px;
+  height: 250px;
   overflow-y: scroll;
 }
 
@@ -86,7 +85,7 @@ input.ir-scenario-name {
   cursor: pointer;
 }
 
-.ir-navbar {
+/*.ir-navbar {
   margin:0;
 }
 
@@ -103,96 +102,115 @@ input.ir-scenario-name {
 }
 .ir-toggle-animate.ng-hide {
   height:0;
-}
+}*/
 .dialogValidateMessage #popupContainer {
   position: relative;
 }
 
-
-/* parallel candidates */
-/*.links line {
-    stroke: #999;
-    stroke-opacity: 0.6;
+/* d3 */
+.axis path {
+	fill: none;
+	stroke: #222;
+	shape-rendering: crispEdges;
 }
-.nodes circle {
-    stroke: #fff;
-    stroke-width: 1.5px;
-}*/
+.axis text {
+	font-size: 13px;
+	font-family: -apple-system, 'Helvetica Neue', Helvetica, sans-serif;
+	font-weight: 300;
+}
 
-/*svg {
-  font: 10px sans-serif;
+.grid .tick {
+	stroke: lightgrey;
+	stroke-opacity: 0.7;
+	shape-rendering: crispEdges;
+}
+.grid path {
+	stroke-width: 0;
+}
+
+.node {
+	cursor: pointer;
+}
+
+.node circle {
+	fill: #fff;
+	stroke: steelblue;
+	stroke-width: 1px;
+}
+
+.node text {
+	font-size: 12px;
+	font-family: -apple-system, 'Helvetica Neue', Helvetica, sans-serif;
+	font-weight: 300;
+}
+
+.link {
+	fill: none;
+	stroke: #ccc;
+	stroke-width: 1px;
+}
+
+.home-bg {
+	background-image: url('../img/pattern.png');
+}
+
+.irs.terminal-output {
+	white-space: pre;
+	font-family: monospace;
+}
+
+
+.box {
+	font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+	fill: #fff;
+	stroke: rgb(154, 179, 205);
+	stroke-width: 1.5px;
+}
+
+.box .center {
+	stroke-dasharray: 1,1;
+}
+
+.box .outlier {
+	fill: none;
+	stroke: #ccc;
+}
+
+
+svg {
+	font: 10px sans-serif;
 }
 
 .background path {
-  fill: none;
-  stroke: #ddd;
-  shape-rendering: crispEdges;
+	fill: none;
+	stroke: #ddd;
+	shape-rendering: crispEdges;
 }
 
 .foreground path {
-  fill: none;
-  stroke: steelblue;
+	fill: none;
+	stroke: rgb(82, 154, 190);
 }
 
 .brush .extent {
-  fill-opacity: .3;
-  stroke: #fff;
-  shape-rendering: crispEdges;
+	fill-opacity: .3;
+	stroke: #fff;
+	shape-rendering: crispEdges;
 }
 
 .axis line,
 .axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
 }
 
 .axis text {
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+	cursor: move;
 }
-
-.parcoords > canvas {
-  font: 14px sans-serif;
-  position: absolute;
-}
-.parcoords > canvas {
-  pointer-events: none;
-}
-.parcoords text.label {
-  cursor: default;
-}
-.parcoords rect.background:hover {
-  fill: rgba(120,120,120,0.2);
-}
-.parcoords canvas {
-  opacity: 1;
-  transition: opacity 0.3s;
-  -moz-transition: opacity 0.3s;
-  -webkit-transition: opacity 0.3s;
-  -o-transition: opacity 0.3s;
-}
-.parcoords canvas.faded {
-  opacity: 0.25;
-}
-.parcoords {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  background-color: white;
-}*/
-
-/* bars */
-/*.bar {
-  fill: steelblue;
-}
-
-.bar:hover {
-  fill: brown;
-}
-
-.axis--x path {
-  display: none;
-}*/

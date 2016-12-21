@@ -1,10 +1,5 @@
 <div ng-controller="RunController">
   <h2 class="ir-bold">2. Running IRACE online</h2>
-  <!-- <md-toolbar style="background: #CCF">
-      <div class="md-toolbar-tools">
-         <h2 class="md-flex">2 Running IRACE online</h2>
-      </div>
-  </md-toolbar> -->
   <div class="md-padding" layout="row">
     <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
     <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
@@ -59,10 +54,8 @@
   <br>
   <div>
     <label class="ir-bold">Candidate details</label> Total {{task_data.aliveCandidates}}
-    <div class="ir-table-runninglive">parallel coordinates
-      <div style="min-width: 100%; overflow-x: auto;">
-        <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
-      </div>
+    <div style="min-width: 100%; overflow-x: auto;"> parallel coordinates
+      <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" id="parallelCoordinatesPlot" label="name"></d3-parallel-coordinates-plot>
     </div>
     <br>
     <label class="ir-bold">Candidate diversity</label>

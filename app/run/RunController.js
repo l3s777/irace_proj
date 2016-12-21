@@ -2,12 +2,10 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
   $scope.scenarioname = $rootScope.scenario;
 
-  // TODO set up $scope + important data from it
-  console.log(__dirname);
-  // console.log($scope.scenarioname);
   var app2 = require('electron').remote;
   var dialog = app2.dialog;
   var fs = require('fs');
+  var mpath = require('path');
 
   // graphics controls
   var d3 = require("d3");
@@ -27,13 +25,12 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
   $scope.task_detail = [{}];
 
   $scope.d3ParallelCoordinatesPlotData = '';
+  $scope.d3BoxPlotData = [];
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
-
   // check the maximum instances in execution
   $scope.currentNumberInstances = function() {};
-
   // experiments so far / current bugdet
   $scope.currentNumberEvaluations = function() {};
 
@@ -45,6 +42,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
     // read data for PARALLEL COORDINATES
     $scope.d3ParallelCoordinatesPlotData = "run/testParallel.csv"; //'bestCandidates.csv';
+
+    // $scope.$apply();
 
   };
 
