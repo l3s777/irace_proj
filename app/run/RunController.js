@@ -41,9 +41,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
     $scope.task_detail = scanTaskDetail('/Users/lesly/Desktop/testrunning/task_detail.cvs.txt');
 
     // read data for PARALLEL COORDINATES
-    $scope.d3ParallelCoordinatesPlotData = "run/testParallel.csv"; //'bestCandidates.csv';
-
-    // $scope.$apply();
+    $scope.d3ParallelCoordinatesPlotData = readFileParCoordinates();
+    console.log($scope.d3ParallelCoordinatesPlotData);
 
   };
 
@@ -133,8 +132,17 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
     });
   }
 
-  // parallel coordinates
+  function readFileParCoordinates() {
+    console.log("reading readFileParCoordinates");
+    $scope.d3ParallelCoordinatesPlotData = "";
+    console.log($scope.d3ParallelCoordinatesPlotData);
+    return "run/testParallel.csv";
+  }
 
-
-  // bars
+  // live running
+  setTimeout(function () {
+        $scope.$apply(function () {
+            $scope.readData();
+        });
+  }, 2000);
 }]);

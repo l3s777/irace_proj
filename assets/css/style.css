@@ -85,24 +85,6 @@ input.ir-scenario-name {
   cursor: pointer;
 }
 
-/*.ir-navbar {
-  margin:0;
-}
-
-.ir-sidenav {
-  width : 180px !important;
-  min-width : 180px !important;
-  max-width : 180px !important;
-}
-.ir-toggle-animate {
-  height:100%;
-}
-.ir-toggle-animate {
-  transition: all linear 0.5s;
-}
-.ir-toggle-animate.ng-hide {
-  height:0;
-}*/
 .dialogValidateMessage #popupContainer {
   position: relative;
 }
@@ -150,15 +132,10 @@ input.ir-scenario-name {
 	stroke-width: 1px;
 }
 
-.home-bg {
-	background-image: url('../img/pattern.png');
-}
-
 .irs.terminal-output {
 	white-space: pre;
 	font-family: monospace;
 }
-
 
 .box {
 	font: 10px sans-serif;
