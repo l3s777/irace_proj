@@ -44,6 +44,11 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
     $scope.d3ParallelCoordinatesPlotData = readFileParCoordinates();
     console.log($scope.d3ParallelCoordinatesPlotData);
 
+    // testing ready d3BoxPlotData
+
+    // testing for barChart
+    barsForCandidateValues();
+
   };
 
   function scanIterationData(filename) {
@@ -135,8 +140,11 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
   function readFileParCoordinates() {
     console.log("reading readFileParCoordinates");
     $scope.d3ParallelCoordinatesPlotData = "";
-    console.log($scope.d3ParallelCoordinatesPlotData);
     return "run/testParallel.csv";
+  }
+
+  function barsForCandidateValues() {
+
   }
 
   // live running

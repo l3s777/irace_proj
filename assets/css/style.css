@@ -191,3 +191,26 @@ svg {
 	text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 	cursor: move;
 }
+/* bars */
+.axis {
+	  font: 10px sans-serif;
+}
+.bar {
+  fill: steelblue;
+}
+.bar:hover {
+  fill: brown;
+}
+.axis--x path {
+  display: none;
+}
+
+/* test for tables*/
+table, th, td {
+    /*border: 1px solid black;*/
+    border-collapse: collapse;
+}
+th, td {
+    padding: 3px;
+    text-align: left;
+}

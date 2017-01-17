@@ -52,24 +52,42 @@
   <div class="ir-spacer-10"></div>
   <!-- candidates summary -->
   <br>
-  <div>
+  <div> <h2>CANDIDATES</h2>
     <label class="ir-bold">Candidate details</label> Total {{task_data.aliveCandidates}}
     <div style="min-width: 100%; overflow-x: auto;"> parallel coordinates
       <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
     </div>
     <br>
     <label class="ir-bold">Candidate diversity</label>
-    <div class="ir-table-runninglive">box plots</div>
+    <div style="min-width: 100%; overflow-x: auto;">box plots
+      <d3-box-plot data="d3BoxPlotData" label="name"></d3-box-plot>
+    </div>
     <br>
     <label class="ir-bold">Candidates values</label>
-    <div class="ir-table-runninglive"> bars for each param.name </div>
+    <div class="ir-table-runninglive"> bars for each param.name
+    </div>
     <br>
   </div>
   <!-- instances summary -->
   <br>
-  <div>
+  <div> <h2>INSTANCES</h2>
     <label class="ir-bold">Used instances</label>
-    <div class="ir-table-shortsummary">used instances</div>
+    <div class="ir-table-shortsummary">
+      <table style="width:100%">
+        <tr>
+          <th></th>
+          <th>best</th>
+        </tr>
+        <tr>
+          <td>1 path</td>
+          <td>3450</td>
+        </tr>
+        <tr>
+          <td>2 path</td>
+          <td>370</td>
+        </tr>
+      </table>
+    </div>
     <br>
     <label class="ir-bold">Kendal w</label>
     <div class="ir-table-shortsummary">www</div>
