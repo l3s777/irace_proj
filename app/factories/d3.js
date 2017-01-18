@@ -23,12 +23,14 @@ app.factory('d3', [function () {
   			scope.$watch(function () {
   				return angular.element(window)[0].innerWidth;
   			}, function () {
+          console.log(scope.data);
   				return scope.render(scope.data);
   			});
 
   			// watch the data source for changes to dynamically update the visualization
   			scope.$watch('data', function (newData, oldData) {
           console.log("at changing data");
+          console.log(newData);
   				return scope.render(newData);
   			}, true);
 
@@ -277,16 +279,13 @@ app.factory('d3', [function () {
 
 				var bar_width = 40;
 
-
 				// Grid
-
 				svg.append("g")
 					.attr("class", "grid")
 					.attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
 					.call(yAxis
 						.tickSize(-(width - margins.left - margins.right), 0, 0)
 						.tickFormat(""));
-
 
 				function computeValues(iteration) {
 					var min,
@@ -373,12 +372,7 @@ app.factory('d3', [function () {
 						.attr("y2", yScale(max))
 						.attr("stroke-width", 1)
 						.attr("stroke", "black");
-
-
-
 				});
-
-
 
 			};
 		}

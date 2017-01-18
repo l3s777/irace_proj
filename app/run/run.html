@@ -3,7 +3,7 @@
   <div class="md-padding" layout="row">
     <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
     <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
-    <p>Scenario Name: {{scenarioname}}</p>
+    <p><span class="ir-bold">Scenario Name: </span>{{scenarioname}}</p>
   </div>
   <!-- intro summary -->
   <div class="md-padding" layout="row">
@@ -64,33 +64,37 @@
     </div>
     <br>
     <label class="ir-bold">Candidates values</label>
-    <div class="ir-table-runninglive"> bars for each param.name
+    <div class="ir-table-runninglive">
+      <div id="bar"> </div>
     </div>
     <br>
   </div>
   <!-- instances summary -->
   <br>
   <div> <h2>INSTANCES</h2>
-    <label class="ir-bold">Used instances</label>
-    <div class="ir-table-shortsummary">
-      <table style="width:100%">
-        <tr>
-          <th></th>
-          <th>best</th>
-        </tr>
-        <tr>
-          <td>1 path</td>
-          <td>3450</td>
-        </tr>
-        <tr>
-          <td>2 path</td>
-          <td>370</td>
-        </tr>
-      </table>
+    <div layout="row" style="min-width: 100%; overflow-x: auto;">
+      <div flex="50">
+        <label class="ir-bold">Used instances</label>
+        <table style="width:100%">
+          <tr>
+            <th></th>
+            <th>best</th>
+          </tr>
+          <tr>
+            <td>1 path</td>
+            <td>3450</td>
+          </tr>
+          <tr>
+            <td>2 path</td>
+            <td>370</td>
+          </tr>
+        </table>
+      </div>
+      <div flex="50">
+        <label class="ir-bold">Kendal w</label>
+        <div class="ir-table-shortsummary">
+        </div>
+      </div>
     </div>
-    <br>
-    <label class="ir-bold">Kendal w</label>
-    <div class="ir-table-shortsummary">www</div>
-
   </div>
 </div>

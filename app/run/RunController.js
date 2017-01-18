@@ -1,4 +1,4 @@
-app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($rootScope, $scope, $mdDialog) {
+app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParser', function($rootScope, $scope, $mdDialog, FileParser) {
 
   $scope.scenarioname = $rootScope.scenario;
 
@@ -26,6 +26,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
   $scope.d3ParallelCoordinatesPlotData = '';
   $scope.d3BoxPlotData = [];
+  $scope.d3LineData = '';
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
@@ -42,12 +43,12 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
 
     // read data for PARALLEL COORDINATES
     $scope.d3ParallelCoordinatesPlotData = readFileParCoordinates();
-    console.log($scope.d3ParallelCoordinatesPlotData);
-
     // testing ready d3BoxPlotData
+    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("./app/run/best-tests.txt");
 
     // testing for barChart
     barsForCandidateValues();
+    // $scope.d3LineData = "./app/run/testLine.cvs"
 
   };
 
@@ -144,7 +145,71 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
   }
 
   function barsForCandidateValues() {
+    // margins
+    var margin = {top: 10, right: 30, bottom: 35, left: 30},
+      width = 250 - margin.left - margin.right,
+      height = 200 - margin.top - margin.bottom;
 
+    var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+    var y = d3.scale.linear().range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(10);
+
+    var svg = d3.select("#bar").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.selectAll("*").remove();
+
+    d3.csv("run/testCandidateValues.csv", function(error, data) {
+      data.forEach(function(d) {
+        d.name = d.name;
+        d.value = +d.value;
+      });
+
+      x.domain(data.map(function(d) { return d.name; }));
+      y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+          .selectAll("text")
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.55em")
+          .attr("transform", "rotate(-90)" );
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text("Frequency");
+
+      svg.selectAll("bar")
+          .data(data)
+          .enter().append("rect")
+          .style("fill", "steelblue")
+          .attr("x", function(d) { return x(d.name); })
+          .attr("width", x.rangeBand())
+          .attr("y", function(d) { return y(d.value); })
+          .attr("height", function(d) { return height - y(d.value); });
+
+          });
   }
 
   // live running
@@ -153,4 +218,5 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', function($
             $scope.readData();
         });
   }, 2000);
+
 }]);
