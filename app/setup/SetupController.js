@@ -524,13 +524,13 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       } else dialog.showErrorBox("File save error", "It cannot save with empty parameters");
     } else {
       // show alert to introduce name for the scenario
-      console.log("intro name");
       dialog.showErrorBox("File save error", "Please, insert a name for the scenario");
     }
 
   };
 
   $scope.summaryBeforeRun = function(ev) {
+    console.log("summaryBeforeRun");
 
     // if(validateParamsReady()) {
       var content = $scope.prepareExportIraceSetup();
@@ -546,8 +546,9 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         clickOutsideToClose:true
       })
       .then(function(answer) {
-        if(answer != "cancel") RunIrace();
+        console.log("answer after click");
         console.log(answer);
+        if(answer != "cancel") RunIrace();
       });
 
     // }else {
@@ -572,6 +573,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   function RunIrace() {
+    console.log("@RunIrace");
     // all data is ready to be saved
     var contentParameters = $scope.prepareExportParams();
     var contentConstrains = $scope.prepareExportConstrains();
@@ -590,6 +592,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     }
 
     fs.writeFile(path+"/params.txt", contentParameters, function(err) {
+      console.log("writing params");
       if(err) alert(err);
     });
     fs.writeFile(path+"/constraints.txt", contentConstrains, function(err) {
@@ -612,12 +615,11 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     });
 
     // executing
-    var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/Desktop/result.txt";
+    var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/irace-setup/result.txt";
 
     // running proccess
     child = exec(execCommand,
             function (error, stdout, stderr) {
-                // console.log('stdout: ' + stdout);
                 // console.log('stderr: ' + stderr);
                 dialog.showErrorBox("Error", stderr);
                 if (error !== null) {
@@ -847,7 +849,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       $scope.scenario.candidates.instances = $scope.scenario.candidates.instances || [] ;
       var c = 1;
       $scope.scenario.candidates.pre_instances.forEach(function(pre_instance) {
-        console.log(pre_instance);
         var instance_obj = {
           'n' : "Candidate " + c,
           'values': pre_instance,

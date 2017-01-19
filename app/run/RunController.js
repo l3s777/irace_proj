@@ -26,7 +26,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
   $scope.d3ParallelCoordinatesPlotData = '';
   $scope.d3BoxPlotData = [];
-  $scope.d3LineData = '';
+  // $scope.d3LineData = '';
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
@@ -49,6 +49,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     // testing for barChart
     barsForCandidateValues();
     // $scope.d3LineData = "./app/run/testLine.cvs"
+
+    // line chart for kendal
+    lineForKendal();
 
   };
 
@@ -139,7 +142,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   }
 
   function readFileParCoordinates() {
-    console.log("reading readFileParCoordinates");
     $scope.d3ParallelCoordinatesPlotData = "";
     return "run/testParallel.csv";
   }
@@ -150,7 +152,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
       width = 250 - margin.left - margin.right,
       height = 200 - margin.top - margin.bottom;
 
-    var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
+    var x = d3.scale.ordinal().rangeRoundBands([0, width], .02);
     var y = d3.scale.linear().range([height, 0]);
 
     var xAxis = d3.svg.axis()
@@ -169,13 +171,13 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
 
-    svg.selectAll("*").remove();
-
     d3.csv("run/testCandidateValues.csv", function(error, data) {
       data.forEach(function(d) {
         d.name = d.name;
         d.value = +d.value;
       });
+
+      svg.selectAll("*").remove();
 
       x.domain(data.map(function(d) { return d.name; }));
       y.domain([0, d3.max(data, function(d) { return d.value; })]);
@@ -210,6 +212,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
           .attr("height", function(d) { return height - y(d.value); });
 
           });
+  }
+
+  function lineForKendal() {
   }
 
   // live running
