@@ -23,7 +23,6 @@ app.factory('d3', [function () {
   			scope.$watch(function () {
   				return angular.element(window)[0].innerWidth;
   			}, function () {
-          console.log(scope.data);
   				return scope.render(scope.data);
   			});
 
@@ -222,9 +221,9 @@ app.factory('d3', [function () {
 
 			// watch the data source for changes to dynamically update the visualization
 			scope.$watch('data', function (newData, oldData) {
+        console.log("refreshing data");
 				return scope.render(newData);
 			}, true);
-
 
 			scope.render = function (data) {
 				// clear out everything in the svg to render a fresh version
@@ -277,7 +276,7 @@ app.factory('d3', [function () {
 					.attr("transform", "translate(" + (margins.left) + "," + (margins.top - margins.bottom) + ")")
 					.call(yAxis);
 
-				var bar_width = 40;
+				var bar_width = 30;
 
 				// Grid
 				svg.append("g")

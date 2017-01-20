@@ -53,13 +53,13 @@
   <!-- candidates summary -->
   <br>
   <div> <h2>CANDIDATES</h2>
-    <label class="ir-bold">Candidate details</label> Total {{task_data.aliveCandidates}}
+    <label class="ir-bold" flex="50">Candidate details</label> Total {{task_data.aliveCandidates}}
     <div style="min-width: 100%; overflow-x: auto;"> parallel coordinates
       <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
     </div>
     <br>
     <label class="ir-bold">Candidate diversity</label>
-    <div style="min-width: 100%; overflow-x: auto;">box plots
+    <div style="min-width: 100%; overflow-x: scroll; background:#DDEEFF;">box plots
       <d3-box-plot data="d3BoxPlotData" label="name"></d3-box-plot>
     </div>
     <br>
@@ -80,13 +80,9 @@
             <th></th>
             <th>best</th>
           </tr>
-          <tr>
-            <td>1 path</td>
-            <td>3450</td>
-          </tr>
-          <tr>
-            <td>2 path</td>
-            <td>370</td>
+          <tr ng-repeat="value in task_best | filter:filter.value">
+            <td>{{value.name}}</td>
+            <td>{{value.value}}</td>
           </tr>
         </table>
       </div>

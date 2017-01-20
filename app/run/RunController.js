@@ -42,14 +42,15 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     $scope.task_detail = scanTaskDetail('/Users/lesly/Desktop/testrunning/task_detail.cvs.txt');
 
     // read data for PARALLEL COORDINATES
-    $scope.d3ParallelCoordinatesPlotData = readFileParCoordinates();
+    $scope.d3ParallelCoordinatesPlotData = "run/results/task_candidates.txt";
     // testing ready d3BoxPlotData
-    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("./app/run/best-tests.txt");
+    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("./app/run/results/task-results.txt");
 
     // testing for barChart
     barsForCandidateValues();
     // $scope.d3LineData = "./app/run/testLine.cvs"
 
+    $scope.task_best = scanTaskBestDetail('/Users/lesly/Desktop/testrunning/results/task-bests.txt');
     // line chart for kendal
     lineForKendal();
 
@@ -141,11 +142,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     });
   }
 
-  function readFileParCoordinates() {
-    $scope.d3ParallelCoordinatesPlotData = "";
-    return "run/testParallel.csv";
-  }
-
   function barsForCandidateValues() {
     // margins
     var margin = {top: 10, right: 30, bottom: 35, left: 30},
@@ -214,10 +210,42 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
           });
   }
 
+  // instances for task_best
+  function scanTaskBestDetail(filename) {
+    var params = [];
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        throw err;
+        console.log(err);
+      }
+
+      var lines = data.split('\n');
+      var output = [];
+      var cnt = 0;
+      lines.forEach(function(line) {
+        if(line[0] != "#") {
+          output[cnt]= line;
+          cnt++;
+          // var words = line.split("\t");
+          var words = line.split(/\s+/);
+          if(words[0]) {
+            var task = {
+              "name": words[0],
+              "value": words[1]
+            };
+            params.push(task);
+          }
+        }
+      });
+      $scope.task_best = params;
+      $scope.$apply();
+    });
+  }
+
   function lineForKendal() {
   }
 
-  // live running
+  // live running TODO
   setTimeout(function () {
         $scope.$apply(function () {
             $scope.readData();
