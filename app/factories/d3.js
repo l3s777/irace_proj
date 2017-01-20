@@ -231,8 +231,9 @@ app.factory('d3', [function () {
 
 				// set up variables
 				var width, height, max;
-				width = d3.select(iElement[0])[0][0].offsetWidth;
-				height = 400;
+				// width = d3.select(iElement[0])[0][0].offsetWidth;
+        width = 1000;
+				height = 700;
 				svg.attr('height', height);
 				svg.attr('width', width);
 

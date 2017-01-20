@@ -26,7 +26,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
   $scope.d3ParallelCoordinatesPlotData = '';
   $scope.d3BoxPlotData = [];
-  // $scope.d3LineData = '';
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
@@ -52,7 +51,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     $scope.task_best = scanTaskBestDetail('/Users/lesly/Desktop/testrunning/results/task-bests.txt');
     // line chart for kendal
-    lineForKendal();
+    // lineForKendal();
 
   };
 
@@ -168,11 +167,14 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
               "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("run/testCandidateValues.csv", function(error, data) {
+
+      console.log(data);
       data.forEach(function(d) {
         d.name = d.name;
         d.value = +d.value;
       });
 
+      // TODO not working overwritting image yet
       svg.selectAll("*").remove();
 
       x.domain(data.map(function(d) { return d.name; }));
@@ -226,7 +228,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
         if(line[0] != "#") {
           output[cnt]= line;
           cnt++;
-          // var words = line.split("\t");
           var words = line.split(/\s+/);
           if(words[0]) {
             var task = {
@@ -243,6 +244,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   }
 
   function lineForKendal() {
+    console.log("@lineForKendal");
   }
 
   // live running TODO
