@@ -772,7 +772,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     var content = cfg.file_options.constraints_header;
     $scope.scenario.constraints.forEach(function(constraint) {
       if(constraint.active) {
-        content += constraint.expression + "\n";
+        if(constraint.expression!="undefined")
+          content += constraint.expression + "\n";
       }
     });
     return content;
@@ -834,6 +835,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       lines.forEach(function(line) {
         if(line[0] != "#") { // first line header
           if(cnt == 0) {
+            // TODO check when it is only "space" (it seems it count it as new one)
             candidates_param = line.split("\t");
           }
           else {
@@ -870,6 +872,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
           content += candidate_param + "\t";
       }
     });
+
     content += "\n";
     $scope.scenario.candidates.instances.forEach(function(candidate_inst) {
       if(candidate_inst.values) {
