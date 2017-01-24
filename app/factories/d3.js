@@ -29,7 +29,6 @@ app.factory('d3', [function () {
   			// watch the data source for changes to dynamically update the visualization
   			scope.$watch('data', function (newData, oldData) {
           console.log("at changing data");
-          console.log(newData);
   				return scope.render(newData);
   			}, true);
 

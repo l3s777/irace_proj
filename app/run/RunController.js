@@ -51,7 +51,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     $scope.task_best = scanTaskBestDetail('/Users/lesly/Desktop/testrunning/results/task-bests.txt');
     // line chart for kendal
-    // lineForKendal();
+    lineForKendal();
 
   };
 
@@ -159,7 +159,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
         .orient("left")
         .ticks(10);
 
-    var svg = d3.select("#bar").append("svg")
+    var svg = d3.select("#bar")
+      .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -168,7 +169,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     d3.csv("run/testCandidateValues.csv", function(error, data) {
 
-      console.log(data);
       data.forEach(function(d) {
         d.name = d.name;
         d.value = +d.value;
@@ -209,7 +209,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
           .attr("y", function(d) { return y(d.value); })
           .attr("height", function(d) { return height - y(d.value); });
 
-          });
+      });
   }
 
   // instances for task_best
