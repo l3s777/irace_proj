@@ -16,6 +16,7 @@ app.service('FileParser', function () {
 			tokens = [];
 
 		lines.forEach(function(l, lindex) {
+      // console.log(l);
 			if(lindex > 0) {
 				tokens = l.split(' ');
 				tokens.forEach(function (t, tindex) {
@@ -28,6 +29,7 @@ app.service('FileParser', function () {
 				});
 			}
 		});
+    console.log(iterations);
 		return iterations;
 	};
 });

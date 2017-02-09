@@ -35,21 +35,23 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.currentNumberEvaluations = function() {};
 
   $scope.readData = function() {
-    // TODO get from working path the files for outputs
-    $scope.iteration_data = scanIterationData("/Users/lesly/Desktop/testrunning/iteration_data.iout.txt");
-    $scope.task_data = scanTaskData('/Users/lesly/Desktop/testrunning/task_data.iout.txt');
-    $scope.task_detail = scanTaskDetail('/Users/lesly/Desktop/testrunning/task_detail.cvs.txt');
+    var workingPath = "/Users/lesly/irace-setup"; // TODO get the user's path
+    $scope.iteration_data = scanIterationData(workingPath + "/iteration_data.iout");
+    $scope.task_data = scanTaskData(workingPath +  "/task_data.iout");
+    $scope.task_detail = scanTaskDetail(workingPath + "/task_detail.cvs");
 
     // read data for PARALLEL COORDINATES
-    $scope.d3ParallelCoordinatesPlotData = "run/results/task_candidates.txt";
+    // $scope.d3ParallelCoordinatesPlotData = "run/results/task_candidates.txt";
+    $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates.txt";
     // testing ready d3BoxPlotData
-    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("./app/run/results/task-results.txt");
+    // $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("./app/run/results/task-results.txt");
+    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
 
     // testing for barChart
     barsForCandidateValues();
     // $scope.d3LineData = "./app/run/testLine.cvs"
 
-    $scope.task_best = scanTaskBestDetail('/Users/lesly/Desktop/testrunning/results/task-bests.txt');
+    $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
     // line chart for kendal
     lineForKendal();
 

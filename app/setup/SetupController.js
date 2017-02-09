@@ -140,6 +140,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       }
   };
 
+  // TODO read from external file
   $scope.full_iraceparams = [
     { "name": "scenarioFile",
       "type": "p",
@@ -477,7 +478,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   $scope.saveScenario = function() {
     // save all the scenario
-    console.log("time to save info");
+    console.log("time to save info"); // TODO remove
     if($scope.scenario.name) {
       if($scope.scenario.parameters) { //if there are parameters to save
         if($scope.scenario.constraints) {
@@ -533,9 +534,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     console.log("summaryBeforeRun");
 
     // if(validateParamsReady()) {
-      var content = $scope.prepareExportIraceSetup();
 
-      // passing scenario name
+      // assigning scenario name
       $rootScope.scenario = $scope.scenario.name;
 
       $mdDialog.show({
@@ -548,7 +548,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       .then(function(answer) {
         console.log("answer after click");
         console.log(answer);
-        if(answer != "cancel") RunIrace();
       });
 
     // }else {
@@ -563,17 +562,19 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       $mdDialog.hide();
     };
 
-    $scope.cancel = function() {
+    $scope.go = function() {
+      RunIrace();
       $mdDialog.cancel();
     };
 
     $scope.answer = function(answer) {
-      $mdDialog.hide(answer);
+      $mdDialog.hide();
     };
   }
 
   function RunIrace() {
     console.log("@RunIrace");
+    console.log($scope.scenario.targetrunner);
     // all data is ready to be saved
     var contentParameters = $scope.prepareExportParams();
     var contentConstrains = $scope.prepareExportConstrains();
@@ -585,9 +586,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     // save it locally for running "internally"
     // create folder and add all files
-    // TODO extract users home path
-    var path = "/Users/lesly/irace-setup";
-    if (!fs.existsSync(path)){
+    var path = "/Users/lesly/irace-setup"; // TODO extract users home path
+    if (!fs.existsSync(path)) {
         fs.mkdirSync(path);
     }
 
@@ -620,7 +620,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     // running proccess
     child = exec(execCommand,
             function (error, stdout, stderr) {
-                // console.log('stderr: ' + stderr);
+                console.log('stderr: ' + stderr);
                 dialog.showErrorBox("Error", stderr);
                 if (error !== null) {
                      console.log('exec error: ' + error);

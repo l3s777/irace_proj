@@ -218,9 +218,10 @@ app.factory('d3', [function () {
 				return scope.render(scope.data);
 			});
 
+      // TODO redo each line
+
 			// watch the data source for changes to dynamically update the visualization
 			scope.$watch('data', function (newData, oldData) {
-        console.log("refreshing data");
 				return scope.render(newData);
 			}, true);
 
@@ -276,7 +277,7 @@ app.factory('d3', [function () {
 					.attr("transform", "translate(" + (margins.left) + "," + (margins.top - margins.bottom) + ")")
 					.call(yAxis);
 
-				var bar_width = 30;
+				var bar_width = 15;
 
 				// Grid
 				svg.append("g")
@@ -302,11 +303,15 @@ app.factory('d3', [function () {
 					return [min, max, mid, q25, q75];
 				}
 
+        // TODO
+        var min_value = [];
 				data.forEach(function(iteration, index) {
 					var val = yScale(iteration[0]);
 					var bar_x = xScale(index+1) - bar_width/2;
 					var values = computeValues(iteration);
 					min = values[0];
+          // TODO redefine
+          min_value.push(min);
 					max = values[1];
 					mid = values[2];
 					q25 = values[3];
