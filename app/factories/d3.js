@@ -8,12 +8,13 @@ app.factory('d3', [function () {
   		scope: {
   			data: "=",
   			label: "@",
+        onClick: '&'
   		},
   		link: function (scope, iElement, iAttrs) {
   			// create the svg to contain our visualization
   			var svg = d3.select(iElement[0])
   				.append("svg")
-  				.attr("width", "100%");
+  				.style("width", "100%"); // responsive
 
   			// make the visualization responsive by watching for changes in window size
   			window.onresize = function () {
@@ -195,7 +196,7 @@ app.factory('d3', [function () {
 		}
 	};
 }])
-.directive('d3BoxPlot', ['d3', function (d3) {
+  .directive('d3BoxPlot', ['d3', function (d3) {
 	return {
 		restrict: 'EA',
 		scope: {
@@ -381,4 +382,77 @@ app.factory('d3', [function () {
 			};
 		}
 	};
-  }]);
+}])
+
+  .directive('linearChart', ['d3', function (d3) {
+    return {
+      restrict:'EA',
+      scope: {
+				data: "=",
+			},
+      link: function(scope, iElement, attrs) {
+              // create the svg to contain our visualization
+      				var svg = d3.select(iElement[0])
+      					.append("svg")
+      					.attr("width", "100%");
+
+              window.onresize = function () {
+  					           return scope.$apply();
+  				            };
+
+              scope.$watch('data', function (newData, oldData) {
+      					return scope.render(newData);
+      				}, true);
+
+              scope.render = function (data) {
+      					// clear out everything in the svg to render a fresh version
+      					svg.selectAll("*").remove();
+
+      					// set up variables
+      					var width, height, max;
+      					width = d3.select(iElement[0])[0][0].offsetWidth;
+      					height = scope.data.length * 40;
+      					max = 100;
+      					svg.attr('height', height);
+
+      					var MARGINS = {
+      							top: 20,
+      							right: 20,
+      							bottom: 20,
+      							left: 50
+      						},
+      						xScale = d3.scale.linear().range([MARGINS.left, width - MARGINS.right]).domain([data[0].t, data[data.length-1].t]),
+      						yScale = d3.scale.linear().range([height - MARGINS.top, MARGINS.bottom]).domain([0, 1]),
+      						xAxis = d3.svg.axis()
+      							      .scale(xScale),
+      						yAxis = d3.svg.axis()
+      							      .scale(yScale)
+      							      .orient("left");
+
+      					  svg.append("svg:g")
+        						.attr("class", "x axis")
+        						.attr("transform", "translate(0," + (height - MARGINS.bottom) + ")")
+        						.call(xAxis);
+        					svg.append("svg:g")
+        						.attr("class", "y axis")
+        						.attr("transform", "translate(" + (MARGINS.left) + ",0)")
+        						.call(yAxis);
+
+        					var lineGen = d3.svg.line()
+            						.x(function (d) {
+            							return xScale(d.t);
+            						})
+            						.y(function (d) {
+            							return yScale(d.v);
+            						});
+        					svg.append('svg:path')
+        						.attr('d', lineGen(data))
+        						.attr('stroke', 'rgb(82, 154, 189)')
+        						.attr('stroke-width', 1)
+        						.attr('fill', 'none');
+
+				};
+      }
+     };
+  }])
+  ;

@@ -106,6 +106,7 @@ input.ir-scenario-name {
 	stroke: lightgrey;
 	stroke-opacity: 0.7;
 	shape-rendering: crispEdges;
+  stroke-dasharray: 1, 2;
 }
 .grid path {
 	stroke-width: 0;

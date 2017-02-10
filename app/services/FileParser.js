@@ -29,7 +29,38 @@ app.service('FileParser', function () {
 				});
 			}
 		});
-    console.log(iterations);
+    // console.log(iterations);
 		return iterations;
+	};
+
+  this.parseIraceKendallFile = function(path) {
+
+		var data = fs.readFileSync(path, 'utf8');
+		if (!data) dialog.showErrorBox('Error', 'Unable to open file: ' + path);
+
+    var lines = data.trim().split('\n');
+    var kendallArray = [];
+
+    lines.forEach(function(line) {
+      var items = line.split(',');
+      // TODO check what to do when NA
+      if(items[1]==="NA") {
+        // TODO change... just for testing
+        var aux = {
+          t: items[0],
+          v: 0
+        };
+      } else {
+        var aux = {
+          t: items[0],
+          v: items[1]
+        };
+      }
+
+      kendallArray.push(aux);
+		});
+
+    return kendallArray;
+
 	};
 });

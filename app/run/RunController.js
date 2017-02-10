@@ -1,4 +1,4 @@
-app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParser', function($rootScope, $scope, $mdDialog, FileParser) {
+app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParser', '$interval', function($rootScope, $scope, $mdDialog, FileParser, $interval) {
 
   $scope.scenarioname = $rootScope.scenario;
 
@@ -27,6 +27,11 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3ParallelCoordinatesPlotData = '';
   $scope.d3BoxPlotData = [];
 
+  // dynamic
+  $interval(function(){
+      $scope.readData();
+  }, 1000, 10);
+
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
   // check the maximum instances in execution
@@ -41,19 +46,17 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     $scope.task_detail = scanTaskDetail(workingPath + "/task_detail.cvs");
 
     // read data for PARALLEL COORDINATES
-    // $scope.d3ParallelCoordinatesPlotData = "run/results/task_candidates.txt";
     $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates.txt";
     // testing ready d3BoxPlotData
-    // $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("./app/run/results/task-results.txt");
     $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
 
     // testing for barChart
-    barsForCandidateValues();
+    // barsForCandidateValues();
     // $scope.d3LineData = "./app/run/testLine.cvs"
 
     $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
     // line chart for kendal
-    lineForKendal();
+    $scope.kendallValues = FileParser.parseIraceKendallFile(workingPath + "/task-kendall.txt");
 
   };
 
@@ -244,16 +247,5 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
       $scope.$apply();
     });
   }
-
-  function lineForKendal() {
-    console.log("@lineForKendal");
-  }
-
-  // live running TODO
-  setTimeout(function () {
-        $scope.$apply(function () {
-            $scope.readData();
-        });
-  }, 2000);
 
 }]);

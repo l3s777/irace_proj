@@ -573,8 +573,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   function RunIrace() {
+    // TODO remove
     console.log("@RunIrace");
-    console.log($scope.scenario.targetrunner);
     // all data is ready to be saved
     var contentParameters = $scope.prepareExportParams();
     var contentConstrains = $scope.prepareExportConstrains();
@@ -620,10 +620,14 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     // running proccess
     child = exec(execCommand,
             function (error, stdout, stderr) {
+                // TODO remove console.log()
+                console.log('error: ' + error);
+                console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
-                dialog.showErrorBox("Error", stderr);
-                if (error !== null) {
-                     console.log('exec error: ' + error);
+
+                if (error === null) {
+                  dialog.showErrorBox("Error", stderr);
+                  console.log('exec error: ' + error);
                 }
             }
     );
