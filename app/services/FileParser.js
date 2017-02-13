@@ -11,25 +11,21 @@ app.service('FileParser', function () {
 		var data = fs.readFileSync(path, 'utf8');
 		if (!data) dialog.showErrorBox('Error', 'Unable to open file: ' + path);
 
-		var lines = data.trim().split('\n'),
-			iterations = [],
-			tokens = [];
+    var lines = data.trim().split('\n');
 
-		lines.forEach(function(l, lindex) {
-      // console.log(l);
-			if(lindex > 0) {
-				tokens = l.split(' ');
-				tokens.forEach(function (t, tindex) {
-          if (tindex > 0) {
-						if (!iterations[tindex - 1]) {
-							iterations[tindex - 1] = [];
-						}
-						iterations[tindex - 1].push(t);
-					}
-				});
-			}
-		});
-    // console.log(iterations);
+    var tokens = [];
+    var iterations = [];
+    var aux = [];
+
+    lines.forEach(function(l, lindex) {
+      tokens = l.split(' ');
+      tokens.forEach(function(t, tindex) {
+        aux[tindex] = t;
+      });
+      iterations[lindex] = aux;
+
+    });
+    console.log(iterations);
 		return iterations;
 	};
 
@@ -43,8 +39,8 @@ app.service('FileParser', function () {
 
     lines.forEach(function(line) {
       var items = line.split(',');
-      // TODO check what to do when NA
-      if(items[1]==="NA") {
+      // TODO check what to do when NA && NaN
+      if(items[1]==="NA" || items[1]==="NaN") {
         // TODO change... just for testing
         var aux = {
           t: items[0],

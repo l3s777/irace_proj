@@ -28,9 +28,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3BoxPlotData = [];
 
   // dynamic
-  $interval(function(){
-      $scope.readData();
-  }, 1000, 10);
+  // $interval(function(){
+  //     $scope.readData();
+  // }, 1000, 10);
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
