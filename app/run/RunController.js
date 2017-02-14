@@ -28,9 +28,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3BoxPlotData = [];
 
   // dynamic
-  // $interval(function(){
-  //     $scope.readData();
-  // }, 1000, 10);
+  $interval(function(){
+      $scope.readData();
+  }, 1000, 10);
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
@@ -49,6 +49,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates.txt";
     // testing ready d3BoxPlotData
     $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
+    // $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("/Users/lesly/Desktop/task-results.txt");
 
     // testing for barChart
     // barsForCandidateValues();

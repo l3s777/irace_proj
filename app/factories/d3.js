@@ -241,23 +241,28 @@ return {
       var yMax = -Infinity,
         yMin = Infinity;
       var xValues = [];
+      var xValuesTicks = [];
       xValues.push(' ');
+
       data.forEach(function (d, index) {
-        xValues.push(index+1);
-        d.forEach(function(p) {
-          if(p > yMax) yMax = p;
-          if(p < yMin) yMin = p;
+        // xValues.push(parseInt(d[0]));
+        xValues.push(index + 1);
+        d.forEach(function(p, ix) {
+          if(ix > 0) {
+            if(p > yMax) yMax = p;
+            if(p < yMin) yMin = p;
+          }
         })
       });
       xValues.push('\t');
 
-      var margins = {top: 50, right: 100, bottom: 50, left: 100 },
+      var margins = {top: 50, right: 50, bottom: 50, left: 70 },
         yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
-          .domain([yMin*0.998, yMax*1.002]),
+          .domain([yMin, yMax]),
         yAxis = d3.svg.axis()
           .scale(yScale)
-          .orient("left"),
-        xScale = d3.scale.ordinal()
+          .orient("left");
+      var xScale = d3.scale.ordinal()
           .domain(xValues)
           .rangePoints([margins.left, width - margins.right]),
         xAxis = d3.svg.axis()
@@ -278,16 +283,13 @@ return {
 
       var bar_width = 40;
 
-
       // Grid
-
       svg.append("g")
         .attr("class", "grid")
         .attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
         .call(yAxis
           .tickSize(-(width - margins.left - margins.right), 0, 0)
           .tickFormat(""));
-
 
       function computeValues(iteration) {
         var min,
@@ -302,13 +304,16 @@ return {
         mid = iteration[Math.round(n/2)];
         q25 = iteration[Math.round(n/4)];
         q75 = iteration[Math.round(3*n/4)];
+
         return [min, max, mid, q25, q75];
       }
 
       data.forEach(function(iteration, index) {
+        // first entry
         var val = yScale(iteration[0]);
         var bar_x = xScale(index+1) - bar_width/2;
-        var values = computeValues(iteration);
+        var aux = iteration.slice(1, iteration.length - 1);
+        var values = computeValues(aux);
         min = values[0];
         max = values[1];
         mid = values[2];
@@ -321,7 +326,7 @@ return {
           .attr("y1", yScale(min))
           .attr("x2", xScale(index+1))
           .attr("y2", yScale(max))
-          .attr("stroke-width", 1)
+          .attr("stroke-width", 2)
           .attr("stroke", irsBlue);
 
         // IQR
@@ -337,6 +342,7 @@ return {
           // finally, set the width of the bar based on the datapoint
           .attr("height", yScale(q25) - yScale(q75))
           .attr("stroke", irsBlue);
+
         svg.append("line")
           .attr("x1", bar_x)
           .attr("y1", yScale(q75))
@@ -344,6 +350,7 @@ return {
           .attr("y2", yScale(q75))
           .attr("stroke-width", 1)
           .attr("stroke", "black");
+
         svg.append("line")
           .attr("x1", bar_x)
           .attr("y1", yScale(q25))
@@ -374,9 +381,6 @@ return {
           .attr("y2", yScale(max))
           .attr("stroke-width", 1)
           .attr("stroke", "black");
-
-
-
       });
 
 
@@ -385,207 +389,6 @@ return {
   }
 };
 }])
-//   .directive('d3BoxPlot', ['d3', function (d3) {
-// 	return {
-// 		restrict: 'EA',
-// 		scope: {
-// 			data: "=",
-// 			label: "@",
-// 		},
-// 		link: function (scope, iElement, iAttrs) {
-// 			// create the svg to contain our visualization
-// 			var svg = d3.select(iElement[0])
-// 				.append("svg")
-// 				.style("width", "100%");
-//
-// 			// make the visualization responsive by watching for changes in window size
-// 			window.onresize = function () {
-// 				return scope.$apply();
-// 			};
-// 			scope.$watch(function () {
-// 				return angular.element(window)[0].innerWidth;
-// 			}, function () {
-// 				return scope.render(scope.data);
-// 			});
-//
-//       // TODO redo each line
-//
-// 			// watch the data source for changes to dynamically update the visualization
-// 			scope.$watch('data', function (newData, oldData) {
-// 				return scope.render(newData);
-// 			}, true);
-//
-// 			scope.render = function (data) {
-// 				// clear out everything in the svg to render a fresh version
-// 				svg.selectAll("*").remove();
-//
-// 				// set up variables
-// 				var width, height, max;
-// 				width = d3.select(iElement[0])[0][0].offsetWidth;
-//         // width = 700;
-// 				height = 900;
-// 				svg.attr('height', height);
-// 				svg.attr('width', width);
-//
-// 				var irsBlue = 'rgb(82, 154, 189)';
-//
-// 				var yMax = Infinity,
-// 					yMin = -Infinity;
-// 				var xValues = [];
-// 				xValues.push(' ');
-//         // reading parse data
-// 				data.forEach(function (d, index) {
-// 					xValues.push(index+1);
-//           // TODO remove
-//           if(index === 0) {
-//             yMax = d[0];
-//     				yMin = -d[0];
-//           }
-// 					d.forEach(function(p) {
-//             console.log(p);
-// 						if(p > yMax) yMax = p;
-// 						if(p < yMin) yMin = p;
-// 					})
-// 				});
-// 				xValues.push('\t');
-//
-//         // TODO remove
-//         console.log("before margins");
-//         console.log(xValues);
-//         console.log(yMax);
-//         console.log(yMin);
-// 				var margins = {top: 20, right: 50, bottom: 20, left: 50 },
-// 					yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
-// 						.domain([yMin, yMax]),
-// 					yAxis = d3.svg.axis()
-// 						.scale(yScale)
-// 						.orient("left"),
-// 					xScale = d3.scale.ordinal()
-// 						.domain(xValues)
-// 						.rangePoints([margins.left, width - margins.right]),
-// 					xAxis = d3.svg.axis()
-// 						.scale(xScale)
-// 						.orient("bottom");
-//
-// 				// Axis
-// 				svg.append("svg:g")
-// 					.attr("class", "x axis")
-// 					.attr("transform", "translate(0," + (height - margins.bottom) + ")")
-// 					.call(xAxis)
-// 					.selectAll("text")
-// 					.style("text-anchor", "end")
-// 				svg.append("svg:g")
-// 					.attr("class", "y axis")
-// 					.attr("transform", "translate(" + (margins.left) + "," + (margins.top - margins.bottom) + ")")
-// 					.call(yAxis);
-//
-// 				var bar_width = 15;
-//
-// 				// Grid
-// 				svg.append("g")
-// 					.attr("class", "grid")
-// 					.attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
-// 					.call(yAxis
-// 						.tickSize(-(width - margins.left - margins.right), 0, 0)
-// 						.tickFormat(""));
-//
-// 				function computeValues(iteration) {
-// 					var min,
-// 						max,
-// 						mid,
-// 						value = Number,
-// 						n = iteration.length;
-//
-// 					iteration = iteration.map(value).sort(d3.ascending);// d3.entries(iteration).sort(function(x) { return d3.ascending(x); });
-// 					max = iteration[n-1];
-// 					min = iteration[0];
-// 					mid = iteration[Math.round(n/2)];
-// 					q25 = iteration[Math.round(n/4)];
-// 					q75 = iteration[Math.round(3*n/4)];
-//           console.log(min + " - " + max + " - " + mid + " - " + q25 + " - " + q75);
-// 					return [min, max, mid, q25, q75];
-// 				}
-//
-//         // TODO
-//         var min_value = [];
-// 				data.forEach(function(iteration, index) {
-// 					var val = yScale(iteration[0]);
-// 					var bar_x = xScale(index+1) - bar_width/2;
-// 					var values = computeValues(iteration);
-// 					min = values[0];
-//           // TODO redefine
-//           min_value.push(min);
-// 					max = values[1];
-// 					mid = values[2];
-// 					q25 = values[3];
-// 					q75 = values[4];
-//
-// 					// Center line
-// 					svg.append("line")
-// 						.attr("x1", xScale(index+1))
-// 						.attr("y1", yScale(min))
-// 						.attr("x2", xScale(index+1))
-// 						.attr("y2", yScale(max))
-// 						.attr("stroke-width", 1)
-// 						.attr("stroke", irsBlue);
-//
-// 					// IQR
-// 					svg.append("rect")
-// 						.style({
-// 							fill: "#f1f1f1"
-// 						})
-// 						// set initial dimensions of the bar
-// 						.attr("width", bar_width)
-// 						// position bar
-// 						.attr("x", bar_x)
-// 						.attr("y", yScale(q75)) // (height-margins.bottom) - val
-// 						// finally, set the width of the bar based on the datapoint
-// 						.attr("height", yScale(q25) - yScale(q75))
-// 						.attr("stroke", irsBlue);
-// 					svg.append("line")
-// 						.attr("x1", bar_x)
-// 						.attr("y1", yScale(q75))
-// 						.attr("x2", bar_x+bar_width)
-// 						.attr("y2", yScale(q75))
-// 						.attr("stroke-width", 1)
-// 						.attr("stroke", "black");
-// 					svg.append("line")
-// 						.attr("x1", bar_x)
-// 						.attr("y1", yScale(q25))
-// 						.attr("x2", bar_x+bar_width)
-// 						.attr("y2", yScale(q25))
-// 						.attr("stroke-width", 1)
-// 						.attr("stroke", "black");
-//
-// 					// Min, mid and max
-// 					svg.append("line")
-// 						.attr("x1", bar_x)
-// 						.attr("y1", yScale(min))
-// 						.attr("x2", bar_x+bar_width)
-// 						.attr("y2", yScale(min))
-// 						.attr("stroke-width", 1)
-// 						.attr("stroke", "black");
-// 					svg.append("line")
-// 						.attr("x1", bar_x)
-// 						.attr("y1", yScale(mid))
-// 						.attr("x2", bar_x+bar_width)
-// 						.attr("y2", yScale(mid))
-// 						.attr("stroke-width", 1)
-// 						.attr("stroke", "black");
-// 					svg.append("line")
-// 						.attr("x1", bar_x)
-// 						.attr("y1", yScale(max))
-// 						.attr("x2", bar_x+bar_width)
-// 						.attr("y2", yScale(max))
-// 						.attr("stroke-width", 1)
-// 						.attr("stroke", "black");
-// 				});
-//
-// 			};
-// 		}
-// 	};
-// }])
-
   .directive('linearChart', ['d3', function (d3) {
     return {
       restrict:'EA',

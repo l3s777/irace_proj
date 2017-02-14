@@ -14,18 +14,23 @@ app.service('FileParser', function () {
     var lines = data.trim().split('\n');
 
     var tokens = [];
+    var bar_i = lines[0].split(' ').length;
+    var bar_j = lines.length;
+
     var iterations = [];
-    var aux = [];
+    for(var x = 0; x < bar_i; x++){
+        iterations[x] = [];
+        for(var y = 0; y < bar_j; y++){
+            iterations[x][y] = 0;
+        }
+    }
 
     lines.forEach(function(l, lindex) {
       tokens = l.split(' ');
       tokens.forEach(function(t, tindex) {
-        aux[tindex] = t;
+        iterations[tindex][lindex] = parseInt(t);
       });
-      iterations[lindex] = aux;
-
     });
-    console.log(iterations);
 		return iterations;
 	};
 
