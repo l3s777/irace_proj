@@ -241,12 +241,10 @@ return {
       var yMax = -Infinity,
         yMin = Infinity;
       var xValues = [];
-      var xValuesTicks = [];
       xValues.push(' ');
 
       data.forEach(function (d, index) {
-        // xValues.push(parseInt(d[0]));
-        xValues.push(index + 1);
+        xValues.push(parseInt(d[0]));
         d.forEach(function(p, ix) {
           if(ix > 0) {
             if(p > yMax) yMax = p;
@@ -274,7 +272,7 @@ return {
         .attr("class", "x axis")
         .attr("transform", "translate(0," + (height - margins.bottom) + ")")
         .call(xAxis)
-        .selectAll("text")
+        // .selectAll("text")
         .style("text-anchor", "end")
       svg.append("svg:g")
         .attr("class", "y axis")
@@ -311,7 +309,8 @@ return {
       data.forEach(function(iteration, index) {
         // first entry
         var val = yScale(iteration[0]);
-        var bar_x = xScale(index+1) - bar_width/2;
+        // each bar is related to the index of the scale
+        var bar_x = xScale(iteration[0]) - bar_width/2;
         var aux = iteration.slice(1, iteration.length - 1);
         var values = computeValues(aux);
         min = values[0];
@@ -322,9 +321,9 @@ return {
 
         // Center line
         svg.append("line")
-          .attr("x1", xScale(index+1))
+          .attr("x1", xScale(iteration[0]))
           .attr("y1", yScale(min))
-          .attr("x2", xScale(index+1))
+          .attr("x2", xScale(iteration[0]))
           .attr("y2", yScale(max))
           .attr("stroke-width", 2)
           .attr("stroke", irsBlue);
@@ -338,11 +337,11 @@ return {
           .attr("width", bar_width)
           // position bar
           .attr("x", bar_x)
-          .attr("y", yScale(q75)) // (height-margins.bottom) - val
-          // finally, set the width of the bar based on the datapoint
+          .attr("y", yScale(q75))
           .attr("height", yScale(q25) - yScale(q75))
           .attr("stroke", irsBlue);
 
+        // upper line rect
         svg.append("line")
           .attr("x1", bar_x)
           .attr("y1", yScale(q75))
@@ -351,6 +350,7 @@ return {
           .attr("stroke-width", 1)
           .attr("stroke", "black");
 
+        // bottom line rect
         svg.append("line")
           .attr("x1", bar_x)
           .attr("y1", yScale(q25))
@@ -382,8 +382,6 @@ return {
           .attr("stroke-width", 1)
           .attr("stroke", "black");
       });
-
-
 
     };
   }

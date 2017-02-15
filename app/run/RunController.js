@@ -17,9 +17,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   };
 
   $scope.task_data = {
-    "aliveCandidates": 50,
-    "numberInstances": 10,
-    "numberEvaluations": 20
+    "aliveCandidates": 1,
+    "numberInstances": 1,
+    "numberEvaluations": 1
   };
 
   $scope.task_detail = [{}];
@@ -48,6 +48,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     // read data for PARALLEL COORDINATES
     $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates.txt";
     // testing ready d3BoxPlotData
+    // TODO review when it is running dynamically
     $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
     // $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("/Users/lesly/Desktop/task-results.txt");
 
