@@ -34,6 +34,98 @@ app.service('FileParser', function () {
 		return iterations;
 	};
 
+  this.parseIraceFrequencyFile = function(path) {
+
+		var data = fs.readFileSync(path, 'utf8');
+		if (!data) dialog.showErrorBox('Error', 'Unable to open file: ' + path);
+
+    // reading each line from the file
+    var lines = data.trim().split('\n');
+    var tokens = [];
+    var values_co = [];
+    var values_ir = [];
+    var result = {
+      "co" : [],
+      "ir" : []
+    };
+
+    var isCorO = false;
+    var setYvalues = false;
+    var setCorO = false;
+
+    var isRorI = false;
+    var setRorI = false;
+
+    var param, type, x_values, y_values, values;
+    lines.forEach(function(l) {
+
+      if(l[0] != "#") { // first line with # is reference
+        tokens = l.split(' ');
+
+        if(isRorI) {
+          values = tokens;
+          setRorI = true;
+          isRorI = false;
+        }
+
+        if(setYvalues) { // set values in Y
+          y_values = tokens;
+          isCorO = false;
+          setYvalues = false;
+          setCorO = true;
+        }
+
+        if(isCorO) { // set values in X
+          x_values = tokens;
+          setYvalues = true;
+        }
+
+        if(tokens[0] === "parameter") {
+          param = tokens[1];
+        }
+        if(tokens[0] === "type") {
+          type = tokens[1];
+          if(type === "c" || type === "o") {
+            isCorO = true;
+          }
+          if(type === "i" || type === "r") {
+            isRorI = true;
+          }
+        }
+
+        if(setCorO) {
+          // console.log("setting value for C or O");
+          var paramObj = {
+                  "param": param, // undefined?
+                  "type": type,
+                  "x_values": x_values,
+                  "y_values": y_values
+          };
+          values_co.push(paramObj);
+          setCorO = false;
+        }
+
+        // R or I
+        if(setRorI) {
+          // console.log("setting value for R or I");
+          var paramObj = {
+                  "param": param, // undefined?
+                  "type": type,
+                  "values": values
+          };
+          values_ir.push(paramObj);
+          setRorI = false;
+        }
+      }
+    });
+    result = {
+      "co" : values_co,
+      "ir" : values_ir
+    } ;
+
+    return result;
+	};
+
   this.parseIraceKendallFile = function(path) {
 
 		var data = fs.readFileSync(path, 'utf8');

@@ -28,9 +28,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3BoxPlotData = [];
 
   // dynamic
-  $interval(function(){
-      $scope.readData();
-  }, 1000, 10);
+  // $interval(function(){
+  //     $scope.readData();
+  // }, 1000, 10);
 
   // check the minimum value for alive candidates
   $scope.currentAliveCandidatess = function() {};
@@ -50,11 +50,16 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     // testing ready d3BoxPlotData
     // TODO review when it is running dynamically
     $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
-    // $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile("/Users/lesly/Desktop/task-results.txt");
 
     // testing for barChart
     // barsForCandidateValues();
-    // $scope.d3LineData = "./app/run/testLine.cvs"
+    $scope.d3Candidates = FileParser.parseIraceFrequencyFile(workingPath + "/task-frequency.txt");
+    // $scope.d3Candidates = FileParser.parseIraceFrequencyFile("/Users/lesly/Desktop"+ "/task-frequency.txt");
+    console.log("back to RunController");
+    $scope.d3Cco = $scope.d3Candidates.co; // represented by BARS
+    $scope.d3Cir = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
+    console.log($scope.d3Cco);
+    console.log($scope.d3Cir);
 
     $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
     // line chart for kendal
