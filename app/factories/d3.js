@@ -387,6 +387,128 @@ return {
   }
 };
 }])
+.directive('d3BarPlot', ['d3', function (d3) {
+  return {
+    restrict: 'EA',
+    scope: {
+      data: "=",
+      label: "@",
+    },
+    link: function (scope, iElement, iAttrs) {
+      // create the svg to contain our visualization
+      var svg = d3.select(iElement[0])
+        .append("svg")
+        .attr("width", "100%");
+
+      // make the visualization responsive by watching for changes in window size
+      window.onresize = function () {
+        return scope.$apply();
+      };
+      scope.$watch(function () {
+        return angular.element(window)[0].innerWidth;
+      }, function () {
+        return scope.render(scope.data);
+      });
+
+      // watch the data source for changes to dynamically update the visualization
+      scope.$watch('data', function (newData, oldData) {
+        return scope.render(newData);
+      }, true);
+
+
+      scope.render = function (data) {
+        // clear out everything in the svg to render a fresh version
+        svg.selectAll("*").remove();
+
+        // set up variables
+        var width, height, max;
+        width = d3.select(iElement[0])[0][0].offsetWidth;
+        height = 250;
+        svg.attr('height', height);
+        svg.attr('width', width);
+
+        var irsBlue = 'rgb(82, 154, 189)';
+
+        // define data
+        var dataLabels = []; // x values
+        dataLabels.push(' ');
+        var yValues; // y values
+        var charTitle, chartSubtitle;
+
+        data.x_values.forEach(function(d){
+          dataLabels.push(d);
+        });
+        // dataLabels = data.x_values;
+        dataLabels.push('\t');
+
+        yValues = data.y_values;
+        chartTitle = data.param;
+        chartSubtitle = data.type;
+
+        var maxValue = d3.max(yValues);
+        var margins = {top: 50, right: 50, bottom: 50, left: 70 },
+          yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
+            .domain([0, maxValue]),
+            // y Axis
+          yAxis = d3.svg.axis()
+            .scale(yScale)
+            .orient("left");
+        var xScale = d3.scale.ordinal()
+            .domain(dataLabels)
+            .rangePoints([margins.left, width - margins.right]),
+            // x Axis
+          xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("bottom");
+
+        // Axis
+        svg.append("svg:g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height - margins.bottom) + ")")
+          .call(xAxis)
+          .style("text-anchor", "end")
+        svg.append("svg:g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + (margins.left) + "," + (margins.top - margins.bottom) + ")")
+          .call(yAxis);
+
+        // Grid
+        svg.append("g")
+          .attr("class", "grid")
+          .attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
+          .call(yAxis
+            .tickSize(-(width - margins.left - margins.right), 0, 0)
+            .tickFormat(""));
+
+        //create the bars
+        svg.append("rect")
+            .style({
+              fill: "#f1f1f1"
+            })
+            // set initial dimensions of the bar
+            .attr("width", 50)
+            // position bar
+            .attr("x", xScale(0))
+            .attr("y", yScale(0))
+            .attr("height", height-yScale(0))
+            .attr("stroke", irsBlue);
+
+        svg.append("text")
+            .attr("class","mainTitle")
+            .attr("x",20)
+            .attr("y",25)
+            .attr("font-size", "20px")
+            .text(chartTitle);
+        svg.append("text")
+            .attr("class","subTitle")
+            .attr("x",20)
+            .attr("y",40)
+            .attr("font-size", "15px")
+            .text(chartSubtitle);
+      };
+    }
+  };
+}])
   .directive('linearChart', ['d3', function (d3) {
     return {
       restrict:'EA',

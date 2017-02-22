@@ -563,7 +563,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     };
 
     $scope.go = function() {
-      RunIrace();
+      // RunIrace();
       $mdDialog.cancel();
     };
 
