@@ -423,7 +423,7 @@ return {
         // set up variables
         var width, height, max;
         width = d3.select(iElement[0])[0][0].offsetWidth;
-        height = 250;
+        height = 220;
         svg.attr('height', height);
         svg.attr('width', width);
 
@@ -486,7 +486,7 @@ return {
               fill: "#f1f1f1"
             })
             // set initial dimensions of the bar
-            .attr("width", 50)
+            .attr("width", 25)
             // position bar
             .attr("x", xScale(0))
             .attr("y", yScale(0))
@@ -509,7 +509,133 @@ return {
     }
   };
 }])
-  .directive('linearChart', ['d3', function (d3) {
+.directive('d3DensityPlot', ['d3', function (d3) {
+  return {
+    restrict: 'EA',
+    scope: {
+      data: "=",
+      label: "@",
+    },
+    link: function (scope, iElement, iAttrs) {
+      // create the svg to contain our visualization
+      var svg = d3.select(iElement[0])
+        .append("svg")
+        .attr("width", "100%");
+
+      // make the visualization responsive by watching for changes in window size
+      window.onresize = function () {
+        return scope.$apply();
+      };
+      scope.$watch(function () {
+        return angular.element(window)[0].innerWidth;
+      }, function () {
+        return scope.render(scope.data);
+      });
+
+      // watch the data source for changes to dynamically update the visualization
+      scope.$watch('data', function (newData, oldData) {
+        return scope.render(newData);
+      }, true);
+
+
+      scope.render = function (data) {
+        // clear out everything in the svg to render a fresh version
+        svg.selectAll("*").remove();
+
+        // set up variables
+        var width, height, max;
+        width = d3.select(iElement[0])[0][0].offsetWidth;
+        height = 220;
+        svg.attr('height', height);
+        svg.attr('width', width);
+
+        var irsBlue = 'rgb(82, 154, 189)';
+
+        // define data
+        console.log(data);
+        var chartTitle = data.param;
+        var chartSubtitle = data.type;
+
+        var margin = {top: 20, right: 30, bottom: 30, left: 40},
+          width = 300 - margin.left - margin.right,
+          height = 400 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .domain([30, 110])
+            .range([0, width]);
+
+        var y = d3.scale.linear()
+            .domain([0, .1])
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format("%"));
+
+        var line = d3.svg.line()
+            .x(function(d) { return x(d[0]); })
+            .y(function(d) { return y(d[1]); });
+
+        var histogram = d3.layout.histogram()
+            .frequency(false)
+            .bins(x.ticks(40));
+
+        // Axis
+        svg.append("svg:g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+          .call(xAxis)
+          .style("text-anchor", "end")
+        svg.append("svg:g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
+          .call(yAxis);
+
+        svg.append("text")
+            .attr("class","mainTitle")
+            .attr("x",20)
+            .attr("y",25)
+            .attr("font-size", "20px")
+            .text(chartTitle);
+        svg.append("text")
+            .attr("class","subTitle")
+            .attr("x",20)
+            .attr("y",40)
+            .attr("font-size", "15px")
+            .text(chartSubtitle);
+
+        // // Grid
+        // svg.append("g")
+        //   .attr("class", "grid")
+        //   .attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
+        //   .call(yAxis
+        //     .tickSize(-(width - margins.left - margins.right), 0, 0)
+        //     .tickFormat(""));
+        //
+        // //create the bars
+        // svg.append("rect")
+        //     .style({
+        //       fill: "#f1f1f1"
+        //     })
+        //     // set initial dimensions of the bar
+        //     .attr("width", 25)
+        //     // position bar
+        //     .attr("x", xScale(0))
+        //     .attr("y", yScale(0))
+        //     .attr("height", height-yScale(0))
+        //     .attr("stroke", irsBlue);
+        //
+
+      };
+    }
+  };
+}])
+.directive('linearChart', ['d3', function (d3) {
     return {
       restrict:'EA',
       scope: {

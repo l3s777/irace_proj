@@ -64,11 +64,15 @@
     </div>
     <br>
     <label class="ir-bold">Candidates values</label>
-    <div class="ir-table-runninglive">
+    <div style="overflow-x: scroll; overflow-y: scroll;" layout="row">
       <div ng-repeat="d3BarPlotData in d3BarPlotDataV">
         <d3-bar-plot data="d3BarPlotData" label="name"></d3-bar-plot>
       </div>
-      <!-- TODO add ProbDistribution (I/R) -->
+    </div>
+    <div style="overflow-x: scroll; overflow-y: scroll;" layout="row">
+      <div ng-repeat="d3DensityPlotData in d3DensityPlotDataV">
+        <d3-density-plot data="d3DensityPlotData" label="name"></d3-density-plot>
+      </div>
     </div>
     <br>
   </div>
