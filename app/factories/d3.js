@@ -448,7 +448,6 @@ return {
         } else if(data.type === "o") {
           chartSubtitle = "ordinal";
         }
-        // chartSubtitle = data.type;
 
         var maxValue = d3.max(yValues);
         var margins = {top: 50, right: 50, bottom: 50, left: 70 },
@@ -548,7 +547,6 @@ return {
         return scope.render(newData);
       }, true);
 
-
       scope.render = function (data) {
         // clear out everything in the svg to render a fresh version
         svg.selectAll("*").remove();
@@ -563,49 +561,69 @@ return {
         var irsBlue = 'rgb(82, 154, 189)';
 
         // define data
-        // console.log(data);
         var chartTitle = data.param;
         var chartSubtitle = data.type;
+        if(data.type === "i") {
+          chartSubtitle = "integer";
+        } else if(data.type === "r") {
+          chartSubtitle = "real";
+        }
 
-        var margin = {top: 20, right: 30, bottom: 30, left: 40},
-          width = 300 - margin.left - margin.right,
-          height = 400 - margin.top - margin.bottom;
+        var margin = {top: 50, right: 50, bottom: 50, left: 70};
 
-        var x = d3.scale.linear()
+        var yScale = d3.scale.linear()
+            .range([height - margin.top, margin.bottom])
+            .nice()
+            .domain([0, 1]);
+        var xScale = d3.scale.linear()
             .domain([0, 100])
-            .range([0, width]);
-
-        var y = d3.scale.linear()
-            .domain([0, .1])
-            .range([height, 0]);
+            .range([margin.left, width - margin.right]);
 
         var xAxis = d3.svg.axis()
-            .scale(x)
+            .scale(xScale)
             .orient("bottom");
         var yAxis = d3.svg.axis()
-            .scale(y)
+            .scale(yScale)
             .orient("left")
             .tickFormat(d3.format("%"));
 
-        // var line = d3.svg.line()
-        //     .x(function(d) { return x(d[0]); })
-        //     .y(function(d) { return y(d[1]); });
-        //
-        // var histogram = d3.layout.histogram()
-        //     .frequency(false)
-        //     .bins(x.ticks(40));
-        //     console.log(histogram);
-        //
-        // // Axis
-        // svg.append("svg:g")
-        //   .attr("class", "x axis")
-        //   .attr("transform", "translate(0," + (height - margin.bottom) + ")")
-        //   .call(xAxis)
-        //   .style("text-anchor", "end")
-        // svg.append("svg:g")
-        //   .attr("class", "y axis")
-        //   .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
-        //   .call(yAxis);
+        // line
+        var line = d3.svg.line()
+            .x(function(d) { return xScale(d[0]); })
+            .y(function(d) { return yScale(d[1]); });
+
+        // histogram
+        var histogram = d3.layout.histogram()
+            .frequency(false)
+            .bins(xScale.ticks(5));
+
+        var d = histogram(data.values);
+        var kde = kernelDensityEstimator(epanechnikovKernel(7), xScale.ticks(100));
+
+        function kernelDensityEstimator(kernel, x) {
+          return function(sample) {
+            return x.map(function(x) {
+              return [x, d3.mean(sample, function(v) { return kernel(x - v); })];
+            });
+          };
+        }
+
+        function epanechnikovKernel(scale) {
+          return function(u) {
+            return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
+          };
+        }
+
+        // Axis
+        svg.append("svg:g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+          .call(xAxis)
+          .style("text-anchor", "end")
+        svg.append("svg:g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
+          .call(yAxis);
 
         svg.append("text")
             .attr("class","mainTitle")
@@ -617,8 +635,28 @@ return {
             .attr("class","subTitle")
             .attr("x",20)
             .attr("y",40)
-            .attr("font-size", "15px")
+            .attr("font-size", "10px")
             .text(chartSubtitle);
+
+        //
+        svg.selectAll("rect")
+            .data(d).enter()
+            .append("rect")
+            .attr("class", "bar")
+            .style({
+              fill: "#f1f1f1"
+            })
+            .attr("stroke", irsBlue)
+            .attr("x", function(d) { return xScale(d.x) + 1; })
+            .attr("y", function(d) { return yScale(d.y) - margin.bottom; })
+            .attr("width", xScale(d[0].dx + d[0].x) - xScale(d[0].x) - 1)
+            .attr("height", function(d) { return height - yScale(d.y); });
+
+        // TODO review LINE values
+        // svg.append("path")
+        //     .data(kde(data.values))
+        //     .attr("class", "line")
+        //     .attr("d", line);
 
         // // Grid
         svg.append("g")
