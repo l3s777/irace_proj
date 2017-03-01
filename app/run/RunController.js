@@ -49,10 +49,10 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     // BarPlot for Categorical and Ordinal
     $scope.d3BarPlotDataV = $scope.d3Candidates.co;
-    console.log($scope.d3BarPlotDataV);
+    // console.log($scope.d3BarPlotDataV);
     // KernelGraph for Integer and Real
     $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
-    console.log($scope.d3DensityPlotDataV);
+    // console.log($scope.d3DensityPlotDataV);
 
     $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
     // line chart for kendal

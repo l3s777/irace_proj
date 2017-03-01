@@ -443,18 +443,25 @@ return {
 
         yValues = data.y_values;
         chartTitle = data.param;
-        chartSubtitle = data.type;
+        if(data.type === "c") {
+          chartSubtitle = "categorical";
+        } else if(data.type === "o") {
+          chartSubtitle = "ordinal";
+        }
+        // chartSubtitle = data.type;
 
         var maxValue = d3.max(yValues);
         var margins = {top: 50, right: 50, bottom: 50, left: 70 },
           yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
-            .domain([0, maxValue]),
+            .domain([0, maxValue])
+            .nice()
             // y Axis
           yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left");
         var xScale = d3.scale.ordinal()
             .domain(dataLabels)
+            // .rangeRoundBands([0, width - margins.right - margins.left], .01),
             .rangePoints([margins.left, width - margins.right]),
             // x Axis
           xAxis = d3.svg.axis()
@@ -481,16 +488,20 @@ return {
             .tickFormat(""));
 
         //create the bars
-        svg.append("rect")
+        svg.selectAll("rect")
+            .data(yValues).enter()
+            .append("rect")
             .style({
               fill: "#f1f1f1"
             })
             // set initial dimensions of the bar
-            .attr("width", 25)
+            // .attr("width", function(d,i){return xScale.rangeBand();})
+            .attr("width", 5)
             // position bar
-            .attr("x", xScale(0))
-            .attr("y", yScale(0))
-            .attr("height", height-yScale(0))
+            .attr("x", function(d,i) { return xScale(dataLabels[i + 1]); })
+            .attr("y", function(d,i) { return (yScale(d) - margins.bottom); })
+            .attr("height", function(d,i) { return height - yScale(d); })
+            // .attr("height", 10)
             .attr("stroke", irsBlue);
 
         svg.append("text")
@@ -503,7 +514,7 @@ return {
             .attr("class","subTitle")
             .attr("x",20)
             .attr("y",40)
-            .attr("font-size", "15px")
+            .attr("font-size", "10px")
             .text(chartSubtitle);
       };
     }
@@ -552,7 +563,7 @@ return {
         var irsBlue = 'rgb(82, 154, 189)';
 
         // define data
-        console.log(data);
+        // console.log(data);
         var chartTitle = data.param;
         var chartSubtitle = data.type;
 
@@ -561,7 +572,7 @@ return {
           height = 400 - margin.top - margin.bottom;
 
         var x = d3.scale.linear()
-            .domain([30, 110])
+            .domain([0, 100])
             .range([0, width]);
 
         var y = d3.scale.linear()
@@ -571,30 +582,30 @@ return {
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom");
-
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left")
             .tickFormat(d3.format("%"));
 
-        var line = d3.svg.line()
-            .x(function(d) { return x(d[0]); })
-            .y(function(d) { return y(d[1]); });
-
-        var histogram = d3.layout.histogram()
-            .frequency(false)
-            .bins(x.ticks(40));
-
-        // Axis
-        svg.append("svg:g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + (height - margin.bottom) + ")")
-          .call(xAxis)
-          .style("text-anchor", "end")
-        svg.append("svg:g")
-          .attr("class", "y axis")
-          .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
-          .call(yAxis);
+        // var line = d3.svg.line()
+        //     .x(function(d) { return x(d[0]); })
+        //     .y(function(d) { return y(d[1]); });
+        //
+        // var histogram = d3.layout.histogram()
+        //     .frequency(false)
+        //     .bins(x.ticks(40));
+        //     console.log(histogram);
+        //
+        // // Axis
+        // svg.append("svg:g")
+        //   .attr("class", "x axis")
+        //   .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+        //   .call(xAxis)
+        //   .style("text-anchor", "end")
+        // svg.append("svg:g")
+        //   .attr("class", "y axis")
+        //   .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
+        //   .call(yAxis);
 
         svg.append("text")
             .attr("class","mainTitle")
@@ -610,26 +621,12 @@ return {
             .text(chartSubtitle);
 
         // // Grid
-        // svg.append("g")
-        //   .attr("class", "grid")
-        //   .attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
-        //   .call(yAxis
-        //     .tickSize(-(width - margins.left - margins.right), 0, 0)
-        //     .tickFormat(""));
-        //
-        // //create the bars
-        // svg.append("rect")
-        //     .style({
-        //       fill: "#f1f1f1"
-        //     })
-        //     // set initial dimensions of the bar
-        //     .attr("width", 25)
-        //     // position bar
-        //     .attr("x", xScale(0))
-        //     .attr("y", yScale(0))
-        //     .attr("height", height-yScale(0))
-        //     .attr("stroke", irsBlue);
-        //
+        svg.append("g")
+          .attr("class", "grid")
+          .attr("transform", "translate(" + margin.left + "," + (margin.top - margin.bottom) + ")")
+          .call(yAxis
+            .tickSize(-(width - margin.left - margin.right), 0, 0)
+            .tickFormat(""));
 
       };
     }
