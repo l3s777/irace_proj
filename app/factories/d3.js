@@ -588,9 +588,9 @@ return {
             .tickFormat(d3.format("%"));
 
         // line
-        var line = d3.svg.line()
-            .x(function(d) { return xScale(d[0]); })
-            .y(function(d) { return yScale(d[1]); });
+        // var line = d3.svg.line()
+        //     .x(function(d) { return xScale(d[0]); })
+        //     .y(function(d) { return yScale(d[1]); });
 
         // histogram
         var histogram = d3.layout.histogram()
