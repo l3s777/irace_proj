@@ -431,17 +431,18 @@ return {
 
         // define data
         var dataLabels = []; // x values
-        dataLabels.push(' ');
-        var yValues; // y values
+        var yValues = []; // y values
         var charTitle, chartSubtitle;
 
         data.x_values.forEach(function(d){
           dataLabels.push(d);
         });
-        // dataLabels = data.x_values;
-        dataLabels.push('\t');
 
-        yValues = data.y_values;
+        data.y_values.forEach(function(d){
+          yValues.push(parseInt(d));
+        });
+
+        // yValues = data.y_values;
         chartTitle = data.param;
         if(data.type === "c") {
           chartSubtitle = "categorical";
@@ -450,8 +451,9 @@ return {
         }
 
         var maxValue = d3.max(yValues);
-        var margins = {top: 50, right: 50, bottom: 50, left: 70 },
-          yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
+        var margins = {top: 50, right: 50, bottom: 50, left: 70 };
+
+        var yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
             .domain([0, maxValue])
             .nice()
             // y Axis
@@ -460,8 +462,7 @@ return {
             .orient("left");
         var xScale = d3.scale.ordinal()
             .domain(dataLabels)
-            // .rangeRoundBands([0, width - margins.right - margins.left], .01),
-            .rangePoints([margins.left, width - margins.right]),
+            .rangeRoundBands([margins.left, width - margins.right], .1),
             // x Axis
           xAxis = d3.svg.axis()
             .scale(xScale)
@@ -494,13 +495,10 @@ return {
               fill: "#f1f1f1"
             })
             // set initial dimensions of the bar
-            // .attr("width", function(d,i){return xScale.rangeBand();})
-            .attr("width", 5)
-            // position bar
-            .attr("x", function(d,i) { return xScale(dataLabels[i + 1]); })
-            .attr("y", function(d,i) { return (yScale(d) - margins.bottom); })
-            .attr("height", function(d,i) { return height - yScale(d); })
-            // .attr("height", 10)
+            .attr("width", function(){return xScale.rangeBand();})
+            .attr("x", function(d,i) { return xScale(dataLabels[i]);}) // position bar
+            .attr("y", function(d,i) { return (yScale(d)); })
+            .attr("height", function(d,i) { return height - yScale(d) - margins.top; })
             .attr("stroke", irsBlue);
 
         svg.append("text")
@@ -587,9 +585,9 @@ return {
             .orient("left")
             .tickFormat(d3.format("%"));
 
-        // line
+        // line function
         // var line = d3.svg.line()
-        //     .x(function(d) { return xScale(d[0]); })
+        //     .x(function(d) {console.log(d); return xScale(d[0]); })
         //     .y(function(d) { return yScale(d[1]); });
 
         // histogram

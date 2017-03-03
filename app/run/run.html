@@ -64,9 +64,11 @@
     </div>
     <br>
     <label class="ir-bold">Candidates values</label>
-    <div style="overflow-x: scroll; overflow-y: scroll;" layout="row">
-      <div ng-repeat="d3BarPlotData in d3BarPlotDataV">
-        <d3-bar-plot data="d3BarPlotData" label="name"></d3-bar-plot>
+    <div layout="row">
+      <div layout="row" style="overflow-x: scroll;">
+        <div ng-repeat="d3BarPlotData in d3BarPlotDataV">
+          <d3-bar-plot data="d3BarPlotData" label="name" flex="25"></d3-bar-plot>
+        </div>
       </div>
     </div>
     <div style="overflow-x: scroll; overflow-y: scroll;" layout="row">
