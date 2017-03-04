@@ -3,7 +3,7 @@
   <div class="md-padding" layout="row">
     <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
     <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
-    <p><span class="ir-bold">Scenario Name: </span>{{scenarioname}}</p>
+    <p><span class="ir-bold">Scenario Name: </span>{{scenario.name}}</p>
   </div>
   <!-- intro summary -->
   <div class="md-padding" layout="row">
@@ -67,7 +67,7 @@
     <div layout="row">
       <div layout="row" style="overflow-x: scroll;">
         <div ng-repeat="d3BarPlotData in d3BarPlotDataV">
-          <d3-bar-plot data="d3BarPlotData" label="name" flex="25"></d3-bar-plot>
+          <d3-bar-plot data="d3BarPlotData" label="name"></d3-bar-plot>
         </div>
       </div>
     </div>

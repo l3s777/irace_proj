@@ -29,7 +29,6 @@ app.factory('d3', [function () {
 
   			// watch the data source for changes to dynamically update the visualization
   			scope.$watch('data', function (newData, oldData) {
-          console.log("at changing data");
   				return scope.render(newData);
   			}, true);
 
@@ -548,6 +547,10 @@ return {
       scope.render = function (data) {
         // clear out everything in the svg to render a fresh version
         svg.selectAll("*").remove();
+        var a = (data.range.split(","));
+        // var init = a[0].substring(1);
+        var lleng = a[1].length;
+        var end = a[1].substring(0,lleng-1);
 
         // set up variables
         var width, height, max;
@@ -567,15 +570,17 @@ return {
           chartSubtitle = "real";
         }
 
+        var maxValue = d3.max(data.values);
         var margin = {top: 50, right: 50, bottom: 50, left: 70};
 
         var yScale = d3.scale.linear()
             .range([height - margin.top, margin.bottom])
             .nice()
-            .domain([0, 1]);
+            .domain([0, maxValue/100]);
+
         var xScale = d3.scale.linear()
-            .domain([0, 100])
-            .range([margin.left, width - margin.right]);
+            .domain([0, parseInt(end)])
+            .rangeRound([margin.left, width - margin.right]);
 
         var xAxis = d3.svg.axis()
             .scale(xScale)
@@ -586,9 +591,9 @@ return {
             .tickFormat(d3.format("%"));
 
         // line function
-        // var line = d3.svg.line()
-        //     .x(function(d) {console.log(d); return xScale(d[0]); })
-        //     .y(function(d) { return yScale(d[1]); });
+        var line = d3.svg.line()
+                  .x(function(d) { return xScale(d[0]); })
+                  .y(function(d) { return yScale(d[1]); });
 
         // histogram
         var histogram = d3.layout.histogram()
@@ -596,21 +601,32 @@ return {
             .bins(xScale.ticks(5));
 
         var d = histogram(data.values);
-        var kde = kernelDensityEstimator(epanechnikovKernel(7), xScale.ticks(100));
+        var kde = kernelDensityEstimator(gaussianKernel(), xScale.ticks(100));
 
         function kernelDensityEstimator(kernel, x) {
           return function(sample) {
             return x.map(function(x) {
+              x = parseInt(x);
               return [x, d3.mean(sample, function(v) { return kernel(x - v); })];
             });
           };
         }
 
-        function epanechnikovKernel(scale) {
+        function gaussianKernel() {
           return function(u) {
-            return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
+            var gaussianConstant = 1 / Math.sqrt(2 * Math.PI),
+              mean = 0, sigma = 1;
+              // u = (u - mean) / sigma;
+              // return gaussianConstant * Math.exp(-.5 * u * u) / sigma;
+              return gaussianConstant * Math.exp(-.5 * u * u);
           };
         }
+
+        // function epanechnikovKernel(scale) {
+        //   return function(u) {
+        //     return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
+        //   };
+        // }
 
         // Axis
         svg.append("svg:g")
@@ -636,7 +652,7 @@ return {
             .attr("font-size", "10px")
             .text(chartSubtitle);
 
-        //
+        // histogram
         svg.selectAll("rect")
             .data(d).enter()
             .append("rect")
@@ -646,15 +662,14 @@ return {
             })
             .attr("stroke", irsBlue)
             .attr("x", function(d) { return xScale(d.x) + 1; })
-            .attr("y", function(d) { return yScale(d.y) - margin.bottom; })
-            .attr("width", xScale(d[0].dx + d[0].x) - xScale(d[0].x) - 1)
-            .attr("height", function(d) { return height - yScale(d.y); });
+            .attr("y", function(d) { return yScale(d.y); })
+            .attr("width", xScale(d[0].dx) - xScale(d[0].x) - 1)
+            .attr("height", function(d) { return height - yScale(d.y) - margin.top; });
 
-        // TODO review LINE values
-        // svg.append("path")
-        //     .data(kde(data.values))
-        //     .attr("class", "line")
-        //     .attr("d", line);
+        svg.append("path")
+            .datum(kde(data.values))
+            .attr("class", "line")
+            .attr("d", line);
 
         // // Grid
         svg.append("g")
@@ -663,7 +678,6 @@ return {
           .call(yAxis
             .tickSize(-(width - margin.left - margin.right), 0, 0)
             .tickFormat(""));
-
       };
     }
   };

@@ -1,6 +1,17 @@
 app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParser', '$interval', function($rootScope, $scope, $mdDialog, FileParser, $interval) {
 
-  $scope.scenarioname = $rootScope.scenario;
+  $scope.scenario = {
+    "name": '',
+    "parameters": [],
+    "constraints": [],
+    "candidates": {},
+    "instances":{},
+    "targetrunner": "",
+    "irace_params": []
+  };
+
+  $scope.scenario.name = $rootScope.scenario;
+  $scope.scenario.parameters = $rootScope.params;
 
   var app2 = require('electron').remote;
   var dialog = app2.dialog;
@@ -11,15 +22,15 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   var d3 = require("d3");
 
   $scope.iteration_data = {
-    "iteration": 1,
-    "budget": 1,
-    "totCandidates": 1
+    "iteration": 0,
+    "budget": 0,
+    "totCandidates": 0
   };
 
   $scope.task_data = {
-    "aliveCandidates": 1,
-    "numberInstances": 1,
-    "numberEvaluations": 1
+    "aliveCandidates": 0,
+    "numberInstances": 0,
+    "numberEvaluations": 0
   };
 
   $scope.task_detail = [{}];
@@ -53,11 +64,45 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     // KernelGraph for Integer and Real
     $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
     // console.log($scope.d3DensityPlotDataV);
+    var moreValues = help2();
+
+    // console.log(moreValues);
+    $scope.d3DensityPlotDataV = moreValues;
+    console.log($scope.d3DensityPlotDataV);
 
     $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
     // line chart for kendal
     $scope.kendallValues = FileParser.parseIraceKendallFile(workingPath + "/task-kendall.txt");
   };
+
+  function help2() {
+    var resultDensityData = [];
+    $scope.scenario.parameters.forEach(function(param) {
+
+      // iterate over all Density params
+      var lengData = $scope.d3DensityPlotDataV.length;
+      for(var i=0; i < lengData; i++) {
+        // console.log(param.name);
+        // console.log($scope.d3DensityPlotDataV[i].param);
+        if(param.name === $scope.d3DensityPlotDataV[i].param) {
+
+          var paramObj = {
+                  "param": $scope.d3DensityPlotDataV[i].param, // undefined?
+                  "type": $scope.d3DensityPlotDataV[i].type,
+                  "values": $scope.d3DensityPlotDataV[i].values,
+                  "range": param.values
+          };
+
+          console.log("found");
+          resultDensityData.push(paramObj);
+          continue;
+        }
+      }
+      // console.log(resultDensityData);
+    });
+    // console.log($scope.d3DensityPlotDataV);
+    return resultDensityData;
+  }
 
   function scanIterationData(filename) {
     fs.readFile(filename, 'utf8', function(err, data) {

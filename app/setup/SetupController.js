@@ -535,8 +535,9 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     // if(validateParamsReady()) {
 
-      // assigning scenario name
+      // assigning important data to next screen
       $rootScope.scenario = $scope.scenario.name;
+      $rootScope.params = $scope.scenario.parameters;
 
       $mdDialog.show({
         controller: DialogController,
