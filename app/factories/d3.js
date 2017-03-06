@@ -547,10 +547,10 @@ return {
       scope.render = function (data) {
         // clear out everything in the svg to render a fresh version
         svg.selectAll("*").remove();
-        var a = (data.range.split(","));
-        // var init = a[0].substring(1);
-        var lleng = a[1].length;
-        var end = a[1].substring(0,lleng-1);
+        // var a = (data.range.split(","));
+        // // not var init = a[0].substring(1);
+        // var lleng = a[1].length;
+        // var end = a[1].substring(0,lleng-1);
 
         // set up variables
         var width, height, max;
@@ -579,7 +579,8 @@ return {
             .domain([0, maxValue/100]);
 
         var xScale = d3.scale.linear()
-            .domain([0, parseInt(end)])
+            // .domain([0, parseInt(end)]) // TODO valid final value
+            .domain([0, 100])
             .rangeRound([margin.left, width - margin.right]);
 
         var xAxis = d3.svg.axis()
@@ -601,24 +602,29 @@ return {
             .bins(xScale.ticks(5));
 
         var d = histogram(data.values);
-        var kde = kernelDensityEstimator(gaussianKernel(), xScale.ticks(100));
+        var l1 = data.values.length;
+        var kde = kernelDensityEstimator(gaussianKernel(1), xScale.ticks(10));
+        // var kde = kernelDensityEstimator(epanechnikovKernel(7), xScale.ticks(100));
 
         function kernelDensityEstimator(kernel, x) {
           return function(sample) {
             return x.map(function(x) {
               x = parseInt(x);
-              return [x, d3.mean(sample, function(v) { return kernel(x - v); })];
+              // console.log(x);
+              var aux = d3.mean(sample, function(v) { return kernel(x - v); });
+              console.log(aux);
+              return [x, aux];
             });
           };
         }
 
-        function gaussianKernel() {
+        function gaussianKernel(scale) {
           return function(u) {
-            var gaussianConstant = 1 / Math.sqrt(2 * Math.PI),
-              mean = 0, sigma = 1;
-              // u = (u - mean) / sigma;
-              // return gaussianConstant * Math.exp(-.5 * u * u) / sigma;
-              return gaussianConstant * Math.exp(-.5 * u * u);
+            // console.log(u);
+            var gaussianConstant = 1 / Math.sqrt(2 * Math.PI);
+            var aux = gaussianConstant * Math.exp(-.5 * u * u);
+            // console.log(aux);
+            return (gaussianConstant * Math.exp(-.5 * u * u))/scale ;
           };
         }
 

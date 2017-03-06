@@ -67,8 +67,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     var moreValues = help2();
 
     // console.log(moreValues);
-    $scope.d3DensityPlotDataV = moreValues;
-    console.log($scope.d3DensityPlotDataV);
+    // $scope.d3DensityPlotDataV = moreValues;
+    // console.log($scope.d3DensityPlotDataV);
 
     $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
     // line chart for kendal
@@ -82,8 +82,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
       // iterate over all Density params
       var lengData = $scope.d3DensityPlotDataV.length;
       for(var i=0; i < lengData; i++) {
-        // console.log(param.name);
-        // console.log($scope.d3DensityPlotDataV[i].param);
         if(param.name === $scope.d3DensityPlotDataV[i].param) {
 
           var paramObj = {
@@ -93,7 +91,7 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
                   "range": param.values
           };
 
-          console.log("found");
+          // console.log("found");
           resultDensityData.push(paramObj);
           continue;
         }
