@@ -207,6 +207,12 @@ svg {
   display: none;
 }
 
+.line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
 /* test for tables*/
 table, th, td {
     /*border: 1px solid black;*/

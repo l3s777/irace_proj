@@ -564,7 +564,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     };
 
     $scope.go = function() {
-      // RunIrace();
+      RunIrace();
       $mdDialog.cancel();
     };
 
@@ -615,6 +615,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       if(err) alert(err);
     });
 
+    // TODO customize values for execution command
     // executing
     var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/irace-setup/result.txt";
 
@@ -633,6 +634,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
             }
     );
   }
+
   //---------------------
   // Params
   //---------------------

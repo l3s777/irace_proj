@@ -547,10 +547,9 @@ return {
       scope.render = function (data) {
         // clear out everything in the svg to render a fresh version
         svg.selectAll("*").remove();
-        // var a = (data.range.split(","));
-        // // not var init = a[0].substring(1);
-        // var lleng = a[1].length;
-        // var end = a[1].substring(0,lleng-1);
+        var a = (data.range.split(","));
+        var lleng = a[1].length;
+        var end = a[1].substring(0,lleng-1);
 
         // set up variables
         var width, height, max;
@@ -579,8 +578,8 @@ return {
             .domain([0, maxValue/100]);
 
         var xScale = d3.scale.linear()
-            // .domain([0, parseInt(end)]) // TODO valid final value
-            .domain([0, 100])
+            .domain([0, parseInt(end)]) // TODO valid final value
+            // .domain([0, 100])
             .rangeRound([margin.left, width - margin.right]);
 
         var xAxis = d3.svg.axis()
@@ -603,16 +602,23 @@ return {
 
         var d = histogram(data.values);
         var l1 = data.values.length;
-        var kde = kernelDensityEstimator(gaussianKernel(1), xScale.ticks(10));
-        // var kde = kernelDensityEstimator(epanechnikovKernel(7), xScale.ticks(100));
+        // TODO adjust ticks
+        var ticks = 100;
+        var stdDev = standardDeviation(data.values);
+
+        // ((4/3)*stDev^5/ticks)^(-1/5)
+        var scaleGaussianKernel = Math.pow(((4/3)*Math.pow(stdDev,5)/ticks),-1/5);
+
+        var kde = kernelDensityEstimator(gaussianKernel(scaleGaussianKernel*100), xScale.ticks(ticks));
 
         function kernelDensityEstimator(kernel, x) {
           return function(sample) {
             return x.map(function(x) {
               x = parseInt(x);
               // console.log(x);
-              var aux = d3.mean(sample, function(v) { return kernel(x - v); });
-              console.log(aux);
+              var aux = d3.mean(sample, function(v) {
+                return kernel(v-x); });
+              // console.log(aux);
               return [x, aux];
             });
           };
@@ -620,19 +626,33 @@ return {
 
         function gaussianKernel(scale) {
           return function(u) {
-            // console.log(u);
+            u = u/scale;
             var gaussianConstant = 1 / Math.sqrt(2 * Math.PI);
-            var aux = gaussianConstant * Math.exp(-.5 * u * u);
-            // console.log(aux);
-            return (gaussianConstant * Math.exp(-.5 * u * u))/scale ;
+            var gaussianKernelValue = gaussianConstant * Math.exp(-.5 * u * u);
+            return gaussianKernelValue;
           };
         }
 
-        // function epanechnikovKernel(scale) {
-        //   return function(u) {
-        //     return Math.abs(u /= scale) <= 1 ? .75 * (1 - u * u) / scale : 0;
-        //   };
-        // }
+        function standardDeviation(values) {
+          var avg = average(values);
+
+          var squareDiffs = values.map(function(value) {
+            var diff = value - avg;
+            return (diff * diff);
+          });
+
+          var avgSquareDiff = average(squareDiffs);
+
+          return Math.sqrt(avgSquareDiff);;
+        }
+
+        function average(data) {
+          var sum = 0;
+          data.forEach(function (d) {
+            sum = sum + parseInt(d);
+          });
+          return sum / data.length;
+        }
 
         // Axis
         svg.append("svg:g")
@@ -715,7 +735,7 @@ return {
       					// set up variables
       					var width, height, max;
       					width = d3.select(iElement[0])[0][0].offsetWidth;
-      					height = scope.data.length * 40;
+                height = 250;
       					max = 100;
       					svg.attr('height', height);
 
@@ -725,8 +745,13 @@ return {
       							bottom: 20,
       							left: 50
       						},
-      						xScale = d3.scale.linear().range([MARGINS.left, width - MARGINS.right]).domain([data[0].t, data[data.length-1].t]),
-      						yScale = d3.scale.linear().range([height - MARGINS.top, MARGINS.bottom]).domain([0, 1]),
+      						xScale = d3.scale.linear()
+                      .range([MARGINS.left, width - MARGINS.right])
+                      // TODO review domain when first time entering here
+                      .domain([data[0].t, data[data.length-1].t]),
+      						yScale = d3.scale.linear()
+                      .range([height - MARGINS.top, MARGINS.bottom])
+                      .domain([0, 1]),
       						xAxis = d3.svg.axis()
       							      .scale(xScale),
       						yAxis = d3.svg.axis()

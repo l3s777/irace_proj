@@ -39,9 +39,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3BoxPlotData = [];
 
   // dynamic
-  // $interval(function(){
-  //     $scope.readData();
-  // }, 1000, 10);
+  $interval(function(){
+      $scope.readData();
+  }, 1000, 10);
 
   $scope.readData = function() {
     var workingPath = "/Users/lesly/irace-setup"; // TODO get the user's path
@@ -64,10 +64,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     // KernelGraph for Integer and Real
     $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
     // console.log($scope.d3DensityPlotDataV);
-    var moreValues = help2();
 
-    // console.log(moreValues);
-    // $scope.d3DensityPlotDataV = moreValues;
+    $scope.d3DensityPlotDataV = help2();
     // console.log($scope.d3DensityPlotDataV);
 
     $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
@@ -90,13 +88,10 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
                   "values": $scope.d3DensityPlotDataV[i].values,
                   "range": param.values
           };
-
-          // console.log("found");
           resultDensityData.push(paramObj);
           continue;
         }
       }
-      // console.log(resultDensityData);
     });
     // console.log($scope.d3DensityPlotDataV);
     return resultDensityData;
