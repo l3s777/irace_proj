@@ -54,7 +54,7 @@
                      </div>
                      <div class="ir-spacer-10"></div>
                      <div class="ir-table-scenario">
-                       <div layout="row" layout-wrap ng-repeat="parameter in scenario.parameters | filter:filter.parameters">
+                       <div layout="row" layout-wrap ng-repeat="parameter in scenario.parameters | filter:filter.parameters" style="height: 70px;">
                            <div flex="5">
                              <md-checkbox ng-model="parameter.active" class="md-primary" aria-label="active parameter?">
                              </md-checkbox>
@@ -105,50 +105,48 @@
 
                  -->
                  <md-tab label="Forbidden combinations">
-                     <md-content class="md-padding">
-                         <p>Each constraint must be a logical expression in R syntax.</p>
-                           <div layout="row" layout-align="space-between center">
-                             <div>
-                               <md-button class="md-primary" ng-click="importConstraints()">Import constraints file</md-button>
-                             </div>
-                             <div>
-                               <md-input-container md-no-float>
-                                 <input ng-model="filter.constraints" class="ir-input-border" placeholder="Search..">
-                               </md-input-container>
-                             </div>
-                           </div>
-                           <div class="ir-spacer-20"></div>
-                           <div layout="row" class="ir-bold" layout-wrap>
+                    <md-content class="md-padding">
+                      <p>Each constraint must be a logical expression in R syntax.</p>
+                        <div layout="row" layout-align="space-between center">
+                          <div>
+                            <md-button class="md-primary" ng-click="importConstraints()">Import constraints file</md-button>
+                          </div>
+                          <div>
+                            <md-input-container md-no-float>
+                              <input ng-model="filter.constraints" class="ir-input-border" placeholder="Search..">
+                            </md-input-container>
+                          </div>
+                        </div>
+                        <div class="ir-spacer-20"></div>
+                        <div layout="row" class="ir-bold" layout-wrap>
                              <div flex="5"></div>
                              <div flex="90">Expression</div>
                              <div flex="5"></div>
-                           </div>
-                           <div class="ir-spacer-10"></div>
-                           <div layout="row" layout-wrap ng-repeat="constraint in scenario.constraints | filter:filter.constraints" style="align-items:baseline">
-                             <md-checkbox class="md-primary" ng-model="constraint.active" aria-label="Is constraint active?" flex="5">
-                             </md-checkbox>
-                             <div flex="90">
-                               <md-input-container md-no-float>
-                                 <input ng-model="constraint.expression" placeholder="Constraint expression">
-                               </md-input-container>
-                             </div>
-                             <div flex="5">
-                               <i class="material-icons ir-btn-delete" ng-click="scenario.constraints.splice($index,1)">
-                                 delete
-                               </i>
-                             </div>
-                           </div>
-                           <div class="ir-spacer-20"></div>
-                           <div layout="row" layout-align="space-between center">
-                               <div>
-                                 <md-button class="md-primary" ng-click="addConstraint()">Add constraint</md-button>
-                               </div>
-                               <div>
-                                 <md-button class="md-primary" ng-click="exportConstraints()">Save constraint file</md-button>
-                               </div>
-                             </div>
-                     </md-content>
-                   </md-tab>
+                        </div>
+                        <div class="ir-spacer-10"></div>
+                        <div layout="row" ng-repeat="constraint in scenario.constraints | filter:filter.constraints" style="align-items:center; height: 70px;">
+                          <md-checkbox class="md-primary" ng-model="constraint.active" aria-label="Is constraint active?" flex="5">
+                          </md-checkbox>
+                          <md-input-container md-no-float flex="90">
+                            <input ng-model="constraint.expression" placeholder="Constraint expression">
+                          </md-input-container>
+                          <div flex="5">
+                            <i class="material-icons ir-btn-delete" ng-click="scenario.constraints.splice($index,1)">
+                            delete
+                            </i>
+                          </div>
+                        </div>
+                        <div class="ir-spacer-20"></div>
+                        <div layout="row" layout-align="space-between center">
+                          <div>
+                            <md-button class="md-primary" ng-click="addConstraint()">Add constraint</md-button>
+                          </div>
+                          <div>
+                            <md-button class="md-primary" ng-click="exportConstraints()">Save constraint file</md-button>
+                          </div>
+                        </div>
+                    </md-content>
+                  </md-tab>
 
                 <!--
 
@@ -157,54 +155,54 @@
                 -->
                 <md-tab label="Initial candidates">
                   <md-content class="md-padding">
-                       <p>Review the initial candidates for this scenario.</p>
-                       <div layout="row" layout-align="space-between center">
-                         <div>
-                           <!-- <input type="file" id="file_candidates" name="file"/> -->
-                           <md-button class="md-primary" ng-click="importCandidates()">Import candidates file</md-button>
-                         </div>
-                         <div>
-                           <md-input-container md-no-float>
-                             <input ng-model="filter.candidates" class="ir-input-border" placeholder="Search..">
-                           </md-input-container>
-                         </div>
-                       </div>
-                       <div class="ir-spacer-20"></div>
-                       <div layout="row" layout-wrap class="ir-bold-scrollx">
-                         <div flex="5"></div>
-                         <div flex="20">Label</div>
-                         <div ng-repeat="parameter in scenario.candidates.parameters track by $index" flex="10" >{{parameter}}</div>
-                       </div>
-                       <div class="ir-spacer-10"></div>
-                       <div layout="row" layout-wrap ng-repeat="candidate in scenario.candidates.instances | filter:filter.candidates" style="align-items:baseline">
-                         <div flex="5">
-                           <md-checkbox class="md-primary" ng-model="candidate.active" aria-label="Is candidate active?">
-                           </md-checkbox>
-                         </div>
-                         <div flex="20">
-                           <md-input-container md-no-float>
-                             <input ng-model="candidate.n" placeholder="Candidate #">
-                           </md-input-container>
-                         </div>
-                         <div flex="10" ng-repeat="value in candidate.values track by $index">
-                           <md-input-container md-no-float>
-                             <input ng-model="value" placeholder="Value" >
-                           </md-input-container>
-                         </div>
-                         <div flex="5" align="center">
-                           <i class="material-icons ir-btn-delete" ng-click="scenario.candidates.instances.splice($index,1)">delete</i>
-                         </div>
-                       </div>
-                       <div class="ir-spacer-20"></div>
-                       <div layout="row" layout-align="space-between center">
-                         <div>
-                           <md-button class="md-primary" ng-click="addCandidateInst()">Add candidate</md-button>
-                         </div>
-                         <div>
-                           <md-button class="md-primary" ng-click="exportCandidates()">Save candidates file</md-button>
-                         </div>
-                       </div>
-                     </md-content>
+                    <p>Review the initial candidates for this scenario.</p>
+                    <div layout="row" layout-align="space-between center">
+                      <div>
+                        <md-button class="md-primary" ng-click="importCandidates()">Import candidates file</md-button>
+                      </div>
+                      <div>
+                        <md-input-container md-no-float>
+                          <input ng-model="filter.candidates" class="ir-input-border" placeholder="Search..">
+                        </md-input-container>
+                      </div>
+                    </div>
+                    <div class="ir-spacer-20"></div>
+                    <div layout="row" class="ir-bold" style="white-space: nowrap; overflow-x: auto;" >
+                      <div flex="5"></div>
+                      <div flex="20">Label</div>
+                      <div layout="row" ng-repeat="parameter in scenario.candidates.parameters track by $index"  flex=75>
+                        <label>{{parameter}}</label>
+                      </div>
+                    </div>
+                    <div class="ir-spacer-10"></div>
+                    <div layout="row" ng-repeat="candidate in scenario.candidates.instances | filter:filter.candidates" style="align-items:baseline; white-space: nowrap; overflow-x: auto;">
+                      <div flex="5">
+                        <md-checkbox class="md-primary" ng-model="candidate.active" aria-label="Is candidate active?"> </md-checkbox>
+                      </div>
+                      <div flex="20">
+                        <md-input-container md-no-float>
+                          <input ng-model="candidate.n" placeholder="Candidate #">
+                        </md-input-container>
+                      </div>
+                      <div ng-repeat="value in candidate.values track by $index" flex="10">
+                        <md-input-container md-no-float>
+                          <input ng-model="value" placeholder="value" >
+                        </md-input-container>
+                      </div>
+                      <div flex="5" align="center">
+                        <i class="material-icons ir-btn-delete" ng-click="scenario.candidates.instances.splice($index,1)">delete</i>
+                      </div>
+                    </div>
+                    <div class="ir-spacer-20"></div>
+                    <div layout="row" layout-align="space-between center">
+                      <div>
+                        <md-button class="md-primary" ng-click="addCandidateInst()">Add candidate</md-button>
+                      </div>
+                      <div>
+                        <md-button class="md-primary" ng-click="exportCandidates()">Save candidates file</md-button>
+                      </div>
+                    </div>
+                  </md-content>
                 </md-tab>
 
                 <!--
@@ -220,12 +218,10 @@
                       <div flex="70">Training set instances</div>
                     </div>
                     <div class="ir-table-short">
-                      <div layout="row" layout-wrap ng-repeat="it in scenario.instances.training track by $index" style="align-items:baseline">
-                        <div flex="80">
-                          <md-input-container md-no-float>
-                            <input ng-model="it" placeholder="Path">
-                          </md-input-container>
-                        </div>
+                      <div layout="row" layout-wrap ng-repeat="it in scenario.instances.training track by $index" style="align-items:center; height: 70px;">
+                        <md-input-container md-no-float flex="80">
+                          <input ng-model="it" placeholder="Path">
+                        </md-input-container>
                         <div flex="15">
                           <md-button class="md-primary" ng-click="browseTrainingInstances($index)">Browse</md-button>
                         </div>
@@ -244,28 +240,27 @@
                           <md-button class="md-primary" ng-click="exportTrainingInstances()">Save</md-button>
                         </div>
                       </div>
-                       </div>
-                       <div class="ir-spacer-20"></div>
-                       <div class="ir-spacer-20"></div>
-                       <!-- Testing instances -->
-                       <div layout="row" class="ir-bold" layout-wrap>
-                         <div flex="70">Test set instances</div>
-                       </div>
-                       <div class="ir-table-short">
-                         <div layout="row" layout-wrap ng-repeat="it in scenario.instances.tests track by $index" style="align-items:baseline">
-                           <div flex="80">
-                             <md-input-container md-no-float>
-                               <input ng-model="it" placeholder="Path">
-                             </md-input-container>
-                           </div>
+                      <br>
+                    </div>
+                    <div class="ir-spacer-20"></div>
+                    <!-- <div class="ir-spacer-20"></div> -->
+                    <!-- Testing instances -->
+                    <div layout="row" class="ir-bold" layout-wrap>
+                      <div flex="70">Test set instances</div>
+                    </div>
+                      <div class="ir-table-short">
+                        <div layout="row" layout-wrap ng-repeat="it in scenario.instances.tests track by $index" style="align-items:center; height: 70px;">
+                          <md-input-container md-no-float flex="80">
+                            <input ng-model="it" placeholder="Path">
+                          </md-input-container>
                            <div flex="15">
                              <md-button class="md-primary" ng-click="browseTestsInstances($index)">Browse</md-button>
                            </div>
                            <div flex="5">
                              <i class="material-icons ir-btn-delete" ng-click="scenario.instances.tests.splice($index,1)">delete</i>
                            </div>
-                         </div>
-                         <div layout="row" layout-align="space-between center">
+                        </div>
+                        <div layout="row" layout-align="space-between center">
                            <div>
                              <md-button class="md-primary" ng-click="addTestsInstance()">Add</md-button>
                            </div>
@@ -274,39 +269,39 @@
                            </div>
                            <div>
                              <md-button class="md-primary" ng-click="exportTestingInstances()">Save</md-button></div>
-                          </div>
-                       </div>
-                      </md-content>
-                  </md-tab>
+                        </div>
+                        <br>
+                      </div>
+                  </md-content>
+                </md-tab>
 
-                   <!--
+                <!--
 
-                       TARGET RUNNER
+                  TARGET RUNNER
 
-                   -->
-                   <md-tab label="Target runner">
-                     <md-content class="md-padding">
-                       <p>Please insert the path to your target-runner method.</p>
-                       <div class="ir-spacer-20"></div>
-                       <div layout="row" class="ir-bold" layout-wrap>
-                         <div flex="80">
-                           <md-input-container md-no-float>
-                             <input ng-model="scenario.targetrunner" placeholder="Path">
-                           </md-input-container>
-                         </div>
-                         <div flex="10">
-                           <md-button class="md-primary" ng-click="browseTargetRunner()">Browse</md-button>
-                         </div><br>
-                         <div class="md-padding" id="popupContainer" ng-cloak>
-                           <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
-                              <md-button class="md-primary" ng-click="validateTargetRunner($event)">
-                                Validate
-                              </md-button>
-                           </div>
-                         </div>
-                       </div>
-                     </md-content>
-                   </md-tab>
+                -->
+                <md-tab label="Target runner">
+                  <md-content class="md-padding">
+                    <p>Please, insert the path to your target-runner method.</p>
+                    <div class="ir-spacer-20"></div>
+                    <div layout="row" class="ir-bold" style="align-items:center">
+                      <md-input-container md-no-float flex="90">
+                        <input ng-model="scenario.targetrunner" placeholder="Path">
+                      </md-input-container>
+                      <div flex="10">
+                        <md-button class="md-primary" ng-click="browseTargetRunner()">Browse</md-button>
+                      </div>
+                      <br>
+                      <div class="md-padding" id="popupContainer" ng-cloak>
+                        <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
+                          <md-button class="md-primary" ng-click="validateTargetRunner($event)">
+                            Validate
+                          </md-button>
+                        </div>
+                      </div>
+                    </div>
+                  </md-content>
+                </md-tab>
 
                    <!--
 

@@ -805,7 +805,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   $scope.addCandidateInst = function() {
     var aux_candidates = [];
     var aux_cont = 1;
-    if($scope.scenario.candidates.parameters.length > 1) {
+    if($scope.scenario.candidates.parameters.length > 0) {
       while(aux_cont <= $scope.scenario.candidates.parameters.length) {
         aux_candidates.push("");
         aux_cont++;
@@ -883,6 +883,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     content += "\n";
     $scope.scenario.candidates.instances.forEach(function(candidate_inst) {
+      console.log(candidate_inst);
       if(candidate_inst.values) {
         if(candidate_inst.active) {
           candidate_inst.values.forEach(function(candidate_inst_){
