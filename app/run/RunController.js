@@ -50,27 +50,41 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     $scope.task_detail = scanTaskDetail(workingPath + "/task_detail.cvs");
 
     // read data for PARALLEL COORDINATES
-    $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates.txt";
+    if(workingPath + "/task-candidates.txt") {
+      $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates.txt";
+    } else console.log("error for task-candidates.txt");
+
     // testing ready d3BoxPlotData
     // TODO review when it is running dynamically (height sometimes returning NaN)
-    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
+    if(workingPath + "/task-results.txt") {
+      $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(workingPath + "/task-results.txt");
+    } else console.log("error for task-results.txt");
 
-    // $scope.d3Candidates = FileParser.parseIraceFrequencyFile(workingPath + "/task-frequency.txt");
-    $scope.d3Candidates = FileParser.parseIraceFrequencyFile("/Users/lesly/Desktop"+ "/task-frequency.txt");
+    if(workingPath + "/task-frequency.txt") {
+      $scope.d3Candidates = FileParser.parseIraceFrequencyFile(workingPath + "/task-frequency.txt");
+      // $scope.d3Candidates = FileParser.parseIraceFrequencyFile("/Users/lesly/Desktop"+ "/task-frequency.txt");
 
-    // BarPlot for Categorical and Ordinal
-    $scope.d3BarPlotDataV = $scope.d3Candidates.co;
-    // console.log($scope.d3BarPlotDataV);
-    // KernelGraph for Integer and Real
-    $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
-    // console.log($scope.d3DensityPlotDataV);
+      // BarPlot for Categorical and Ordinal
+      $scope.d3BarPlotDataV = $scope.d3Candidates.co;
+      // console.log($scope.d3BarPlotDataV);
+      // KernelGraph for Integer and Real
+      $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
+      console.log($scope.d3DensityPlotDataV);
 
-    $scope.d3DensityPlotDataV = help2();
-    // console.log($scope.d3DensityPlotDataV);
+      if($scope.d3DensityPlotDataV) {
+        $scope.d3DensityPlotDataV = help2();
+      }
+    } else console.log("error for task-frequency.txt");
 
-    $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
+    if(workingPath + "/task-bests.txt") {
+      $scope.task_best = scanTaskBestDetail(workingPath + "/task-bests.txt");
+    } else console.log("error for task-bests.txt");
+
     // line chart for kendal
-    $scope.kendallValues = FileParser.parseIraceKendallFile(workingPath + "/task-kendall.txt");
+    if(workingPath + "/task-kendall.txt") {
+      $scope.kendallValues = FileParser.parseIraceKendallFile(workingPath + "/task-kendall.txt");
+    } else console.log("error for task-kendall.txt");
+
   };
 
   function help2() {

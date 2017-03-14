@@ -39,7 +39,7 @@ body {
 }
 
 .ir-table-runninglive {
-  border:1px solid;
+  border:0px solid;
   height: 250px;
   overflow-y: scroll;
 }

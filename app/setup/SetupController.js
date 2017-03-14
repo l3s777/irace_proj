@@ -533,7 +533,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   $scope.summaryBeforeRun = function(ev) {
     console.log("summaryBeforeRun");
 
-    // if(validateParamsReady()) {
+    if(validateParamsReady()) {
 
       // assigning important data to next screen
       $rootScope.scenario = $scope.scenario.name;
@@ -551,10 +551,10 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         console.log(answer);
       });
 
-    // }else {
-    //   dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
-    //   return "";
-    // }
+    } else {
+      dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
+      return "";
+    }
 
   };
 
@@ -628,7 +628,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                 console.log('stderr: ' + stderr);
 
                 if (error === null) {
-                  dialog.showErrorBox("Error", stderr);
+                  // dialog.showErrorBox("Error", stderr);
                   console.log('exec error: ' + error);
                 }
             }
@@ -673,6 +673,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         if(line[0] != "#") {
           output[cnt]= line;
           cnt++;
+          // TODO also split by simple space :S
           var words = line.split("\t");
           if(words[0]) {
             if(words[1]=="undefined") var switchParam="";

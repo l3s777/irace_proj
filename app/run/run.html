@@ -1,18 +1,19 @@
 <div ng-controller="RunController">
-  <h2 class="ir-bold">2. Running IRACE online</h2>
+  <div layout="row" layout-wrap style="align-items:center">
+    <h2 class="ir-bold">2. Running IRACE online</h2>
+    <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
+  </div>
+  <p ><span class="ir-bold">Scenario Name: </span>{{scenario.name}}</p>
   <div class="md-padding" layout="row">
     <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
-    <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
-    <p><span class="ir-bold">Scenario Name: </span>{{scenario.name}}</p>
+
   </div>
   <!-- intro summary -->
   <div class="md-padding" layout="row">
     <div flex="50">
-      <div>
-        Current iteration: <font color="red">{{iteration_data.iteration}}</font><br>
-        Current budget: <font color="red">{{iteration_data.budget}}</font><br>
-        Total candidates: <font color="red">{{iteration_data.totCandidates}}</font><br>
-      </div>
+      Current iteration: <font color="red">{{iteration_data.iteration}}</font><br>
+      Current budget: <font color="red">{{iteration_data.budget}}</font><br>
+      Total candidates: <font color="red">{{iteration_data.totCandidates}}</font><br>
     </div>
     <div flex="50">
       Alive conditions: <strong>{{task_data.aliveCandidates}}</strong><br>
@@ -29,8 +30,7 @@
     <div class="ir-bold" flex="20">Time</div>
     <div class="ir-bold" flex="20">w</div>
   </div>
-  <!-- reading the values from the output -->
-  <div class="ir-table-runninglive">
+  <div class="ir-table-runninglive"> <!-- reading the values from the output -->
     <div class="md-padding" layout="row" layout-wrap ng-repeat="value in task_detail | filter:filter.value">
       <div flex="20">
         <label>{{value.numberInstance}}</label>
@@ -52,18 +52,20 @@
   <div class="ir-spacer-10"></div>
   <!-- candidates summary -->
   <br>
-  <div> <h2>CANDIDATES</h2>
-    <label class="ir-bold" flex="50">Candidate details</label> Total {{task_data.aliveCandidates}}
-    <div style="min-width: 100%; overflow-x: auto;"> parallel coordinates
+  <div>
+    <h2>CANDIDATES</h2>
+    <label class="ir-bold">Alive candidates</label>
+    <label> - total: {{task_data.aliveCandidates}}</label>
+    <div style="min-width: 100%; overflow-x: auto;">
       <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
     </div>
     <br>
-    <label class="ir-bold">Candidate diversity</label>
-    <div style="overflow-x: scroll; overflow-y: scroll;">box plots
+    <label class="ir-bold">Candidate perfomance</label>
+    <div style="overflow-x: scroll; overflow-y: scroll;">
       <d3-box-plot data="d3BoxPlotData" label="name"></d3-box-plot>
     </div>
     <br>
-    <label class="ir-bold">Candidates values</label>
+    <label class="ir-bold">Parameter value frequency</label>
     <div layout="row">
       <div layout="row" style="overflow-x: scroll;">
         <div ng-repeat="d3BarPlotData in d3BarPlotDataV">
@@ -84,7 +86,7 @@
     <h2>INSTANCES</h2>
     <div style="min-width: 100%; overflow-x: auto;">
       <div>
-        <label class="ir-bold">Used instances</label>
+        <label class="ir-bold">Instances tested</label>
         <table style="width:100%">
           <tr>
             <th></th>
