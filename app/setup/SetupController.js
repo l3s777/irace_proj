@@ -471,10 +471,34 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   // Scenario
   //----------------------
 
-  // TODO
-  // $scope.openScenario = function() {
-  //   console.log("when it opens");
-  // };
+  $scope.openScenario = function() {
+
+    var userPath = dialog.showOpenDialog({
+        properties: ['openDirectory']
+    });
+    // open params file
+    var path_params = userPath+"/params.txt";
+    scanParameters(path_params);
+    // open constraints file
+    var path_constraints = userPath+"/constraints.txt";
+    scanConstraints(path_constraints);
+    // open candidates
+    var path_candidates = userPath+"/candidates.txt";
+    scanCandidates(path_candidates);
+    // open instances
+    var path_training_inst = userPath+"/candidates.txt";
+    scanTrainingInstancesByPoll(path_training_inst);
+    var path_testing_inst = userPath+"/candidates.txt";
+    scanTestingInstancesByPoll(path_testing_inst);
+
+    // open target runner
+    var path_targetrunner = userPath+"/targetrunner.txt";
+    $scope.scenario.targetrunner = path_targetrunner;
+    // open irace params
+    var path_constraints = userPath+"/iracesetup.txt";
+    // TODO read values from IRACE setup
+
+  };
 
   $scope.saveScenario = function() {
     // save all the scenario
@@ -493,6 +517,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                   var contentParameters = $scope.prepareExportParams();
                   var contentConstrains = $scope.prepareExportConstrains();
                   var contentCandidates = $scope.prepareExportCandidates();
+                  var contentTrainingInstances = $scope.prepareExportTrainingInstances();
+                  var contentTestInstances = $scope.prepareExportTestingInstances();
                   var contentTargetRunner = $scope.scenario.targetrunner;
                   var contentIraceParams = $scope.prepareExportIraceSetup();
 
@@ -508,6 +534,12 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                     if(err) alert(err);
                   });
                   fs.writeFile(userPath+"/candidates.txt", contentCandidates, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath+"/training_instances.txt", contentTrainingInstances, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath+"/test_instances.txt", contentTestInstances, function(err) {
                     if(err) alert(err);
                   });
                   fs.writeFile(userPath+"/targetrunner.txt", contentTargetRunner, function(err) {
@@ -592,6 +624,9 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         fs.mkdirSync(path);
     }
 
+    // adding path value
+    $rootScope.running_path = path;
+
     fs.writeFile(path+"/params.txt", contentParameters, function(err) {
       console.log("writing params");
       if(err) alert(err);
@@ -623,12 +658,11 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     child = exec(execCommand,
             function (error, stdout, stderr) {
                 // TODO remove console.log()
-                console.log('error: ' + error);
                 console.log('stdout: ' + stdout);
                 console.log('stderr: ' + stderr);
 
                 if (error === null) {
-                  // dialog.showErrorBox("Error", stderr);
+                  dialog.showErrorBox("Error", stderr);
                   console.log('exec error: ' + error);
                 }
             }
@@ -762,13 +796,15 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       var cnt = 0;
       lines.forEach(function(line) {
         if(line[0] != "#") {
-          output[cnt]= line;
-          cnt++;
-          var constraint = {
-            "expression": line,
-            "active": true
-          };
-          constraints.push(constraint);
+          if(line) {
+            output[cnt]= line;
+            cnt++;
+            var constraint = {
+              "expression": line,
+              "active": true
+            };
+            constraints.push(constraint);
+          }
         }
       });
       $scope.scenario.constraints = constraints;
@@ -847,7 +883,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
             candidates_param = line.split("\t");
           }
           else {
-            candidates_inst[cnt-1] = line.split("\t");
+            if(line) candidates_inst[cnt-1] = line.split("\t");
           }
           cnt++;
         }
@@ -883,7 +919,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     content += "\n";
     $scope.scenario.candidates.instances.forEach(function(candidate_inst) {
-      console.log(candidate_inst);
       if(candidate_inst.values) {
         if(candidate_inst.active) {
           candidate_inst.values.forEach(function(candidate_inst_){
@@ -931,27 +966,32 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   $scope.addPollTrainingInstances = function() {
     dialog.showOpenDialog(function(filename) {
-
       if(filename) {
-        fs.readFile(filename[0], 'utf8', function(err, data) {
-          if (err) {
-            throw err;
-            console.log(err);
-          }
-          var lines = data.split('\n');
-          var output = [];
-          var cnt = 0;
-          // TODO review why it charges from second line
-          lines.forEach(function(line) {
-            if(line[0] != "#") {
-              $scope.scenario.instances.training.push(line);
-            }
-          });
-          $scope.$apply();
-        });
+        $scope.scenario.instances.training = scanTrainingInstancesByPoll(filename[0]);
+        $scope.$apply();
       }
     });
   };
+
+  scanTrainingInstancesByPoll = function(filename) {
+    fs.readFile(filename, 'utf8', function(err, data) {
+      $scope.scenario.instances.training = [];
+      if (err) {
+        throw err;
+        console.log(err);
+      }
+      var lines = data.split('\n');
+      var output = [];
+      var cnt = 0;
+      // TODO review why it charges from second line
+      lines.forEach(function(line) {
+        if(line[0] != "#") {
+          if(line) $scope.scenario.instances.training.push(line);
+        }
+      });
+      $scope.$apply();
+    });
+  }
 
   $scope.prepareExportTrainingInstances = function() {
     var content = cfg.file_options.instances_header;
@@ -985,24 +1025,30 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     dialog.showOpenDialog(function(filename) {
 
       if(filename) {
-        fs.readFile(filename[0], 'utf8', function(err, data) {
-          if (err) {
-            throw err;
-            console.log(err);
-          }
-          var lines = data.split('\n');
-          var output = [];
-          var cnt = 0;
-          lines.forEach(function(line) {
-            if(line[0] != "#") {
-              $scope.scenario.instances.tests.push(line);
-            }
-          });
-          $scope.$apply();
-        });
+        $scope.scenario.instances.tests = scanTestingInstancesByPoll(filename[0]);
+        $scope.$apply();
       }
     });
   };
+
+  scanTestingInstancesByPoll = function(filename) {
+    fs.readFile(filename, 'utf8', function(err, data) {
+      $scope.scenario.instances.tests = [];
+      if (err) {
+        throw err;
+        console.log(err);
+      }
+      var lines = data.split('\n');
+      var output = [];
+      var cnt = 0;
+      lines.forEach(function(line) {
+        if(line[0] != "#") {
+          if(line) $scope.scenario.instances.tests.push(line);
+        }
+      });
+      $scope.$apply();
+    });
+  }
 
   $scope.browseTestsInstances = function(index) {
     dialog.showOpenDialog(function(filename) {
@@ -1139,8 +1185,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         content += value.name + " = " + $scope.irace_parameters.seed.value + "\n";
       } else if (value.name==="parallel") {
         if($scope.irace_parameters.parallel.value) {
-          // parallel active so number of cores
-          content += value.name + " = " + $scope.irace_parameters.parallel.value + "\n";
+          content += value.name + " = " + $scope.irace_parameters.parallel.numCores + "\n"; // parallel active so number of cores
         } else content += value.name + " = " + 0 + "\n";
      } else if(value.name==="loadBalancing") {
        if($scope.irace_parameters.loadBalancing.value)  content += value.name + " = " + 1 + "\n";
@@ -1184,7 +1229,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
             if($scope.scenario.instances) {
               if($scope.scenario.targetrunner) {
                 if($scope.scenario.irace_params) {
-                  console.log("return true");
+                  console.log("all params validate");
                   return true;
                 } else return false;
               } else return false;
