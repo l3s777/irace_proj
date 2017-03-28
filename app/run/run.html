@@ -6,7 +6,6 @@
   <p ><span class="ir-bold">Scenario Name: </span>{{scenario.name}}</p>
   <div class="md-padding" layout="row">
     <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
-
   </div>
   <!-- intro summary -->
   <div class="md-padding" layout="row">
@@ -66,18 +65,33 @@
     </div>
     <br>
     <label class="ir-bold">Parameter value frequency</label>
-    <div layout="row">
-      <div layout="row" style="overflow-x: scroll;">
-        <div ng-repeat="d3BarPlotData in d3BarPlotDataV">
+    <table>
+      <tr ng-repeat="d3BarPlotData in d3BarPlotDataV | filter:getFiltered">
+        <td>
           <d3-bar-plot data="d3BarPlotData" label="name"></d3-bar-plot>
-        </div>
-      </div>
-    </div>
-    <div style="overflow-x: scroll; overflow-y: scroll;" layout="row">
-      <div ng-repeat="d3DensityPlotData in d3DensityPlotDataV">
-        <d3-density-plot data="d3DensityPlotData" label="name"></d3-density-plot>
-      </div>
-    </div>
+        </td>
+        <td>
+          <d3-bar-plot data="d3BarPlotDataV[d3BarPlotData._index+1]" label="name"></d3-bar-plot>
+        </td>
+        <td>
+          <d3-bar-plot data="d3BarPlotDataV[d3BarPlotData._index+2]" label="name"></d3-bar-plot>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <table>
+      <tr ng-repeat="d3DensityPlotData in d3DensityPlotDataV | filter:getFiltered">
+        <td>
+          <d3-density-plot data="d3DensityPlotData" label="name"></d3-density-plot>
+        </td>
+        <td>
+          <d3-density-plot data="d3DensityPlotDataV[d3DensityPlotData._index+1]" label="name"></d3-density-plot>
+        </td>
+        <td>
+          <d3-density-plot data="d3DensityPlotDataV[d3DensityPlotData._index+2]" label="name"></d3-density-plot>
+        </td>
+      </tr>
+    </table>
     <br>
   </div>
   <!-- instances summary -->

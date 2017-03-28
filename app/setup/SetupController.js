@@ -10,6 +10,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   var fs = require('fs');
 
   // Execute commands
+  const os = require('os');
   var sys = require('util');
   var exec = require('child_process').exec;
   var child;
@@ -470,30 +471,32 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   //----------------------
   // Scenario
   //----------------------
-
   $scope.openScenario = function() {
 
     var userPath = dialog.showOpenDialog({
         properties: ['openDirectory']
     });
+    // main file with scenario name
+    var path_mainfile = userPath + "/main.txt";
+    scanMainFile(path_mainfile);
     // open params file
-    var path_params = userPath+"/params.txt";
+    var path_params = userPath + "/params.txt";
     scanParameters(path_params);
     // open constraints file
-    var path_constraints = userPath+"/constraints.txt";
+    var path_constraints = userPath + "/constraints.txt";
     scanConstraints(path_constraints);
-    // open candidates
-    var path_candidates = userPath+"/candidates.txt";
+    // open candidates file
+    var path_candidates = userPath + "/candidates.txt";
     scanCandidates(path_candidates);
     // open instances
-    var path_training_inst = userPath+"/candidates.txt";
+    var path_training_inst = userPath + "/training_instances.txt";
     scanTrainingInstancesByPoll(path_training_inst);
-    var path_testing_inst = userPath+"/candidates.txt";
+    var path_testing_inst = userPath + "/test_instances.txt";
     scanTestingInstancesByPoll(path_testing_inst);
 
     // open target runner
     var path_targetrunner = userPath+"/targetrunner.txt";
-    $scope.scenario.targetrunner = path_targetrunner;
+    scanTargetrunnerPath(path_targetrunner);
     // open irace params
     var path_constraints = userPath+"/iracesetup.txt";
     // TODO read values from IRACE setup
@@ -502,7 +505,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   $scope.saveScenario = function() {
     // save all the scenario
-    console.log("time to save info"); // TODO remove
     if($scope.scenario.name) {
       if($scope.scenario.parameters) { //if there are parameters to save
         if($scope.scenario.constraints) {
@@ -514,6 +516,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                   console.log("passed validations");
 
                   // all data is ready to be saved
+                  var contentMain = $scope.scenario.name;
                   var contentParameters = $scope.prepareExportParams();
                   var contentConstrains = $scope.prepareExportConstrains();
                   var contentCandidates = $scope.prepareExportCandidates();
@@ -527,39 +530,39 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                       properties: ['openDirectory']
                   });
                   // saving data in user provided path
-                  fs.writeFile(userPath+"/params.txt", contentParameters, function(err) {
+                  fs.writeFile(userPath +"/main.txt", contentMain, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath+"/constraints.txt", contentConstrains, function(err) {
+                  // saving data in user provided path
+                  fs.writeFile(userPath + "/params.txt", contentParameters, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath+"/candidates.txt", contentCandidates, function(err) {
+                  fs.writeFile(userPath + "/constraints.txt", contentConstrains, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath+"/training_instances.txt", contentTrainingInstances, function(err) {
+                  fs.writeFile(userPath + "/candidates.txt", contentCandidates, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath+"/test_instances.txt", contentTestInstances, function(err) {
+                  fs.writeFile(userPath + "/training_instances.txt", contentTrainingInstances, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath+"/targetrunner.txt", contentTargetRunner, function(err) {
+                  fs.writeFile(userPath + "/test_instances.txt", contentTestInstances, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath+"/iracesetup.txt", contentIraceParams, function(err) {
+                  fs.writeFile(userPath + "/targetrunner.txt", contentTargetRunner, function(err) {
+                    if(err) alert(err);
+                  });
+                  fs.writeFile(userPath + "/iracesetup.txt", contentIraceParams, function(err) {
                     if(err) alert(err);
                   });
 
-                } else dialog.showErrorBox("File save error", "It cannot save with empty irace parameters");
+                } else dialog.showErrorBox("File save error", "It cannot save with empty irace setup parameters");
               } else dialog.showErrorBox("File save error", "It cannot save with empty target runner path");
             } else dialog.showErrorBox("File save error", "It cannot save with empty instances");
           } else dialog.showErrorBox("File save error", "It cannot save with empty initial candidates");
         } else dialog.showErrorBox("File save error", "It cannot save with empty forbidden combinations");
       } else dialog.showErrorBox("File save error", "It cannot save with empty parameters");
-    } else {
-      // show alert to introduce name for the scenario
-      dialog.showErrorBox("File save error", "Please, insert a name for the scenario");
-    }
-
+    } else dialog.showErrorBox("File save error", "Please, insert a name for the scenario");
   };
 
   $scope.summaryBeforeRun = function(ev) {
@@ -587,7 +590,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
       return "";
     }
-
   };
 
   function DialogController($scope, $mdDialog) {
@@ -606,8 +608,9 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   function RunIrace() {
-    // TODO remove
-    console.log("@RunIrace");
+    // TODO put a timer before going to next screen
+
+    console.log("@RunIrace"); // TODO remove
     // all data is ready to be saved
     var contentParameters = $scope.prepareExportParams();
     var contentConstrains = $scope.prepareExportConstrains();
@@ -619,7 +622,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     // save it locally for running "internally"
     // create folder and add all files
-    var path = "/Users/lesly/irace-setup"; // TODO extract users home path
+    var path = os.homedir() + "/irace-setup";
     if (!fs.existsSync(path)) {
         fs.mkdirSync(path);
     }
@@ -627,32 +630,33 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     // adding path value
     $rootScope.running_path = path;
 
-    fs.writeFile(path+"/params.txt", contentParameters, function(err) {
+    fs.writeFile(path + "/params.txt", contentParameters, function(err) {
       console.log("writing params");
       if(err) alert(err);
     });
-    fs.writeFile(path+"/constraints.txt", contentConstrains, function(err) {
+    fs.writeFile(path + "/constraints.txt", contentConstrains, function(err) {
       if(err) alert(err);
     });
-    fs.writeFile(path+"/candidates.txt", contentCandidates, function(err) {
+    fs.writeFile(path + "/candidates.txt", contentCandidates, function(err) {
       if(err) alert(err);
     });
-    fs.writeFile(path+"/training_instances.txt", contentTrainingInstances, function(err) {
+    fs.writeFile(path + "/training_instances.txt", contentTrainingInstances, function(err) {
       if(err) alert(err);
     });
-    fs.writeFile(path+"/test_instances.txt", contentTestInstances, function(err) {
+    fs.writeFile(path + "/test_instances.txt", contentTestInstances, function(err) {
       if(err) alert(err);
     });
-    fs.writeFile(path+"/targetrunner.txt", contentTargetRunner, function(err) {
+    fs.writeFile(path + "/targetrunner.txt", contentTargetRunner, function(err) {
       if(err) alert(err);
     });
-    fs.writeFile(path+"/tune-conf.txt", contentIraceSetup, function(err) {
+    fs.writeFile(path + "/tune-conf.txt", contentIraceSetup, function(err) {
       if(err) alert(err);
     });
 
-    // TODO customize values for execution command
     // executing
-    var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario ~/irace-setup/tune-conf.txt  >> ~/irace-setup/result.txt";
+    var tunepath = path + "/tune-conf.txt";
+    var resultpath = path + "/result.txt";
+    var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario " +  tunepath + " >> " + resultpath;
 
     // running proccess
     child = exec(execCommand,
@@ -662,12 +666,36 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                 console.log('stderr: ' + stderr);
 
                 if (error === null) {
-                  dialog.showErrorBox("Error", stderr);
+                  // dialog.showErrorBox("Error", stderr);
                   console.log('exec error: ' + error);
                 }
             }
     );
   }
+
+
+  //---------------------
+  // Main
+  //---------------------
+  function scanMainFile(filename) {
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        dialog.showErrorBox("Error opening escenario", "Incompatible files");
+        throw err;
+        console.log(err);
+      }
+      if(filename) {
+        var lines = data.split('\n');
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            $scope.scenario.name = line;
+            $scope.$apply();
+          }
+        });
+      } else dialog.showErrorBox("Error opening escenario", "Incompatible files");
+    });
+  }
+
 
   //---------------------
   // Params
@@ -693,48 +721,50 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   function scanParameters(filename) {
-    var params = [];
-    var auxparams = [];
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          output[cnt]= line;
-          cnt++;
-          // TODO also split by simple space :S
-          var words = line.split("\t");
-          if(words[0]) {
-            if(words[1]=="undefined") var switchParam="";
-            else var switchParam = words[1];
-            if(words[4]) {
-                if(words[4].includes("undefined")) var condition = "";
-                else var condition = words[4].split("| ")[1];
-            } else var condition = "";
-            var param = {
-              "name": words[0],
-              "switch": switchParam,
-              "type": words[2],
-              "values": words[3],
-              "conditions": condition,
-              "active": true
-            };
-            params.push(param);
-            auxparams.push(param.name);
-          }
+    if(filename) {
+      var params = [];
+      var auxparams = [];
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            output[cnt]= line;
+            cnt++;
+            // TODO also split by simple space :S
+            var words = line.split("\t");
+            if(words[0]) {
+              if(words[1]=="undefined") var switchParam="";
+              else var switchParam = words[1];
+              if(words[4]) {
+                  if(words[4].includes("undefined")) var condition = "";
+                  else var condition = words[4].split("| ")[1];
+              } else var condition = "";
+              var param = {
+                "name": words[0],
+                "switch": switchParam,
+                "type": words[2],
+                "values": words[3],
+                "conditions": condition,
+                "active": true
+              };
+              params.push(param);
+              auxparams.push(param.name);
+            }
+          }
+        });
+        $scope.scenario.parameters = params;
+        $scope.$apply();
       });
-      $scope.scenario.parameters = params;
-      $scope.$apply();
-    });
 
-    // save same params in candidates
-    $scope.scenario.candidates.parameters = auxparams;
+      // save same params in candidates
+      $scope.scenario.candidates.parameters = auxparams;
+    } else dialog.showErrorBox("Error opening escenario", "Incompatible files");
   }
 
   $scope.prepareExportParams = function() {
@@ -785,31 +815,33 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   };
 
   function scanConstraints(filename) {
-    var constraints = [];
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          if(line) {
-            output[cnt]= line;
-            cnt++;
-            var constraint = {
-              "expression": line,
-              "active": true
-            };
-            constraints.push(constraint);
-          }
+    if(filename) {
+      var constraints = [];
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            if(line) {
+              output[cnt]= line;
+              cnt++;
+              var constraint = {
+                "expression": line,
+                "active": true
+              };
+              constraints.push(constraint);
+            }
+          }
+        });
+        $scope.scenario.constraints = constraints;
+        $scope.$apply();
       });
-      $scope.scenario.constraints = constraints;
-      $scope.$apply();
-    });
+    } else dialog.showErrorBox("Error opening escenario", "Incompatible files");
   }
 
   $scope.prepareExportConstrains = function () {
@@ -851,7 +883,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
           'values': aux_candidates,
           'active': true
       });
-    } else dialog.showErrorBox("Cannot add candidate", "First add labels.");
+    } else dialog.showErrorBox("Cannot add candidate", "First, add labels.");
   };
 
   $scope.importCandidates = function() {
@@ -864,52 +896,55 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   };
 
   function scanCandidates(filename) {
-    var candidates = [];
-    var candidates_param = [];
-    var candidates_inst = [];
+    if(filename) {
+      var candidates = [];
+      var candidates_param = [];
+      var candidates_inst = [];
 
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") { // first line header
-          if(cnt == 0) {
-            // TODO check when it is only "space" (it seems it count it as new one)
-            candidates_param = line.split("\t");
-          }
-          else {
-            if(line) candidates_inst[cnt-1] = line.split("\t");
-          }
-          cnt++;
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
-      });
-      $scope.scenario.candidates = {
-          "parameters": candidates_param,
-          "pre_instances": candidates_inst
-      };
-      $scope.scenario.candidates.instances = $scope.scenario.candidates.instances || [] ;
-      var c = 1;
-      $scope.scenario.candidates.pre_instances.forEach(function(pre_instance) {
-        var instance_obj = {
-          'n' : "Candidate " + c,
-          'values': pre_instance,
-          'active': true
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != "#") { // first line header
+            if(cnt == 0) {
+              // TODO check when it is only "space" (it seems it count it as new one)
+              candidates_param = line.split("\t");
+            }
+            else {
+              // candidates instances
+              if(line) candidates_inst[cnt-1] = line.split("\t");
+            }
+            cnt++;
+          }
+        });
+        $scope.scenario.candidates = {
+            "parameters": candidates_param,
+            "pre_instances": candidates_inst
         };
-        $scope.scenario.candidates.instances.push(instance_obj);
-        c++;
+        $scope.scenario.candidates.instances = $scope.scenario.candidates.instances || [] ;
+        var c = 1;
+        $scope.scenario.candidates.pre_instances.forEach(function(pre_instance) {
+          var instance_obj = {
+            'n' : "Candidate " + c,
+            'values': pre_instance,
+            'active': true
+          };
+          $scope.scenario.candidates.instances.push(instance_obj);
+          c++;
+        });
+        $scope.$apply();
       });
-      $scope.$apply();
-    });
+    } else dialog.showErrorBox("Error opening escenario", "Incompatible files");
   }
 
   $scope.prepareExportCandidates = function() {
     var content = cfg.file_options.candidates_header;
-    var aux = " ";
+    var aux = "";
 
     $scope.scenario.candidates.parameters.forEach(function(candidate_param) {
       if (candidate_param) {
@@ -974,23 +1009,25 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   };
 
   scanTrainingInstancesByPoll = function(filename) {
-    fs.readFile(filename, 'utf8', function(err, data) {
-      $scope.scenario.instances.training = [];
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      // TODO review why it charges from second line
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          if(line) $scope.scenario.instances.training.push(line);
+    if(filename) {
+      fs.readFile(filename, 'utf8', function(err, data) {
+        $scope.scenario.instances.training = [];
+        if (err) {
+          throw err;
+          console.log(err);
         }
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        // TODO review why it charges from second line
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            if(line) $scope.scenario.instances.training.push(line);
+          }
+        });
+        $scope.$apply();
       });
-      $scope.$apply();
-    });
+    } else dialog.showErrorBox("Error opening escenario", "Incompatible files");
   }
 
   $scope.prepareExportTrainingInstances = function() {
@@ -1032,22 +1069,24 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   };
 
   scanTestingInstancesByPoll = function(filename) {
-    fs.readFile(filename, 'utf8', function(err, data) {
-      $scope.scenario.instances.tests = [];
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          if(line) $scope.scenario.instances.tests.push(line);
+    if(filename) {
+      fs.readFile(filename, 'utf8', function(err, data) {
+        $scope.scenario.instances.tests = [];
+        if (err) {
+          throw err;
+          console.log(err);
         }
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            if(line) $scope.scenario.instances.tests.push(line);
+          }
+        });
+        $scope.$apply();
       });
-      $scope.$apply();
-    });
+    } else dialog.showErrorBox("Error opening", "Incompatible files");
   }
 
   $scope.browseTestsInstances = function(index) {
@@ -1086,6 +1125,24 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   //---------------------
   // Target-runner
   //---------------------
+  function scanTargetrunnerPath(filename) {
+    if(filename) {
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
+        }
+        var lines = data.split('\n');
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            $scope.scenario.targetrunner = line;
+            $scope.$apply();
+          }
+        });
+      });
+    } else dialog.showErrorBox("Error opening", "Incompatible files");
+  }
+
   $scope.browseTargetRunner = function() {
     dialog.showOpenDialog(function(filename) {
       $scope.scenario.targetrunner = filename[0];
@@ -1115,8 +1172,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     // export parameters set up to an independent file
     var content = cfg.file_options.irace_params_header;
 
-    // TODO retrieve users home path
-    var path = "/Users/lesly/irace-setup";
+    // var path = "/Users/lesly/irace-setup"; // TODO remove!
+    var path = os.homedir() + "/irace-setup";
     if (!fs.existsSync(path)){
         fs.mkdirSync(path);
     }
@@ -1124,101 +1181,101 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     content += "#path: " + path + "\n";
     content += cfg.file_options.iraceparams_header;
 
-    $scope.full_iraceparams.forEach(function(value) {
-      if(value.name==="parameterFile") {
-        content += value.name + " = " + "\"" + path + "/params.txt" + "\"" +  "\n";
-      } else if(value.name==="execDir") {
-        content += value.name + " = " + "\"" + path + "/" + "\"" + "\n";
-      } else if(value.name==="logFile") {
-        content += value.name + " = " + "\"" + path + "/irace.Rdata" + "\"" + "\n";
-      } else if(value.name==="configurationsFile") {
-        content += value.name + " = " + "\"" + path+"/candidates.txt" + "\"" + "\n";
-      } else if(value.name==="targetRunner") {
-        content += value.name + " = " + "\"" + $scope.scenario.targetrunner + "\"" +  "\n";
-      } else if(value.name==="targetRunnerParallel") {
-        content += value.name + " = " + "NULL" +  "\n";
-      } else if(value.name === "targetEvaluator") {
-        content += value.name + " = " + "\"" + "" + "\"" + "\n";
-      } else if(value.name === "maxExperiments") {
-        //TODO check if $scope given value is NULL if so, just retreive from default values
-        if($scope.irace_parameters.maxExperiments.value===0) content += value.name + " = " + 100 + "\n";
-        else content += value.name + " = " + $scope.irace_parameters.maxExperiments.value + "\n";
-      } else if(value.name === "maxTime") {
-        content += value.name + " = " + $scope.irace_parameters.maxTime.value + "\n";
-      } else if(value.name==="budgetEstimation") {
-        content += value.name + " = " + $scope.irace_parameters.budgetEstimation.value + "\n";
-      } else if(value.name==="testInstancesFile") {
-        content += value.name + " = " + "\"" + path + "/test_instances.txt" + "\"" + "\n";
-      } else if(value.name==="trainInstancesDir") {
-        content += value.name + " = " + "\"" + "" + "\"" + "\n";
-      } else if(value.name==="trainInstancesFile") {
-        content += value.name + " = " + "\"" + path + "/training_instances.txt" + "\"" + "\n";
-      } else if(value.name==="testNbElites") {
-        content += value.name + " = " + $scope.irace_parameters.testNbElites.value + "\n";
-      } else if(value.name==="testIterationElites") {
-        if($scope.irace_parameters.testIterationElites.value) content += value.name + " = " + 1 + "\n";
-        else  content += value.name + " = " + 0 + "\n";
-      } else if(value.name === "digits") {
-        content += value.name + " = " + $scope.irace_parameters.digits.value + "\n";
-      } else if(value.name === "debugLevel") {
-        content += value.name + " = " + 0 + "\n";
-      } else if(value.name === "nbIterations") {
-        content += value.name + " = " + $scope.irace_parameters.nbIterations.value + "\n";
-      } else if(value.name=="nbExperimentsPerIteration") {
-        content += value.name + " = " + $scope.irace_parameters.nbExperimentsPerIteration.value + "\n";
-      } else if(value.name==="sampleInstances") {
-        if($scope.irace_parameters.sampleInstances.value) content += value.name + " = " + 1 + "\n";
-        else content += value.name + " = " + 1 + "\n";
-      } else if(value.name==="testType") {
-        content += value.name + " = "+ "\"" + "F-test"+ "\"" + "\n";
-      } else if(value.name==="firstTest") {
-        content += value.name + " = " + value.default + "\n";
-      } else if(value.name === "eachTest" ) {
-        content += value.name + " = " + value.default + "\n";
-      } else if(value.name === "minNbSurvival") {
-        content += value.name + " = " + $scope.irace_parameters.minNbSurvival.value + "\n";
-      } else if(value.name==="nbConfigurations") {
-        content += value.name + " = " + $scope.irace_parameters.nbConfigurations.value + "\n";
-      } else if(value.name==="mu") {
-        content += value.name + " = " + $scope.irace_parameters.mu.value + "\n";
-      } else if(value.name==="seed") {
-        content += value.name + " = " + $scope.irace_parameters.seed.value + "\n";
-      } else if (value.name==="parallel") {
-        if($scope.irace_parameters.parallel.value) {
-          content += value.name + " = " + $scope.irace_parameters.parallel.numCores + "\n"; // parallel active so number of cores
-        } else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="loadBalancing") {
-       if($scope.irace_parameters.loadBalancing.value)  content += value.name + " = " + 1 + "\n";
-       else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="sgeCluster") {
-         if ($scope.irace_parameters.sgeCluster.value) content += value.name + " = " + 1 + "\n";
+      $scope.full_iraceparams.forEach(function(value) {
+        if(value.name==="parameterFile") {
+          content += value.name + " = " + "\"" + path + "/params.txt" + "\"" +  "\n";
+        } else if(value.name==="execDir") {
+          content += value.name + " = " + "\"" + path + "/" + "\"" + "\n";
+        } else if(value.name==="logFile") {
+          content += value.name + " = " + "\"" + path + "/irace.Rdata" + "\"" + "\n";
+        } else if(value.name==="configurationsFile") {
+          content += value.name + " = " + "\"" + path+"/candidates.txt" + "\"" + "\n";
+        } else if(value.name==="targetRunner") {
+          content += value.name + " = " + "\"" + $scope.scenario.targetrunner + "\"" +  "\n";
+        } else if(value.name==="targetRunnerParallel") {
+          content += value.name + " = " + "NULL" +  "\n";
+        } else if(value.name === "targetEvaluator") {
+          content += value.name + " = " + "\"" + "" + "\"" + "\n";
+        } else if(value.name === "maxExperiments") {
+          //TODO check if $scope given value is NULL if so, just retreive from default values
+          if($scope.irace_parameters.maxExperiments.value===0) content += value.name + " = " + 100 + "\n";
+          else content += value.name + " = " + $scope.irace_parameters.maxExperiments.value + "\n";
+        } else if(value.name === "maxTime") {
+          content += value.name + " = " + $scope.irace_parameters.maxTime.value + "\n";
+        } else if(value.name==="budgetEstimation") {
+          content += value.name + " = " + $scope.irace_parameters.budgetEstimation.value + "\n";
+        } else if(value.name==="testInstancesFile") {
+          content += value.name + " = " + "\"" + path + "/test_instances.txt" + "\"" + "\n";
+        } else if(value.name==="trainInstancesDir") {
+          content += value.name + " = " + "\"" + "" + "\"" + "\n";
+        } else if(value.name==="trainInstancesFile") {
+          content += value.name + " = " + "\"" + path + "/training_instances.txt" + "\"" + "\n";
+        } else if(value.name==="testNbElites") {
+          content += value.name + " = " + $scope.irace_parameters.testNbElites.value + "\n";
+        } else if(value.name==="testIterationElites") {
+          if($scope.irace_parameters.testIterationElites.value) content += value.name + " = " + 1 + "\n";
+          else  content += value.name + " = " + 0 + "\n";
+        } else if(value.name === "digits") {
+          content += value.name + " = " + $scope.irace_parameters.digits.value + "\n";
+        } else if(value.name === "debugLevel") {
+          content += value.name + " = " + 0 + "\n";
+        } else if(value.name === "nbIterations") {
+          content += value.name + " = " + $scope.irace_parameters.nbIterations.value + "\n";
+        } else if(value.name=="nbExperimentsPerIteration") {
+          content += value.name + " = " + $scope.irace_parameters.nbExperimentsPerIteration.value + "\n";
+        } else if(value.name==="sampleInstances") {
+          if($scope.irace_parameters.sampleInstances.value) content += value.name + " = " + 1 + "\n";
+          else content += value.name + " = " + 1 + "\n";
+        } else if(value.name==="testType") {
+          content += value.name + " = "+ "\"" + "F-test"+ "\"" + "\n";
+        } else if(value.name==="firstTest") {
+          content += value.name + " = " + value.default + "\n";
+        } else if(value.name === "eachTest" ) {
+          content += value.name + " = " + value.default + "\n";
+        } else if(value.name === "minNbSurvival") {
+          content += value.name + " = " + $scope.irace_parameters.minNbSurvival.value + "\n";
+        } else if(value.name==="nbConfigurations") {
+          content += value.name + " = " + $scope.irace_parameters.nbConfigurations.value + "\n";
+        } else if(value.name==="mu") {
+          content += value.name + " = " + $scope.irace_parameters.mu.value + "\n";
+        } else if(value.name==="seed") {
+          content += value.name + " = " + $scope.irace_parameters.seed.value + "\n";
+        } else if (value.name==="parallel") {
+          if($scope.irace_parameters.parallel.value) {
+            content += value.name + " = " + $scope.irace_parameters.parallel.numCores + "\n"; // parallel active so number of cores
+          } else content += value.name + " = " + 0 + "\n";
+       } else if(value.name==="loadBalancing") {
+         if($scope.irace_parameters.loadBalancing.value)  content += value.name + " = " + 1 + "\n";
          else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="mpi") {
-       if($scope.irace_parameters.mpi.value) content += value.name + " = " + 1 + "\n";
-       else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="softRestart") {
-       if($scope.irace_parameters.softRestart.value) content += value.name + " = " + 1 + "\n";
-       else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="recoveryFile") {
-       content += value.name + " = "+ "\"" + ""+ "\"" + "\n";
-     } else if(value.name==="elitist") {
-       if($scope.irace_parameters.elitist.value) content += value.name + " = " + 1 + "\n";
-       else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="elitistNewInstances") {
-       content += value.name + " = " + $scope.irace_parameters.elitistNewInstances.value + "\n";
-     } else if(value.name==="elitistLimit") {
-       content += value.name + " = " + $scope.irace_parameters.elitistLimit.value + "\n";
-     } else if (value.name==="deterministic") {
-       if($scope.irace_parameters.deterministic.value) content += value.name + " = " + 1 + "\n";
-       else content += value.name + " = " + 0 + "\n";
-     } else if(value.name==="testInstancesDir") {
-       content += value.name + " = " + "\"" + $scope.irace_parameters.testInstancesDir.value + "\"" + "\n";
-     } else if (value.name === "softRestartThreshold") {
-       content += value.name + " = " + $scope.irace_parameters.softRestartThreshold.value + "\n";
-    }
-  });
-  content += "## END of configuration file";
-  return content;
+       } else if(value.name==="sgeCluster") {
+           if ($scope.irace_parameters.sgeCluster.value) content += value.name + " = " + 1 + "\n";
+           else content += value.name + " = " + 0 + "\n";
+       } else if(value.name==="mpi") {
+         if($scope.irace_parameters.mpi.value) content += value.name + " = " + 1 + "\n";
+         else content += value.name + " = " + 0 + "\n";
+       } else if(value.name==="softRestart") {
+         if($scope.irace_parameters.softRestart.value) content += value.name + " = " + 1 + "\n";
+         else content += value.name + " = " + 0 + "\n";
+       } else if(value.name==="recoveryFile") {
+         content += value.name + " = "+ "\"" + ""+ "\"" + "\n";
+       } else if(value.name==="elitist") {
+         if($scope.irace_parameters.elitist.value) content += value.name + " = " + 1 + "\n";
+         else content += value.name + " = " + 0 + "\n";
+       } else if(value.name==="elitistNewInstances") {
+         content += value.name + " = " + $scope.irace_parameters.elitistNewInstances.value + "\n";
+       } else if(value.name==="elitistLimit") {
+         content += value.name + " = " + $scope.irace_parameters.elitistLimit.value + "\n";
+       } else if (value.name==="deterministic") {
+         if($scope.irace_parameters.deterministic.value) content += value.name + " = " + 1 + "\n";
+         else content += value.name + " = " + 0 + "\n";
+       } else if(value.name==="testInstancesDir") {
+         content += value.name + " = " + "\"" + $scope.irace_parameters.testInstancesDir.value + "\"" + "\n";
+       } else if (value.name === "softRestartThreshold") {
+         content += value.name + " = " + $scope.irace_parameters.softRestartThreshold.value + "\n";
+      }
+    });
+    content += "## END of configuration file";
+    return content;
   };
 
   function validateParamsReady() {
@@ -1241,7 +1298,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   $scope.exportIraceSetup = function() {
-
     if(validateParamsReady()) {
       var content = $scope.prepareExportIraceSetup();
 

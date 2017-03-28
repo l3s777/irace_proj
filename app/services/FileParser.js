@@ -7,30 +7,32 @@ app.service('FileParser', function () {
   var dialog = app2.dialog;
 
   this.parseIraceTestElitesFile = function(path) {
-
-		var data = fs.readFileSync(path, 'utf8');
-		if (!data) dialog.showErrorBox('Error', 'Unable to open file: ' + path);
-
-    var lines = data.trim().split('\n');
-
-    var tokens = [];
-    var bar_i = lines[0].split(' ').length;
-    var bar_j = lines.length;
-
     var iterations = [];
-    for(var x = 0; x < bar_i; x++){
-        iterations[x] = [];
-        for(var y = 0; y < bar_j; y++){
-            iterations[x][y] = 0;
-        }
-    }
+    if(path) {
+      var data = fs.readFileSync(path, 'utf8');
+  		if (!data) dialog.showErrorBox('Error', 'Unable to open file: ' + path);
 
-    lines.forEach(function(l, lindex) {
-      tokens = l.split(' ');
-      tokens.forEach(function(t, tindex) {
-        iterations[tindex][lindex] = parseInt(t);
+      var lines = data.trim().split('\n');
+
+      var tokens = [];
+      var bar_i = lines[0].split(' ').length;
+      var bar_j = lines.length;
+
+
+      for(var x = 0; x < bar_i; x++){
+          iterations[x] = [];
+          for(var y = 0; y < bar_j; y++){
+              iterations[x][y] = 0;
+          }
+      }
+
+      lines.forEach(function(l, lindex) {
+        tokens = l.split(' ');
+        tokens.forEach(function(t, tindex) {
+          iterations[tindex][lindex] = parseInt(t);
+        });
       });
-    });
+    } else console.log("parseIraceTestElitesFile: path not found");
 		return iterations;
 	};
 

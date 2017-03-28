@@ -53,29 +53,40 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     // read data for PARALLEL COORDINATES
     var path_candidates = workingPath + "/task-candidates.txt";
-    $scope.d3ParallelCoordinatesPlotData = path_candidates;
+    if(path_candidates) {
+      $scope.d3ParallelCoordinatesPlotData = path_candidates;
+    } else console.log("task-candidates not found");
 
     // d3BoxPlotData
     var path_results = workingPath + "/task-results.txt";
-    $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(path_results);
+    if(path_results) {
+      $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(path_results);
+    } else console.log("task-results not found");
 
     var path_freq = workingPath + "/task-frequency.txt";
-    $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
-    // BarPlot for Categorical and Ordinal
-    $scope.d3BarPlotDataV = $scope.d3Candidates.co;
-    // KernelGraph for Integer and Real
-    $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
-    // add interval from parameters
-    if($scope.d3DensityPlotDataV) {
-      $scope.d3DensityPlotDataV = help2();
-    }
+    if(path_freq) {
+      $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
+      // BarPlot for Categorical and Ordinal
+      $scope.d3BarPlotDataV = $scope.d3Candidates.co;
+
+      // KernelGraph for Integer and Real
+      $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
+      // add interval from parameters
+      if($scope.d3DensityPlotDataV) {
+        $scope.d3DensityPlotDataV = help2();
+      }
+    } else console.log("task-frequency not found");
 
     var path_bests = workingPath + "/task-bests.txt";
-    $scope.task_best = scanTaskBestDetail(path_bests);
+    if(path_bests) {
+      $scope.task_best = scanTaskBestDetail(path_bests);
+    } else console.log("task-bests not found");
 
     // line chart for kendal
     var path_kendall = workingPath + "/task-kendall.txt";
-    $scope.kendallValues = FileParser.parseIraceKendallFile(path_kendall);
+    if(path_kendall) {
+      $scope.kendallValues = FileParser.parseIraceKendallFile(path_kendall);
+    } else console.log("task-kendall not found");
   };
 
   function help2() {
@@ -98,125 +109,137 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
         }
       }
     });
-    // console.log($scope.d3DensityPlotDataV);
     return resultDensityData;
   }
 
-  function scanIterationData(filename) {
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
+  $scope.getFiltered = function(obj, idx) {
+    return !((obj._index = idx) % 3);
+  }
 
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != '#') {
-          output[cnt]= line;
-          cnt++;
+  function scanIterationData(filename) {
+    if(filename) {
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
+
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != '#') {
+            output[cnt]= line;
+            cnt++;
+          }
+        });
+        var iData = {
+          "iteration": output[0],
+          "budget": output[1],
+          "totCandidates": output[2]
+        };
+        $scope.iteration_data = iData;
+        $scope.$apply();
       });
-      var iData = {
-        "iteration": output[0],
-        "budget": output[1],
-        "totCandidates": output[2]
-      };
-      $scope.iteration_data = iData;
-      $scope.$apply();
-    });
+    } else console.log("scanIterationData: file not found");
   }
 
   function scanTaskData(filename) {
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != '#') {
-          output[cnt]= line;
-          cnt++;
+    if(filename) {
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
+
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != '#') {
+            output[cnt]= line;
+            cnt++;
+          }
+        });
+        var tData = {
+          "aliveCandidates": output[0],
+          "numberInstances": output[1],
+          "numberEvaluations": output[2]
+        };
+        $scope.task_data = tData;
+        $scope.$apply();
       });
-      var tData = {
-        "aliveCandidates": output[0],
-        "numberInstances": output[1],
-        "numberEvaluations": output[2]
-      };
-      $scope.task_data = tData;
-      $scope.$apply();
-    });
+    } else console.log("scanTaskData: file not found");
   }
 
   function scanTaskDetail(filename) {
-    var params = [];
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          output[cnt]= line;
-          cnt++;
-          // var words = line.split("\t");
-          var words = line.split(/\s+/);
-          if(words[0]) {
-            var task = {
-              "numberInstance": words[0],
-              "numberCandidate": words[1],
-              "mean": words[2],
-              "time": words[3],
-              "w": words[4]
-            };
-            params.push(task);
-          }
+    if(filename) {
+      var params = [];
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
+
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            output[cnt]= line;
+            cnt++;
+            // var words = line.split("\t");
+            var words = line.split(/\s+/);
+            if(words[0]) {
+              var task = {
+                "numberInstance": words[0],
+                "numberCandidate": words[1],
+                "mean": words[2],
+                "time": words[3],
+                "w": words[4]
+              };
+              params.push(task);
+            }
+          }
+        });
+        $scope.task_detail = params;
+        $scope.$apply();
       });
-      $scope.task_detail = params;
-      $scope.$apply();
-    });
+    } else console.log("scanTaskDetail: file not found");
   }
 
   // instances for task_best
   function scanTaskBestDetail(filename) {
-    var params = [];
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        throw err;
-        console.log(err);
-      }
-
-      var lines = data.split('\n');
-      var output = [];
-      var cnt = 0;
-      lines.forEach(function(line) {
-        if(line[0] != "#") {
-          output[cnt]= line;
-          cnt++;
-          var words = line.split(/\s+/);
-          if(words[0]) {
-            var task = {
-              "name": words[0],
-              "value": words[1]
-            };
-            params.push(task);
-          }
+    if(filename) {
+      var params = [];
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) {
+          throw err;
+          console.log(err);
         }
+
+        var lines = data.split('\n');
+        var output = [];
+        var cnt = 0;
+        lines.forEach(function(line) {
+          if(line[0] != "#") {
+            output[cnt]= line;
+            cnt++;
+            var words = line.split(/\s+/);
+            if(words[0]) {
+              var task = {
+                "name": words[0],
+                "value": words[1]
+              };
+              params.push(task);
+            }
+          }
+        });
+        $scope.task_best = params;
+        $scope.$apply();
       });
-      $scope.task_best = params;
-      $scope.$apply();
-    });
+    } else console.log("scanTaskBestDetail: file not found");
+
   }
 
 }]);
