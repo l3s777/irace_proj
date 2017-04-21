@@ -10,6 +10,7 @@ app.service('FileParser', function () {
     var iterations = [];
     if(path) {
       var data = fs.readFileSync(path, 'utf8');
+      // TODO action when data is null
   		if (!data) dialog.showErrorBox('Error', 'Unable to open file: ' + path);
 
       var lines = data.trim().split('\n');

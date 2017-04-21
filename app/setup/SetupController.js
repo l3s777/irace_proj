@@ -476,31 +476,33 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     var userPath = dialog.showOpenDialog({
         properties: ['openDirectory']
     });
-    // main file with scenario name
-    var path_mainfile = userPath + "/main.txt";
-    scanMainFile(path_mainfile);
-    // open params file
-    var path_params = userPath + "/params.txt";
-    scanParameters(path_params);
-    // open constraints file
-    var path_constraints = userPath + "/constraints.txt";
-    scanConstraints(path_constraints);
-    // open candidates file
-    var path_candidates = userPath + "/candidates.txt";
-    scanCandidates(path_candidates);
-    // open instances
-    var path_training_inst = userPath + "/training_instances.txt";
-    scanTrainingInstancesByPoll(path_training_inst);
-    var path_testing_inst = userPath + "/test_instances.txt";
-    scanTestingInstancesByPoll(path_testing_inst);
 
-    // open target runner
-    var path_targetrunner = userPath+"/targetrunner.txt";
-    scanTargetrunnerPath(path_targetrunner);
-    // open irace params
-    var path_constraints = userPath+"/iracesetup.txt";
-    // TODO read values from IRACE setup
+    if(userPath != undefined) {
+      // main file with scenario name
+      var path_mainfile = userPath + "/main.txt";
+      scanMainFile(path_mainfile);
+      // open params file
+      var path_params = userPath + "/params.txt";
+      scanParameters(path_params);
+      // open constraints file
+      var path_constraints = userPath + "/constraints.txt";
+      scanConstraints(path_constraints);
+      // open candidates file
+      var path_candidates = userPath + "/candidates.txt";
+      scanCandidates(path_candidates);
+      // open instances
+      var path_training_inst = userPath + "/training_instances.txt";
+      scanTrainingInstancesByPoll(path_training_inst);
+      var path_testing_inst = userPath + "/test_instances.txt";
+      scanTestingInstancesByPoll(path_testing_inst);
 
+      // open target runner
+      var path_targetrunner = userPath+"/targetrunner.txt";
+      scanTargetrunnerPath(path_targetrunner);
+      // open irace params
+      var path_constraints = userPath+"/iracesetup.txt";
+      // TODO read values from IRACE setup
+    } else dialog.showErrorBox("Error", "No selection made.");
   };
 
   $scope.saveScenario = function() {
@@ -568,7 +570,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   $scope.summaryBeforeRun = function(ev) {
     console.log("summaryBeforeRun");
 
-    if(validateParamsReady()) {
+    // if(validateParamsReady()) {
 
       // assigning important data to next screen
       $rootScope.scenario = $scope.scenario.name;
@@ -586,10 +588,10 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         console.log(answer);
       });
 
-    } else {
-      dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
-      return "";
-    }
+    // } else {
+    //   dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
+    //   return "";
+    // }
   };
 
   function DialogController($scope, $mdDialog) {
@@ -620,8 +622,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     var contentTargetRunner = $scope.scenario.targetrunner;
     var contentIraceSetup = $scope.prepareExportIraceSetup();
 
-    // save it locally for running "internally"
-    // create folder and add all files
+    // save it locally for running "internally" and create folder and add all files
     var path = os.homedir() + "/irace-setup";
     if (!fs.existsSync(path)) {
         fs.mkdirSync(path);

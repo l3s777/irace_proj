@@ -39,9 +39,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3BoxPlotData = [];
 
   // dynamic
-  $interval(function(){
-      $scope.readData();
-  }, 5000, 10);
+  // $interval(function(){
+  //     $scope.readData();
+  // }, 5000, 10);
 
   $scope.readData = function() {
     var workingPath = $rootScope.running_path;
@@ -63,7 +63,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
       $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(path_results);
     } else console.log("task-results not found");
 
+    // frequencies
     var path_freq = workingPath + "/task-frequency.txt";
+    // var path_freq = "Users/lesly/Desktop/task-frequency.txt";
     if(path_freq) {
       $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
       // BarPlot for Categorical and Ordinal

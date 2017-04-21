@@ -547,9 +547,13 @@ return {
       scope.render = function (data) {
         // clear out everything in the svg to render a fresh version
         svg.selectAll("*").remove();
+        // TODO remove
+        console.log(data);
+
         var a = (data.range.split(","));
         var lleng = a[1].length;
         var end = a[1].substring(0,lleng-1);
+        // console.log("end axis-x: " + end);
 
         // set up variables
         var width, height, max;
@@ -569,17 +573,17 @@ return {
           chartSubtitle = "real";
         }
 
-        var maxValue = d3.max(data.values);
+        // var maxValue = d3.max(data.values);
         var margin = {top: 50, right: 50, bottom: 50, left: 70};
 
         var yScale = d3.scale.linear()
             .range([height - margin.top, margin.bottom])
             .nice()
-            .domain([0, maxValue/100]);
+            .domain([0, 1]);
 
         var xScale = d3.scale.linear()
-            .domain([0, parseInt(end)]) // TODO valid final value
-            // .domain([0, 100])
+            // .domain([0, parseInt(end)])
+            .domain([0, parseFloat(end)])
             .rangeRound([margin.left, width - margin.right]);
 
         var xAxis = d3.svg.axis()
@@ -601,24 +605,31 @@ return {
             .bins(xScale.ticks(5));
 
         var d = histogram(data.values);
-        var l1 = data.values.length;
-        // TODO adjust ticks
-        var ticks = 100;
+        //var l1 = data.values.length;
+        var ticks = end;
         var stdDev = standardDeviation(data.values);
+        console.log(stdDev);
 
         // ((4/3)*stDev^5/ticks)^(-1/5)
-        var scaleGaussianKernel = Math.pow(((4/3)*Math.pow(stdDev,5)/ticks),-1/5);
+        var scaleGaussianKernel = Math.pow(((4/3)*Math.pow(stdDev,5)/ticks),(-1/5));
+        // value kernel
+        var valueKernel;
+        if(data.type === "i") {
+          valueKernel = scaleGaussianKernel*100;
+        } else if(data.type === "r") {
+          valueKernel = scaleGaussianKernel/10;
+        }
 
-        var kde = kernelDensityEstimator(gaussianKernel(scaleGaussianKernel*100), xScale.ticks(ticks));
+        var kde = kernelDensityEstimator(gaussianKernel(valueKernel), xScale.ticks(ticks));
 
         function kernelDensityEstimator(kernel, x) {
           return function(sample) {
             return x.map(function(x) {
-              x = parseInt(x);
-              // console.log(x);
+              // x = parseInt(x);
+              x = parseFloat(x);
               var aux = d3.mean(sample, function(v) {
+                v = parseFloat(v);
                 return kernel(v-x); });
-              // console.log(aux);
               return [x, aux];
             });
           };
@@ -649,7 +660,7 @@ return {
         function average(data) {
           var sum = 0;
           data.forEach(function (d) {
-            sum = sum + parseInt(d);
+            sum = sum + parseFloat(d);
           });
           return sum / data.length;
         }
