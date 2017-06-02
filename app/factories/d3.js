@@ -74,11 +74,9 @@ app.factory('d3', [function () {
   										.range([height - margins.bottom, margins.top]));
   							}
   							else {
-
   								return y[d] = d3.scale.ordinal()
   									.domain(cars.map(function(p) { return p[d]; }))
   									.rangePoints([height - margins.bottom, margins.top]);
-
   							}
   						}));
 
@@ -105,37 +103,37 @@ app.factory('d3', [function () {
   							.attr("class", "dimension")
   							.attr("transform", function (d) {
   								return "translate(" + x(d) + ")";
-  							})
-  							.call(d3.behavior.drag()
-  								.origin(function (d) {
-  									return {x: x(d)};
-  								})
-  								.on("dragstart", function (d) {
-  									dragging[d] = x(d);
-  									background.attr("visibility", "hidden");
-  								})
-  								.on("drag", function (d) {
-  									dragging[d] = Math.min(width, Math.max(0, d3.event.x));
-  									foreground.attr("d", path);
-  									dimensions.sort(function (a, b) {
-  										return position(a) - position(b);
-  									});
-  									x.domain(dimensions);
-  									g.attr("transform", function (d) {
-  										return "translate(" + position(d) + ")";
-  									})
-  								})
-  								.on("dragend", function (d) {
-  									delete dragging[d];
-  									transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
-  									transition(foreground).attr("d", path);
-  									background
-  										.attr("d", path)
-  										.transition()
-  										.delay(500)
-  										.duration(0)
-  										.attr("visibility", null);
-  								}));
+  							});
+  							// .call(d3.behavior.drag()
+  							// 	.origin(function (d) {
+  							// 		return {x: x(d)};
+  							// 	})
+  							// 	.on("dragstart", function (d) {
+  							// 		dragging[d] = x(d);
+  							// 		background.attr("visibility", "hidden");
+  							// 	})
+  							// 	.on("drag", function (d) {
+  							// 		dragging[d] = Math.min(width, Math.max(0, d3.event.x));
+  							// 		foreground.attr("d", path);
+  							// 		dimensions.sort(function (a, b) {
+  							// 			return position(a) - position(b);
+  							// 		});
+  							// 		x.domain(dimensions);
+  							// 		g.attr("transform", function (d) {
+  							// 			return "translate(" + position(d) + ")";
+  							// 		})
+  							// 	})
+  							// 	.on("dragend", function (d) {
+  							// 		delete dragging[d];
+  							// 		transition(d3.select(this)).attr("transform", "translate(" + x(d) + ")");
+  							// 		transition(foreground).attr("d", path);
+  							// 		background
+  							// 			.attr("d", path)
+  							// 			.transition()
+  							// 			.delay(500)
+  							// 			.duration(0)
+  							// 			.attr("visibility", null);
+  							// 	}));
 
   						// Add an axis and title.
   						g.append("g")
@@ -428,6 +426,9 @@ return {
 
         var irsBlue = 'rgb(82, 154, 189)';
 
+        // TODO remove
+        // console.log(data);
+
         // define data
         var dataLabels = []; // x values
         var yValues = []; // y values
@@ -516,7 +517,219 @@ return {
     }
   };
 }])
-.directive('d3DensityPlot', ['d3', function (d3) {
+// .directive('d3DensityPlot', ['d3', function (d3) {
+//   return {
+//     restrict: 'EA',
+//     scope: {
+//       data: "=",
+//       label: "@",
+//     },
+//     link: function (scope, iElement, iAttrs) {
+//       // create the svg to contain our visualization
+//       var svg = d3.select(iElement[0])
+//         .append("svg")
+//         .attr("width", "100%");
+//
+//       // make the visualization responsive by watching for changes in window size
+//       window.onresize = function () {
+//         return scope.$apply();
+//       };
+//       scope.$watch(function () {
+//         return angular.element(window)[0].innerWidth;
+//       }, function () {
+//         return scope.render(scope.data);
+//       });
+//
+//       // watch the data source for changes to dynamically update the visualization
+//       scope.$watch('data', function (newData, oldData) {
+//         return scope.render(newData);
+//       }, true);
+//
+//       scope.render = function (data) {
+//         // clear out everything in the svg to render a fresh version
+//         svg.selectAll("*").remove();
+//
+//         var init = 0, end = 100;
+//         // ranges definition
+//         if(data.range) {
+//           var a = (data.range.split(","));
+//           init = a[0].substring(1);
+//           if(init < 1) init = 0;
+//           var lleng = a[1].length;
+//           end = a[1].substring(0,lleng-1);
+//         }
+//
+//         // set up variables
+//         var width, height, max;
+//         width = d3.select(iElement[0])[0][0].offsetWidth;
+//         height = 220;
+//         svg.attr('height', height);
+//         svg.attr('width', width);
+//
+//         var irsBlue = 'rgb(82, 154, 189)';
+//
+//         // define data
+//         var chartTitle = data.param;
+//         var chartSubtitle = data.type;
+//         if(data.type === "i") {
+//           chartSubtitle = "integer";
+//         } else if(data.type === "r") {
+//           chartSubtitle = "real";
+//         }
+//
+//         var margin = {top: 50, right: 50, bottom: 50, left: 70};
+//
+//         var yScale = d3.scale.linear()
+//             .range([height - margin.top, margin.bottom])
+//             .nice()
+//             .domain([0, 1]);
+//
+//         var xScale = d3.scale.linear()
+//             .domain([0, parseFloat(end)])
+//             // .domain([parseInt(init), parseInt(end)])
+//             .rangeRound([margin.left, width - margin.right]);
+//
+//         var xAxis = d3.svg.axis()
+//             .scale(xScale)
+//             .orient("bottom");
+//         var yAxis = d3.svg.axis()
+//             .scale(yScale)
+//             .orient("left")
+//             .tickFormat(d3.format("%"));
+//
+//         // histogram
+//         var histogram = d3.layout.histogram()
+//             .frequency(false)
+//             .bins(xScale.ticks(7));
+//
+//         var d = histogram(data.values);
+//
+//         var ticks = parseInt(end);
+//         var stdDev = standardDeviation(data.values);
+//
+//         // console.log(data.values);
+//         var min_ = d3.min(data.values);
+//
+//         // ((4/3)*stDev^5/ticks)^(-1/5)
+//         var scaleGaussianKernel = Math.pow(((4/3)*Math.pow(stdDev,5)/min_),(-1/5));
+//
+//         // var kde = kernelDensityEstimator(gaussianKernel(valueKernel), xScale.ticks(ticks));
+//         var kde = kernelDensityEstimator(gaussianKernel(scaleGaussianKernel), xScale.ticks(ticks));
+//
+//         function kernelDensityEstimator(kernel, x) {
+//           return function(sample) {
+//             return x.map(function(x) {
+//               x = parseFloat(x);
+//               // normalization
+//               // x_norm = 100*(x-min_tick)/(max_tick-min_tick);
+//               var aux = 0;
+//               sample.forEach(function (d) {
+//                   d = parseFloat(d);
+//                   aux = aux + kernel(d - x);
+//               });
+//               aux = aux/sample.length;
+//
+//               // var aux = d3.mean(sample, function(v) {
+//               //   console.log(v);
+//               //   v = parseFloat(v);
+//               //   return kernel(v-x); });
+//               return [x, aux];
+//             });
+//           };
+//         }
+//
+//         function gaussianKernel(scale) {
+//           return function(u) {
+//             u = u/scale;
+//
+//             var gaussianConstant = 1 / Math.sqrt(2 * Math.PI);
+//             var gaussianKernelValue = gaussianConstant * Math.exp((-.5) * u * u);
+//
+//             return parseFloat(gaussianKernelValue);
+//           };
+//         }
+//
+//         function standardDeviation(values) {
+//           var avg = average(values);
+//
+//           var squareDiffs = values.map(function(value) {
+//             var diff = value - avg;
+//             return (diff * diff);
+//           });
+//
+//           var avgSquareDiff = average(squareDiffs);
+//
+//           return parseFloat(Math.sqrt(avgSquareDiff));
+//         }
+//
+//         function average(data) {
+//           var sum = 0;
+//           data.forEach(function (d) {
+//             sum = sum + parseFloat(d);
+//           });
+//           return parseFloat(sum / data.length);
+//         }
+//
+//         // line function
+//         var line = d3.svg.line()
+//                   .x(function(d) { return xScale(d[0]); })
+//                   .y(function(d) { return yScale(d[1]); });
+//
+//         // Axis
+//         svg.append("svg:g")
+//           .attr("class", "x axis")
+//           .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+//           .call(xAxis)
+//           .style("text-anchor", "end")
+//         svg.append("svg:g")
+//           .attr("class", "y axis")
+//           .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
+//           .call(yAxis);
+//
+//         svg.append("text")
+//             .attr("class","mainTitle")
+//             .attr("x",20)
+//             .attr("y",25)
+//             .attr("font-size", "20px")
+//             .text(chartTitle);
+//         svg.append("text")
+//             .attr("class","subTitle")
+//             .attr("x",20)
+//             .attr("y",40)
+//             .attr("font-size", "10px")
+//             .text(chartSubtitle);
+//
+//         // histogram
+//         svg.selectAll("rect")
+//             .data(d).enter()
+//             .append("rect")
+//             .attr("class", "bar")
+//             .style({
+//               fill: "#f1f1f1"
+//             })
+//             .attr("stroke", irsBlue)
+//             .attr("x", function(d) { return xScale(d.x) + 1; })
+//             .attr("y", function(d) { return yScale(d.y); })
+//             .attr("width", xScale(d[0].dx) - xScale(d[0].x) - 1)
+//             .attr("height", function(d) { return height - yScale(d.y) - margin.top; });
+//
+//         // svg.append("path")
+//         //     .datum(kde(data.values))
+//         //     .attr("class", "line")
+//         //     .attr("d", line);
+//
+//         // // Grid
+//         svg.append("g")
+//           .attr("class", "grid")
+//           .attr("transform", "translate(" + margin.left + "," + (margin.top - margin.bottom) + ")")
+//           .call(yAxis
+//             .tickSize(-(width - margin.left - margin.right), 0, 0)
+//             .tickFormat(""));
+//       };
+//     }
+//   };
+// }])
+.directive('d3DensityLinePlot', ['d3', function (d3) {
   return {
     restrict: 'EA',
     scope: {
@@ -547,13 +760,6 @@ return {
       scope.render = function (data) {
         // clear out everything in the svg to render a fresh version
         svg.selectAll("*").remove();
-        // TODO remove
-        console.log(data);
-
-        var a = (data.range.split(","));
-        var lleng = a[1].length;
-        var end = a[1].substring(0,lleng-1);
-        // console.log("end axis-x: " + end);
 
         // set up variables
         var width, height, max;
@@ -565,156 +771,99 @@ return {
         var irsBlue = 'rgb(82, 154, 189)';
 
         // define data
-        var chartTitle = data.param;
-        var chartSubtitle = data.type;
-        if(data.type === "i") {
+        var xLabels = []; // x values
+        var yValues = []; // y values
+        var charTitle, chartSubtitle;
+
+        data.x_values_bp.forEach(function(d){
+          xLabels.push(d);
+        });
+
+        data.y_values_bp.forEach(function(d){
+          yValues.push(parseFloat(d));
+        });
+
+        // create X axis for bars
+        var xLabelsBars = [];
+        for (i=0; i < xLabels.length - 1; i ++) {
+          xLabelsBars[i] = parseFloat(((xLabels[i+1] - xLabels[i])/2)) + parseFloat(xLabels[i]);
+        }
+
+        // naming graphics
+        chartTitle = data.param;
+        chartSubtitle = data.type;
+        if(chartSubtitle === "i") {
           chartSubtitle = "integer";
-        } else if(data.type === "r") {
+        } else if(chartSubtitle === "r") {
           chartSubtitle = "real";
         }
 
-        // var maxValue = d3.max(data.values);
-        var margin = {top: 50, right: 50, bottom: 50, left: 70};
+        var maxValue = d3.max(yValues);
+        var margins = {top: 50, right: 50, bottom: 50, left: 70 };
 
-        var yScale = d3.scale.linear()
-            .range([height - margin.top, margin.bottom])
+        var yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
+            .domain([0, maxValue])
             .nice()
-            .domain([0, 1]);
-
-        var xScale = d3.scale.linear()
-            // .domain([0, parseInt(end)])
-            .domain([0, parseFloat(end)])
-            .rangeRound([margin.left, width - margin.right]);
-
-        var xAxis = d3.svg.axis()
+            // y Axis
+          yAxis = d3.svg.axis()
+            .scale(yScale)
+            .orient("left");
+        var xScale = d3.scale.ordinal()
+            // .domain(xLabels)
+            .domain(xLabelsBars)
+            .rangeRoundBands([margins.left, width - margins.right], .1),
+            // x Axis
+          xAxis = d3.svg.axis()
             .scale(xScale)
             .orient("bottom");
-        var yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("left")
-            .tickFormat(d3.format("%"));
-
-        // line function
-        var line = d3.svg.line()
-                  .x(function(d) { return xScale(d[0]); })
-                  .y(function(d) { return yScale(d[1]); });
-
-        // histogram
-        var histogram = d3.layout.histogram()
-            .frequency(false)
-            .bins(xScale.ticks(5));
-
-        var d = histogram(data.values);
-        //var l1 = data.values.length;
-        var ticks = end;
-        var stdDev = standardDeviation(data.values);
-        console.log(stdDev);
-
-        // ((4/3)*stDev^5/ticks)^(-1/5)
-        var scaleGaussianKernel = Math.pow(((4/3)*Math.pow(stdDev,5)/ticks),(-1/5));
-        // value kernel
-        var valueKernel;
-        if(data.type === "i") {
-          valueKernel = scaleGaussianKernel*100;
-        } else if(data.type === "r") {
-          valueKernel = scaleGaussianKernel/10;
-        }
-
-        var kde = kernelDensityEstimator(gaussianKernel(valueKernel), xScale.ticks(ticks));
-
-        function kernelDensityEstimator(kernel, x) {
-          return function(sample) {
-            return x.map(function(x) {
-              // x = parseInt(x);
-              x = parseFloat(x);
-              var aux = d3.mean(sample, function(v) {
-                v = parseFloat(v);
-                return kernel(v-x); });
-              return [x, aux];
-            });
-          };
-        }
-
-        function gaussianKernel(scale) {
-          return function(u) {
-            u = u/scale;
-            var gaussianConstant = 1 / Math.sqrt(2 * Math.PI);
-            var gaussianKernelValue = gaussianConstant * Math.exp(-.5 * u * u);
-            return gaussianKernelValue;
-          };
-        }
-
-        function standardDeviation(values) {
-          var avg = average(values);
-
-          var squareDiffs = values.map(function(value) {
-            var diff = value - avg;
-            return (diff * diff);
-          });
-
-          var avgSquareDiff = average(squareDiffs);
-
-          return Math.sqrt(avgSquareDiff);;
-        }
-
-        function average(data) {
-          var sum = 0;
-          data.forEach(function (d) {
-            sum = sum + parseFloat(d);
-          });
-          return sum / data.length;
-        }
 
         // Axis
         svg.append("svg:g")
           .attr("class", "x axis")
-          .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+          .attr("transform", "translate(0," + (height - margins.bottom) + ")")
           .call(xAxis)
           .style("text-anchor", "end")
         svg.append("svg:g")
           .attr("class", "y axis")
-          .attr("transform", "translate(" + (margin.left) + "," + (margin.top - margin.bottom) + ")")
+          .attr("transform", "translate(" + (margins.left) + "," + (margins.top - margins.bottom) + ")")
           .call(yAxis);
 
-        svg.append("text")
-            .attr("class","mainTitle")
-            .attr("x",20)
-            .attr("y",25)
-            .attr("font-size", "20px")
-            .text(chartTitle);
-        svg.append("text")
-            .attr("class","subTitle")
-            .attr("x",20)
-            .attr("y",40)
-            .attr("font-size", "10px")
-            .text(chartSubtitle);
+        // Grid
+        svg.append("g")
+          .attr("class", "grid")
+          .attr("transform", "translate(" + margins.left + "," + (margins.top - margins.bottom) + ")")
+          .call(yAxis
+            .tickSize(-(width - margins.left - margins.right), 0, 0)
+            .tickFormat(""));
 
-        // histogram
+        svg.append("text")
+          .attr("class","mainTitle")
+          .attr("x",20)
+          .attr("y",25)
+          .attr("font-size", "20px")
+          .text(chartTitle);
+        svg.append("text")
+          .attr("class","subTitle")
+          .attr("x",20)
+          .attr("y",40)
+          .attr("font-size", "10px")
+          .text(chartSubtitle);
+
+        //create the bars
         svg.selectAll("rect")
-            .data(d).enter()
+            .data(yValues).enter()
             .append("rect")
-            .attr("class", "bar")
             .style({
               fill: "#f1f1f1"
             })
-            .attr("stroke", irsBlue)
-            .attr("x", function(d) { return xScale(d.x) + 1; })
-            .attr("y", function(d) { return yScale(d.y); })
-            .attr("width", xScale(d[0].dx) - xScale(d[0].x) - 1)
-            .attr("height", function(d) { return height - yScale(d.y) - margin.top; });
+            // set initial dimensions of the bar
+            .attr("width", function(){return xScale.rangeBand();})
+            .attr("x", function(d,i) { return xScale(xLabelsBars[i]);}) // position bar
+            .attr("y", function(d,i) { return (yScale(d)); })
+            .attr("height", function(d,i) { return height - yScale(d) - margins.top; })
+            .attr("stroke", irsBlue);
 
-        svg.append("path")
-            .datum(kde(data.values))
-            .attr("class", "line")
-            .attr("d", line);
 
-        // // Grid
-        svg.append("g")
-          .attr("class", "grid")
-          .attr("transform", "translate(" + margin.left + "," + (margin.top - margin.bottom) + ")")
-          .call(yAxis
-            .tickSize(-(width - margin.left - margin.right), 0, 0)
-            .tickFormat(""));
       };
     }
   };
@@ -757,9 +906,10 @@ return {
       							left: 50
       						},
       						xScale = d3.scale.linear()
-                      .range([MARGINS.left, width - MARGINS.right])
+                      // .range([MARGINS.left, width - MARGINS.right])
                       // TODO review domain when first time entering here
-                      .domain([data[0].t, data[data.length-1].t]),
+                      .domain([data[0].t, data[data.length-1].t])
+                      .range([MARGINS.left,width - MARGINS.right]),
       						yScale = d3.scale.linear()
                       .range([height - MARGINS.top, MARGINS.bottom])
                       .domain([0, 1]),

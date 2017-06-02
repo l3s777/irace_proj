@@ -65,18 +65,20 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     // frequencies
     var path_freq = workingPath + "/task-frequency.txt";
-    // var path_freq = "Users/lesly/Desktop/task-frequency.txt";
+    // TODO change validation of path
     if(path_freq) {
       $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
+      // console.log($scope.d3Candidates);
       // BarPlot for Categorical and Ordinal
       $scope.d3BarPlotDataV = $scope.d3Candidates.co;
 
       // KernelGraph for Integer and Real
       $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
+      // console.log($scope.d3DensityPlotDataV);
       // add interval from parameters
-      if($scope.d3DensityPlotDataV) {
-        $scope.d3DensityPlotDataV = help2();
-      }
+      // if($scope.d3DensityPlotDataV) {
+      //   $scope.d3DensityPlotDataV = help2();
+      // }
     } else console.log("task-frequency not found");
 
     var path_bests = workingPath + "/task-bests.txt";
@@ -91,28 +93,29 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     } else console.log("task-kendall not found");
   };
 
-  function help2() {
-    var resultDensityData = [];
-    $scope.scenario.parameters.forEach(function(param) {
-
-      // iterate over all Density params
-      var lengData = $scope.d3DensityPlotDataV.length;
-      for(var i=0; i < lengData; i++) {
-        if(param.name === $scope.d3DensityPlotDataV[i].param) {
-
-          var paramObj = {
-                  "param": $scope.d3DensityPlotDataV[i].param, // undefined?
-                  "type": $scope.d3DensityPlotDataV[i].type,
-                  "values": $scope.d3DensityPlotDataV[i].values,
-                  "range": param.values
-          };
-          resultDensityData.push(paramObj);
-          continue;
-        }
-      }
-    });
-    return resultDensityData;
-  }
+  // function help2() {
+  //   var resultDensityData = [];
+  //   $scope.scenario.parameters.forEach(function(param) {
+  //
+  //     // iterate over all Density params
+  //     var lengData = $scope.d3DensityPlotDataV.length;
+  //     for(var i=0; i < lengData; i++) {
+  //       if(param.name === $scope.d3DensityPlotDataV[i].param) {
+  //
+  //         var paramObj = {
+  //                 "param": $scope.d3DensityPlotDataV[i].param, // undefined?
+  //                 "type": $scope.d3DensityPlotDataV[i].type,
+  //                 "values": $scope.d3DensityPlotDataV[i].values,
+  //                 "range": param.values
+  //         };
+  //         // console.log(paramObj);
+  //         resultDensityData.push(paramObj);
+  //         continue;
+  //       }
+  //     }
+  //   });
+  //   return resultDensityData;
+  // }
 
   $scope.getFiltered = function(obj, idx) {
     return !((obj._index = idx) % 3);

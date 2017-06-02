@@ -630,6 +630,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
     // adding path value
     $rootScope.running_path = path;
+    console.log("@RunIrace path: " + $rootScope.running_path);
 
     fs.writeFile(path + "/params.txt", contentParameters, function(err) {
       console.log("writing params");
@@ -660,20 +661,19 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario " +  tunepath + " >> " + resultpath;
 
     // running proccess
-    child = exec(execCommand,
-            function (error, stdout, stderr) {
-                // TODO remove console.log()
-                console.log('stdout: ' + stdout);
-                console.log('stderr: ' + stderr);
-
-                if (error === null) {
-                  // dialog.showErrorBox("Error", stderr);
-                  console.log('exec error: ' + error);
-                }
-            }
-    );
+    // child = exec(execCommand,
+    //         function (error, stdout, stderr) {
+    //             // TODO remove console.log()
+    //             console.log('stdout: ' + stdout);
+    //             console.log('stderr: ' + stderr);
+    //
+    //             if (error === null) {
+    //               // dialog.showErrorBox("Error", stderr);
+    //               console.log('exec error: ' + error);
+    //             }
+    //         }
+    // );
   }
-
 
   //---------------------
   // Main

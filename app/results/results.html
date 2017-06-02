@@ -1,0 +1,76 @@
+<div ng-controller="ResultsController">
+  <div layout="row" layout-wrap style="align-items:center">
+    <h2 class="ir-bold">3. IRACE Results</h2>
+    <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
+  </div>
+  <p><span class="ir-bold">Scenario Name: </span>{{scenario.name}}</p>
+  <!-- intro summary -->
+  <div class="md-padding" layout="row">
+    <div flex="50">
+      Iterations: <font color="red"> {{results.iterations}} </font><br>
+      Candidates: <font color="red"> {{results.candidates}} </font><br>
+      Instances: <font color="red"> {{results.instances}} </font><br>
+      Evaluations: <font color="red"> {{results.evaluations}} </font><br>
+      Time: <font color="red"> {{results.time}} </font><br>
+    </div>
+  </div>
+  <!-- final configurations -->
+  <div class="ir-spacer-10"></div>
+  <div>
+    <h3>BEST CANDIDATES</h3>
+    <div>
+      <table style="width:100%">
+        <tr>
+          <th>hi</th>
+          <th>best</th>
+        </tr>
+        <tr ng-repeat="cand in candidates_best | filter:filter.cand">
+          <td>{{cand}}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="min-width: 100%; overflow-x: auto;">
+      <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
+    </div>
+    <br>
+    <label class="ir-bold">Parameter value frequency</label>
+    <table>
+      <tr ng-repeat="d3BarPlotData in d3BarPlotDataV | filter:getFiltered">
+        <td>
+          <d3-bar-plot data="d3BarPlotData" label="name"></d3-bar-plot>
+        </td>
+        <td>
+          <d3-bar-plot data="d3BarPlotDataV[d3BarPlotData._index+1]" label="name"></d3-bar-plot>
+        </td>
+        <td>
+          <d3-bar-plot data="d3BarPlotDataV[d3BarPlotData._index+2]" label="name"></d3-bar-plot>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <table>
+      <tr ng-repeat="d3DensityPlotData in d3DensityPlotDataV | filter:getFiltered">
+        <td>
+          <d3-density-line-plot data="d3DensityPlotData" label="name"></d3-density-line-plot>
+        </td>
+        <td>
+          <d3-density-line-plot data="d3DensityPlotDataV[d3DensityPlotData._index+1]" label="name"></d3-density-line-plot>
+        </td>
+        <td>
+          <d3-density-line-plot data="d3DensityPlotDataV[d3DensityPlotData._index+2]" label="name"></d3-density-line-plot>
+        </td>
+      </tr>
+    </table>
+    <br>
+  </div>
+  <!-- instances summary -->
+  <br>
+  <div>
+    <h3>ITERATION CONFIGURATION</h3>
+    <div style="min-width: 100%; overflow-x: auto;">
+      <div style="min-width: 100%; overflow-x: auto;">
+        <d3-parallel-coordinates-plot data="d3ParallelCoordinatesPlotData" label="name"></d3-parallel-coordinates-plot>
+      </div>
+    </div>
+  </div>
+</div>

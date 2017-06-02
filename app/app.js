@@ -15,6 +15,10 @@ app.config(['$routeProvider',
         templateUrl: 'run/run.html',
         controller: 'RunController'
       }).
+      when('/results', {
+        templateUrl: 'results/results.html',
+        controller: 'ResultsController'
+      }).
       when('/', {
         templateUrl: 'home/home.html',
         controller: 'HomeController'

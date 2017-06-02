@@ -1,12 +1,16 @@
 <div ng-controller="RunController">
   <div layout="row" layout-wrap style="align-items:center">
-    <h2 class="ir-bold">2. Running IRACE online</h2>
-    <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
+    <div layout="row" layout-wrap>
+      <h2 class="ir-bold">2. Running IRACE online</h2>
+      <i class="material-icons ir-btn-refresh" ng-click="readData()">refresh</i>
+    </div>
+    <div style="align-items:right">
+      <a href = "#results">
+        <md-button class="md-primary md-raised">Results</md-button>
+      </a>
+    </div>
   </div>
   <p ><span class="ir-bold">Scenario Name: </span>{{scenario.name}}</p>
-  <div class="md-padding" layout="row">
-    <!-- <md-button class="md-primary" ng-click="readData()"> Refresh</md-button> -->
-  </div>
   <!-- intro summary -->
   <div class="md-padding" layout="row">
     <div flex="50">
@@ -82,13 +86,13 @@
     <table>
       <tr ng-repeat="d3DensityPlotData in d3DensityPlotDataV | filter:getFiltered">
         <td>
-          <d3-density-plot data="d3DensityPlotData" label="name"></d3-density-plot>
+          <d3-density-line-plot data="d3DensityPlotData" label="name"></d3-density-line-plot>
         </td>
         <td>
-          <d3-density-plot data="d3DensityPlotDataV[d3DensityPlotData._index+1]" label="name"></d3-density-plot>
+          <d3-density-line-plot data="d3DensityPlotDataV[d3DensityPlotData._index+1]" label="name"></d3-density-line-plot>
         </td>
         <td>
-          <d3-density-plot data="d3DensityPlotDataV[d3DensityPlotData._index+2]" label="name"></d3-density-plot>
+          <d3-density-line-plot data="d3DensityPlotDataV[d3DensityPlotData._index+2]" label="name"></d3-density-line-plot>
         </td>
       </tr>
     </table>
