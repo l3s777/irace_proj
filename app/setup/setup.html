@@ -262,7 +262,7 @@
                         </div>
                         <div layout="row" layout-align="space-between center">
                            <div>
-                             <md-button class="md-primary" ng-click="addTestsInstance()">Add</md-button>
+                             <md-button class="md-primary" ng-click="addTestsInstance()">Add one</md-button>
                            </div>
                            <div>
                              <md-button class="md-primary" ng-click="addPollTestsInstances()">Add poll</md-button>
@@ -293,11 +293,11 @@
                       </div>
                       <br>
                       <div class="md-padding" id="popupContainer" ng-cloak>
-                        <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
+                        <!-- <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
                           <md-button class="md-primary" ng-click="validateTargetRunner($event)">
                             Validate
                           </md-button>
-                        </div>
+                        </div> -->
                       </div>
                     </div>
                   </md-content>
@@ -420,11 +420,11 @@
                          <md-input-container md-no-float>
                             <input ng-model="irace_parameters.nbIterations.value" placeholder="Insert number">
                          </md-input-container>
-                         <br><label>Number of experiments to execute per iteration</label>
+                         <br><label>Number of experiments to be executed per iteration</label>
                          <md-input-container md-no-float>
                             <input ng-model="irace_parameters.nbExperimentsPerIteration.value" placeholder="Insert number">
                          </md-input-container>
-                         <br><label>Number of configurations that should be sampled and evaluated at each iteration</label>
+                         <br><label>Number of configurations that should be sampled and evaluated per iteration</label>
                          <md-input-container md-no-float>
                             <input ng-model="irace_parameters.nbConfigurations.value" placeholder="Insert number">
                          </md-input-container>

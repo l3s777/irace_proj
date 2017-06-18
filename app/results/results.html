@@ -20,12 +20,8 @@
     <h3>BEST CANDIDATES</h3>
     <div>
       <table style="width:100%">
-        <tr>
-          <th>hi</th>
-          <th>best</th>
-        </tr>
         <tr ng-repeat="cand in candidates_best | filter:filter.cand">
-          <td>{{cand}}</td>
+          <td ng-repeat="i in cand track by $index"> {{ i }}</td>
         </tr>
       </table>
     </div>

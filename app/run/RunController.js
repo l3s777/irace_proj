@@ -74,11 +74,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
       // KernelGraph for Integer and Real
       $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
+      $scope.d3DensityPlotDataV = help();
       // console.log($scope.d3DensityPlotDataV);
-      // add interval from parameters
-      // if($scope.d3DensityPlotDataV) {
-      //   $scope.d3DensityPlotDataV = help2();
-      // }
     } else console.log("task-frequency not found");
 
     var path_bests = workingPath + "/task-bests.txt";
@@ -93,29 +90,57 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     } else console.log("task-kendall not found");
   };
 
-  // function help2() {
-  //   var resultDensityData = [];
-  //   $scope.scenario.parameters.forEach(function(param) {
-  //
-  //     // iterate over all Density params
-  //     var lengData = $scope.d3DensityPlotDataV.length;
-  //     for(var i=0; i < lengData; i++) {
-  //       if(param.name === $scope.d3DensityPlotDataV[i].param) {
-  //
-  //         var paramObj = {
-  //                 "param": $scope.d3DensityPlotDataV[i].param, // undefined?
-  //                 "type": $scope.d3DensityPlotDataV[i].type,
-  //                 "values": $scope.d3DensityPlotDataV[i].values,
-  //                 "range": param.values
-  //         };
-  //         // console.log(paramObj);
-  //         resultDensityData.push(paramObj);
-  //         continue;
-  //       }
-  //     }
-  //   });
-  //   return resultDensityData;
-  // }
+  function help() {
+    var resultDensityData = [];
+    var x_news = [];
+    var y_news = [];
+    // iterate over all Density params
+    var lengData = $scope.d3DensityPlotDataV.length;
+    console.log(lengData);
+    for(var i=0; i < lengData; i++) {
+
+      // iterating over each object
+      var ob = $scope.d3DensityPlotDataV[i];
+      var k = 0;
+      var init = ob.x_values_bp[0];
+      var l = ob.x_values_bp.length;
+      var ed = ob.x_values_bp[l-1];
+
+      for(var j=0; j < ob.x_values_pd.length; j++) {
+        if(ob.x_values_pd[j] >= init) {
+          if(ob.x_values_pd[j] <= ed) {
+            x_news[k] = ob.x_values_pd[j]
+            y_news[k] = ob.y_values_pd[j]
+            k++;
+          }
+        }
+      }
+
+      var task = {
+        "x": x_news,
+        "y": y_news
+      };
+
+      var paramObj = {
+        "param": ob.param,
+        "type": ob.type,
+        "x_values_bp": ob.x_values_bp,
+        "y_values_bp": ob.y_values_bp,
+        "line": task
+        // "x_values_pd": x_news,
+        // "y_values_pd": y_news
+      };
+
+      // reset values
+      k = 0;
+      x_news = [];
+      y_news = [];
+      task = {};
+
+      resultDensityData.push(paramObj);
+    }
+    return resultDensityData;
+  }
 
   $scope.getFiltered = function(obj, idx) {
     return !((obj._index = idx) % 3);

@@ -1,32 +1,40 @@
 <div ng-controller="HomeController">
   <div md-padding>
-     <h1 class="ir-bold">Welcome to IRACE configuration</h1>
+     <h1 class="ir-bold">Welcome to the IRACE package configuration</h1>
      <md-content flex layout-padding>
-        <p>Press "Create new scenario" for starting and you will be able to set up your new project
-          or press "Load scenario" for loading your previous configuration saved.</p>
+        <p>The IRACE package is an automatic algorithm configurator developed at
+          IRIDIA (Institut de Recherches Interdisciplinaires et de Developpements en Intelligence Artificielle).
+          <br>
+          Its main task is the automatic configuration of optimization and decision algorithms.
+        </p>
         <div>
-          <p>You will be able to: </p>
+          <p>This program will let you: </p>
           <ol>
-            <li>IRACE scenario set up</li>
-            <li>Running IRACE online</li>
-            <li>Results</li>
+            <li>Set up the IRACE scenario</li>
+            <li>Visualize the process execution of IRACE running</li>
+            <li>Visualize the IRACE final results</li>
           </ol>
       </div>
      </md-content>
   </div>
   <br>
   <div>
-    <div class="md-padding" ng-cloak>
-      <div layout="row" layout-wrap layout-margin layout-align="center">
-          <a href = "#setup">
-            <md-button class="md-primary md-raised">Start</md-button>
-          </a>
+    <md-content flex layout-padding>
+      <div md-padding>
+        <p>Initial configuration: </p>
+        <ol>
+          <li>Set workspace path: <md-button class="md-primary">workspace</md-button>
+          </li>
+          <li>Set IRACE installation path: <md-button class="md-primary">IRACE path</md-button>
+          </li>
+        </ol>
       </div>
-    </div>
-    <div layout="row" layout-wrap layout-margin layout-align="center">
-      <a href = "#home">
-        <!-- <md-button class="md-primary md-raised">Load scenario</md-button> -->
-      </a>
-    </div>
+      <div class="md-padding" ng-cloak>
+        <p>To create or load scenario, press Start.</p>
+        <a href = "#setup">
+          <md-button class="md-primary md-raised">Start</md-button>
+        </a> <!-- <div layout="row" layout-wrap layout-margin layout-align="center"></div> -->
+      </div>
+    </md-content>
   </div>
 </div>

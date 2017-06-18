@@ -55,10 +55,12 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
     $scope.d3BarPlotDataV = $scope.d3Candidates.co;
     // Kernel Density Estimation
     $scope.d3DensityPlotDataV = $scope.d3Candidates.ir;
+    // console.log($scope.d3Candidates.ir);
+    $scope.d3DensityPlotDataV = help();
+    console.log($scope.d3DensityPlotDataV);
 
     // # Iteration configurations
     // scanFileIterationsResults(workingPath, resultsPath);
-
 
   };
 
@@ -179,6 +181,7 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
   function scanDataTable(filename) {
     if(filename) {
       var cand = [];
+      var indcand = [];
       fs.readFile(filename, 'utf8', function(err, data) {
         if (err) {
           throw err;
@@ -189,13 +192,68 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
         var output = [];
         var cnt = 0;
         lines.forEach(function(line) {
-          cand[cnt] = line;
+          var words = line.split(",");
+          cand[cnt] = words;
           cnt++;
         });
         $scope.candidates_best = cand;
         $scope.$apply();
+
+        // console.log($scope.candidates_best);
       });
     } else console.log("scanDataTable: file not found");
 
+  }
+
+  function help() {
+    var resultDensityData = [];
+    var x_news = [];
+    var y_news = [];
+    // iterate over all Density params
+    var lengData = $scope.d3DensityPlotDataV.length;
+    console.log(lengData);
+    for(var i=0; i < lengData; i++) {
+
+      // iterating over each object
+      var ob = $scope.d3DensityPlotDataV[i];
+      var k = 0;
+      var init = ob.x_values_bp[0];
+      var l = ob.x_values_bp.length;
+      var ed = ob.x_values_bp[l-1];
+
+      for(var j=0; j < ob.x_values_pd.length; j++) {
+        if(ob.x_values_pd[j] >= init) {
+          if(ob.x_values_pd[j] <= ed) {
+            x_news[k] = ob.x_values_pd[j]
+            y_news[k] = ob.y_values_pd[j]
+            k++;
+          }
+        }
+      }
+
+      var task = {
+        "x": x_news,
+        "y": y_news
+      };
+
+      var paramObj = {
+        "param": ob.param,
+        "type": ob.type,
+        "x_values_bp": ob.x_values_bp,
+        "y_values_bp": ob.y_values_bp,
+        "line": task
+        // "x_values_pd": x_news,
+        // "y_values_pd": y_news
+      };
+
+      // reset values
+      k = 0;
+      x_news = [];
+      y_news = [];
+      task = {};
+
+      resultDensityData.push(paramObj);
+    }
+    return resultDensityData;
   }
 }]);

@@ -775,6 +775,8 @@ return {
         var yValues = []; // y values
         var charTitle, chartSubtitle;
 
+        // console.log(data);
+
         data.x_values_bp.forEach(function(d){
           xLabels.push(d);
         });
@@ -789,6 +791,10 @@ return {
           xLabelsBars[i] = parseFloat(((xLabels[i+1] - xLabels[i])/2)) + parseFloat(xLabels[i]);
         }
 
+        // line
+        // var lineData = data.line;
+        // console.log(lineData);
+
         // naming graphics
         chartTitle = data.param;
         chartSubtitle = data.type;
@@ -798,6 +804,7 @@ return {
           chartSubtitle = "real";
         }
 
+        // BARs scale X and Y
         var maxValue = d3.max(yValues);
         var margins = {top: 50, right: 50, bottom: 50, left: 70 };
 
