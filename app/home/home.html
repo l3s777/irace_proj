@@ -23,17 +23,18 @@
       <div md-padding>
         <p>Initial configuration: </p>
         <ol>
-          <li>Set workspace path: <md-button class="md-primary">workspace</md-button>
+          <li>Set workspace path: <md-button class="md-primary" ng-click="pathForWorkspace()">workspace</md-button>
           </li>
-          <li>Set IRACE installation path: <md-button class="md-primary">IRACE path</md-button>
+          <li>Set IRACE installation path: <md-button class="md-primary" ng-click="pathForIrace()">IRACE path</md-button>
           </li>
         </ol>
       </div>
       <div class="md-padding" ng-cloak>
         <p>To create or load scenario, press Start.</p>
         <a href = "#setup">
-          <md-button class="md-primary md-raised">Start</md-button>
-        </a> <!-- <div layout="row" layout-wrap layout-margin layout-align="center"></div> -->
+          <md-button class="md-primary md-raised" ng-click="validate()">Start</md-button>
+        </a>
+        <!-- <div layout="row" layout-wrap layout-margin layout-align="center"></div> -->
       </div>
     </md-content>
   </div>
