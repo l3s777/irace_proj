@@ -13,6 +13,8 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.scenario.name = $rootScope.scenario;
   $scope.scenario.parameters = $rootScope.params;
 
+  var workingPath = $rootScope.running_path;
+
   var app2 = require('electron').remote;
   var dialog = app2.dialog;
   var fs = require('fs');
@@ -44,7 +46,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   // }, 5000, 10);
 
   $scope.readData = function() {
-    var workingPath = $rootScope.running_path;
 
     // VALIDATE if path were created
     $scope.iteration_data = scanIterationData(workingPath + "/iteration_data.iout");
@@ -53,73 +54,77 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
 
     // read data for PARALLEL COORDINATES
     var path_candidates = workingPath + "/task-candidates.txt";
-    if(path_candidates) {
-      $scope.d3ParallelCoordinatesPlotData = path_candidates;
-    } else console.log("task-candidates not found");
+    if (fs.existsSync(path_candidates)) {
+        $scope.d3ParallelCoordinatesPlotData = path_candidates;
+    }
 
     // d3BoxPlotData
     var path_results = workingPath + "/task-results.txt";
-    if(path_results) {
-      $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(path_results);
-    } else console.log("task-results not found");
+    if (fs.existsSync(path_results)) {
+        $scope.d3BoxPlotData = FileParser.parseIraceTestElitesFile(path_results);
+    }
 
     // frequencies
     var path_freq = workingPath + "/task-frequency.txt";
-    // TODO change validation of path
-    if(path_freq) {
-      $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
-      // console.log($scope.d3Candidates);
-      // BarPlot for Categorical and Ordinal
-      $scope.d3BarPlotDataV = $scope.d3Candidates.co;
+    if (fs.existsSync(path_freq)) {
+        $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
 
-      // KernelGraph for Integer and Real
-      $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
-      $scope.d3DensityPlotDataV = help();
-      // console.log($scope.d3DensityPlotDataV);
-    } else console.log("task-frequency not found");
+        // BarPlot for Categorical and Ordinal
+        $scope.d3BarPlotDataV = $scope.d3Candidates.co;
+
+        // KernelGraph for Integer and Real
+        $scope.d3DensityPlotDataV = $scope.d3Candidates.ir; // represented by Kernel Density Estimation
+        $scope.d3DensityPlotDataV = help();
+    }
 
     var path_bests = workingPath + "/task-bests.txt";
-    if(path_bests) {
-      $scope.task_best = scanTaskBestDetail(path_bests);
-    } else console.log("task-bests not found");
+    if (fs.existsSync(path_bests)) {
+        $scope.task_best = scanTaskBestDetail(path_bests);
+    }
 
     // line chart for kendal
     var path_kendall = workingPath + "/task-kendall.txt";
-    if(path_kendall) {
-      $scope.kendallValues = FileParser.parseIraceKendallFile(path_kendall);
-    } else console.log("task-kendall not found");
+    if (fs.existsSync(path_kendall)) {
+        $scope.kendallValues = FileParser.parseIraceKendallFile(path_kendall);
+    }
   };
 
   function help() {
     var resultDensityData = [];
-    var x_news = [];
-    var y_news = [];
     // iterate over all Density params
     var lengData = $scope.d3DensityPlotDataV.length;
-    console.log(lengData);
-    for(var i=0; i < lengData; i++) {
 
+    for(var i=0; i < lengData; i++) {
       // iterating over each object
       var ob = $scope.d3DensityPlotDataV[i];
-      var k = 0;
+      console.log(ob);
+      // var init = parseFloat(ob.x_values_bp[0]);
       var init = ob.x_values_bp[0];
       var l = ob.x_values_bp.length;
       var ed = ob.x_values_bp[l-1];
 
-      for(var j=0; j < ob.x_values_pd.length; j++) {
-        if(ob.x_values_pd[j] >= init) {
-          if(ob.x_values_pd[j] <= ed) {
-            x_news[k] = ob.x_values_pd[j]
-            y_news[k] = ob.y_values_pd[j]
-            k++;
+      var task = [];
+
+      if (ob.x_values_pd[0] === "NONE" || ob.x_values_pd[0] === 'NONE') {
+        var aux = {
+          x: ob.x_values_pd[0],
+          y: ob.y_values_pd[0]
+        };
+        task.push(aux);
+      } else {
+        for(var j=0; j < ob.x_values_pd.length; j++) {
+
+          if(parseFloat(ob.x_values_pd[j]) >= init) {
+            if(parseFloat(ob.x_values_pd[j]) <= ed) {
+              var aux = {
+                x: parseFloat(ob.x_values_pd[j]),
+                y: parseFloat(ob.y_values_pd[j])
+              };
+              task.push(aux);
+            }
           }
         }
       }
-
-      var task = {
-        "x": x_news,
-        "y": y_news
-      };
 
       var paramObj = {
         "param": ob.param,
@@ -127,17 +132,11 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
         "x_values_bp": ob.x_values_bp,
         "y_values_bp": ob.y_values_bp,
         "line": task
-        // "x_values_pd": x_news,
-        // "y_values_pd": y_news
       };
 
-      // reset values
-      k = 0;
-      x_news = [];
-      y_news = [];
-      task = {};
-
       resultDensityData.push(paramObj);
+      paramObj = {};
+      task = [];
     }
     return resultDensityData;
   }
@@ -269,7 +268,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
         $scope.$apply();
       });
     } else console.log("scanTaskBestDetail: file not found");
-
   }
 
 }]);

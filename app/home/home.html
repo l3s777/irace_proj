@@ -23,9 +23,13 @@
       <div md-padding>
         <p>Initial configuration: </p>
         <ol>
-          <li>Set workspace path: <md-button class="md-primary" ng-click="pathForWorkspace()">workspace</md-button>
+          <li>Set workspace path:
+            <input ng-model="userPathWorkspace" placeholder="Path">
+            <md-button class="md-primary" ng-click="pathForWorkspace()">workspace</md-button>
           </li>
-          <li>Set IRACE installation path: <md-button class="md-primary" ng-click="pathForIrace()">IRACE path</md-button>
+          <li>Set IRACE installation path:
+            <input ng-model="userPathIRACE" placeholder="Path">
+            <md-button class="md-primary" ng-click="pathForIrace()">IRACE path</md-button>
           </li>
         </ol>
       </div>

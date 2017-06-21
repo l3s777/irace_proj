@@ -1,4 +1,4 @@
-app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function($rootScope, $scope, $mdDialog) {
+app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', '$timeout', function($rootScope, $scope, $mdDialog, $timeout) {
   // Initialize the scope variables
   var self = $scope;
   // reading external file for parameteres
@@ -14,6 +14,9 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   var sys = require('util');
   var exec = require('child_process').exec;
   var child;
+
+  var path = $rootScope.pathWorkspace;
+  var IRACE_path = $rootScope.userPathIRACE; // /Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace
 
   fs.readFile('./app/config.json', 'utf8', function(err, data) {
     if (err) throw err;
@@ -378,7 +381,8 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       "type": "p",
       "short": "-p",
       "long": "--parameter-file",
-      "default": "./parameters.txt",
+      // "default": "./parameters.txt",
+      "default":"/params.txt",
       "description": "File that contains the description of the parameters to be tuned. See the template."
     },
     { "name": "digits",
@@ -477,7 +481,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         properties: ['openDirectory']
     });
 
-    if(userPath != undefined) {
+    if(userPath) {
       // main file with scenario name
       var path_mainfile = userPath + "/main.txt";
       scanMainFile(path_mainfile);
@@ -493,7 +497,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       // open instances
       var path_training_inst = userPath + "/training_instances.txt";
       scanTrainingInstancesByPoll(path_training_inst);
-      var path_testing_inst = userPath + "/test_instances.txt";
+      var path_testing_inst = userPath + "/testing_instances.txt";
       scanTestingInstancesByPoll(path_testing_inst);
 
       // open target runner
@@ -502,7 +506,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       // open irace params
       var path_constraints = userPath+"/iracesetup.txt";
       // TODO read values from IRACE setup
-    } else dialog.showErrorBox("Error", "No selection made.");
+    } else dialog.showErrorBox("Error", "No directory selected.");
   };
 
   $scope.saveScenario = function() {
@@ -515,8 +519,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
               if($scope.scenario.targetrunner) {
                 if($scope.scenario.irace_params) {
 
-                  console.log("passed validations");
-
                   // all data is ready to be saved
                   var contentMain = $scope.scenario.name;
                   var contentParameters = $scope.prepareExportParams();
@@ -527,7 +529,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                   var contentTargetRunner = $scope.scenario.targetrunner;
                   var contentIraceParams = $scope.prepareExportIraceSetup();
 
-                  // save for user
+                  // user selects the folder where to save the info
                   var userPath = dialog.showOpenDialog({
                       properties: ['openDirectory']
                   });
@@ -548,7 +550,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
                   fs.writeFile(userPath + "/training_instances.txt", contentTrainingInstances, function(err) {
                     if(err) alert(err);
                   });
-                  fs.writeFile(userPath + "/test_instances.txt", contentTestInstances, function(err) {
+                  fs.writeFile(userPath + "/testing_instances.txt", contentTestInstances, function(err) {
                     if(err) alert(err);
                   });
                   fs.writeFile(userPath + "/targetrunner.txt", contentTargetRunner, function(err) {
@@ -568,7 +570,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   };
 
   $scope.summaryBeforeRun = function(ev) {
-    console.log("summaryBeforeRun");
 
     // if(validateParamsReady()) {
 
@@ -584,8 +585,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         clickOutsideToClose:true
       })
       .then(function(answer) {
-        console.log("answer after click");
-        console.log(answer);
+        console.log("answer after click: " + answer);
       });
 
     // } else {
@@ -610,7 +610,16 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   function RunIrace() {
-    // TODO put a timer before going to next screen
+
+    // save it locally for running "internally" and create folder and add all files
+    if (!path) {
+      path = os.homedir();
+    }
+
+    path = path + "/irace-tuning";
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path);
+    }
 
     console.log("@RunIrace"); // TODO remove
     // all data is ready to be saved
@@ -622,18 +631,11 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     var contentTargetRunner = $scope.scenario.targetrunner;
     var contentIraceSetup = $scope.prepareExportIraceSetup();
 
-    // save it locally for running "internally" and create folder and add all files
-    var path = os.homedir() + "/irace-setup";
-    if (!fs.existsSync(path)) {
-        fs.mkdirSync(path);
-    }
 
     // adding path value
     $rootScope.running_path = path;
-    console.log("@RunIrace path: " + $rootScope.running_path);
 
     fs.writeFile(path + "/params.txt", contentParameters, function(err) {
-      console.log("writing params");
       if(err) alert(err);
     });
     fs.writeFile(path + "/constraints.txt", contentConstrains, function(err) {
@@ -645,7 +647,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     fs.writeFile(path + "/training_instances.txt", contentTrainingInstances, function(err) {
       if(err) alert(err);
     });
-    fs.writeFile(path + "/test_instances.txt", contentTestInstances, function(err) {
+    fs.writeFile(path + "/testing_instances.txt", contentTestInstances, function(err) {
       if(err) alert(err);
     });
     fs.writeFile(path + "/targetrunner.txt", contentTargetRunner, function(err) {
@@ -655,22 +657,24 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
       if(err) alert(err);
     });
 
+    $timeout(executeAction, 2000);
+  }
+
+  function executeAction() {
     // executing
     var tunepath = path + "/tune-conf.txt";
     var resultpath = path + "/result.txt";
-    var execCommand = "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario " +  tunepath + " >> " + resultpath;
+    // "/Library/Frameworks/R.framework/Versions/3.3/Resources/library/irace/bin/irace --scenario " +  tunepath + " >> " + resultpath;
+    var execCommand = IRACE_path + " --scenario " +  tunepath + " >> " + resultpath;
 
     // running proccess
     // child = exec(execCommand,
     //         function (error, stdout, stderr) {
-    //             // TODO remove console.log()
-    //             console.log('stdout: ' + stdout);
-    //             console.log('stderr: ' + stderr);
     //
-    //             if (error === null) {
-    //               // dialog.showErrorBox("Error", stderr);
-    //               console.log('exec error: ' + error);
-    //             }
+    //           if(stderr) {
+    //             dialog.showErrorBox("Error", stderr);
+    //             // console.log('stderr: ' + stderr);
+    //           }
     //         }
     // );
   }
@@ -874,11 +878,14 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   $scope.addCandidateInst = function() {
     var aux_candidates = [];
     var aux_cont = 1;
+
     if($scope.scenario.candidates.parameters.length > 0) {
+
       while(aux_cont <= $scope.scenario.candidates.parameters.length) {
         aux_candidates.push("");
         aux_cont++;
       }
+
       $scope.scenario.candidates.instances.push({
           'n' : "new_candidate ",
           'values': aux_candidates,
@@ -1044,7 +1051,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   $scope.exportTrainingInstances = function() {
     var content = $scope.prepareExportTrainingInstances()
-
     dialog.showSaveDialog(function(filename) {
       if(filename) {
         fs.writeFile(filename, content, function(err) {
@@ -1061,7 +1067,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
 
   $scope.addPollTestsInstances = function() {
     dialog.showOpenDialog(function(filename) {
-
       if(filename) {
         $scope.scenario.instances.tests = scanTestingInstancesByPoll(filename[0]);
         $scope.$apply();
@@ -1152,7 +1157,6 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   };
 
   $scope.validateTargetRunner = function(ev) {
-    console.log("validate TargetRunner");
     // TODO validate link to TargetRunner
     $mdDialog.show(
       $mdDialog.alert()
@@ -1173,20 +1177,16 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
     // export parameters set up to an independent file
     var content = cfg.file_options.irace_params_header;
 
-    // var path = "/Users/lesly/irace-setup"; // TODO remove!
-    var path = os.homedir() + "/irace-setup";
-    if (!fs.existsSync(path)){
-        fs.mkdirSync(path);
-    }
-
     content += "#path: " + path + "\n";
     content += cfg.file_options.iraceparams_header;
 
       $scope.full_iraceparams.forEach(function(value) {
         if(value.name==="parameterFile") {
           content += value.name + " = " + "\"" + path + "/params.txt" + "\"" +  "\n";
+          value.default = path + "/params.txt";
         } else if(value.name==="execDir") {
           content += value.name + " = " + "\"" + path + "/" + "\"" + "\n";
+          value.default = path + "/";
         } else if(value.name==="logFile") {
           content += value.name + " = " + "\"" + path + "/irace.Rdata" + "\"" + "\n";
         } else if(value.name==="configurationsFile") {
@@ -1199,14 +1199,18 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
           content += value.name + " = " + "\"" + "" + "\"" + "\n";
         } else if(value.name === "maxExperiments") {
           //TODO check if $scope given value is NULL if so, just retreive from default values
-          if($scope.irace_parameters.maxExperiments.value===0) content += value.name + " = " + 100 + "\n";
-          else content += value.name + " = " + $scope.irace_parameters.maxExperiments.value + "\n";
+          if($scope.irace_parameters.maxExperiments.value===0) {
+            content += value.name + " = " + 100 + "\n";
+          } else {
+            value.default = $scope.irace_parameters.maxExperiments.value;
+            content += value.name + " = " + $scope.irace_parameters.maxExperiments.value + "\n";
+          }
         } else if(value.name === "maxTime") {
           content += value.name + " = " + $scope.irace_parameters.maxTime.value + "\n";
         } else if(value.name==="budgetEstimation") {
           content += value.name + " = " + $scope.irace_parameters.budgetEstimation.value + "\n";
         } else if(value.name==="testInstancesFile") {
-          content += value.name + " = " + "\"" + path + "/test_instances.txt" + "\"" + "\n";
+          content += value.name + " = " + "\"" + path + "/testing_instances.txt" + "\"" + "\n";
         } else if(value.name==="trainInstancesDir") {
           content += value.name + " = " + "\"" + "" + "\"" + "\n";
         } else if(value.name==="trainInstancesFile") {
@@ -1287,7 +1291,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
             if($scope.scenario.instances) {
               if($scope.scenario.targetrunner) {
                 if($scope.scenario.irace_params) {
-                  console.log("all params validate");
+                  // console.log("all params validate");
                   return true;
                 } else return false;
               } else return false;
@@ -1299,7 +1303,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
   }
 
   $scope.exportIraceSetup = function() {
-    if(validateParamsReady()) {
+    // if(validateParamsReady()) {
       var content = $scope.prepareExportIraceSetup();
 
       dialog.showSaveDialog(function(filename) {
@@ -1310,10 +1314,10 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', function
         }
       });
 
-    } else {
-      dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
-      return "";
-    }
+    // } else {
+    //   dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
+    //   return "";
+    // }
   };
 
   $scope.insertPathTestInstancesDir = function() {

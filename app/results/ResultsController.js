@@ -42,7 +42,7 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
     // CANDIDATES
     scanFileReturnPath(workingPath, resultsPath);
     // table
-    scanDataTable(workingPath + "/task-candidates_result.txt")
+    scanDataTable(workingPath + "/task-candidates_result.txt");
     // parallel candidates
     $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates_result.txt";
 
@@ -207,34 +207,40 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
 
   function help() {
     var resultDensityData = [];
-    var x_news = [];
-    var y_news = [];
     // iterate over all Density params
     var lengData = $scope.d3DensityPlotDataV.length;
-    console.log(lengData);
-    for(var i=0; i < lengData; i++) {
 
+    for(var i=0; i < lengData; i++) {
       // iterating over each object
       var ob = $scope.d3DensityPlotDataV[i];
-      var k = 0;
+      console.log(ob);
+      // var init = parseFloat(ob.x_values_bp[0]);
       var init = ob.x_values_bp[0];
       var l = ob.x_values_bp.length;
       var ed = ob.x_values_bp[l-1];
 
-      for(var j=0; j < ob.x_values_pd.length; j++) {
-        if(ob.x_values_pd[j] >= init) {
-          if(ob.x_values_pd[j] <= ed) {
-            x_news[k] = ob.x_values_pd[j]
-            y_news[k] = ob.y_values_pd[j]
-            k++;
+      var task = [];
+
+      if (ob.x_values_pd[0] === "NONE" || ob.x_values_pd[0] === 'NONE') {
+        var aux = {
+          x: ob.x_values_pd[0],
+          y: ob.y_values_pd[0]
+        };
+        task.push(aux);
+      } else {
+        for(var j=0; j < ob.x_values_pd.length; j++) {
+
+          if(parseFloat(ob.x_values_pd[j]) >= init) {
+            if(parseFloat(ob.x_values_pd[j]) <= ed) {
+              var aux = {
+                x: parseFloat(ob.x_values_pd[j]),
+                y: parseFloat(ob.y_values_pd[j])
+              };
+              task.push(aux);
+            }
           }
         }
       }
-
-      var task = {
-        "x": x_news,
-        "y": y_news
-      };
 
       var paramObj = {
         "param": ob.param,
@@ -242,17 +248,11 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
         "x_values_bp": ob.x_values_bp,
         "y_values_bp": ob.y_values_bp,
         "line": task
-        // "x_values_pd": x_news,
-        // "y_values_pd": y_news
       };
 
-      // reset values
-      k = 0;
-      x_news = [];
-      y_news = [];
-      task = {};
-
       resultDensityData.push(paramObj);
+      paramObj = {};
+      task = [];
     }
     return resultDensityData;
   }
