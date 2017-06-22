@@ -571,7 +571,7 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', '$timeou
 
   $scope.summaryBeforeRun = function(ev) {
 
-    // if(validateParamsReady()) {
+    if(validateParamsReady()) {
 
       // assigning important data to next screen
       $rootScope.scenario = $scope.scenario.name;
@@ -588,10 +588,10 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', '$timeou
         console.log("answer after click: " + answer);
       });
 
-    // } else {
-    //   dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
-    //   return "";
-    // }
+    } else {
+      dialog.showErrorBox("Cannot save data", "Some parameters have not been set up.");
+      return "";
+    }
   };
 
   function DialogController($scope, $mdDialog) {
@@ -668,15 +668,15 @@ app.controller('SetupController', ['$rootScope', '$scope', '$mdDialog', '$timeou
     var execCommand = IRACE_path + " --scenario " +  tunepath + " >> " + resultpath;
 
     // running proccess
-    // child = exec(execCommand,
-    //         function (error, stdout, stderr) {
-    //
-    //           if(stderr) {
-    //             dialog.showErrorBox("Error", stderr);
-    //             // console.log('stderr: ' + stderr);
-    //           }
-    //         }
-    // );
+    child = exec(execCommand,
+            function (error, stdout, stderr) {
+
+              if(stderr) {
+                dialog.showErrorBox("Error", stderr);
+                // console.log('stderr: ' + stderr);
+              }
+            }
+    );
   }
 
   //---------------------

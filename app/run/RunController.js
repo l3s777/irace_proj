@@ -41,9 +41,9 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
   $scope.d3BoxPlotData = [];
 
   // dynamic
-  // $interval(function(){
-  //     $scope.readData();
-  // }, 5000, 10);
+  $interval(function(){
+      $scope.readData();
+  }, 5000, 10);
 
   $scope.readData = function() {
 
@@ -97,7 +97,6 @@ app.controller('RunController', ['$rootScope', '$scope', '$mdDialog', 'FileParse
     for(var i=0; i < lengData; i++) {
       // iterating over each object
       var ob = $scope.d3DensityPlotDataV[i];
-      console.log(ob);
       // var init = parseFloat(ob.x_values_bp[0]);
       var init = ob.x_values_bp[0];
       var l = ob.x_values_bp.length;

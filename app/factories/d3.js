@@ -221,7 +221,7 @@ return {
       });
       xValues.push('\t');
 
-      var margins = {top: 50, right: 50, bottom: 50, left: 70 },
+      var margins = {top: 50, right: 50, bottom: 50, left: 100 },
         yScale = d3.scale.linear().range([height - margins.top, margins.bottom])
           .domain([yMin, yMax]),
         yAxis = d3.svg.axis()

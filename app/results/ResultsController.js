@@ -8,6 +8,12 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
   // graphics controls
   var d3 = require("d3");
 
+  // Execute commands
+  const os = require('os');
+  var sys = require('util');
+  var exec = require('child_process').exec;
+  var child;
+
   $scope.scenario = {
     "name": '',
     "parameters": [],
@@ -19,6 +25,7 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
   };
 
   $scope.scenario.name = $rootScope.scenario;
+  var workingPath = $rootScope.running_path;
 
   $scope.results = {
     "iterations": 0,
@@ -32,36 +39,61 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
   $scope.d3ParallelCoordinatesPlotData = '';
 
   $scope.readData = function() {
-    var workingPath = $rootScope.running_path;
+    // lunch R script
+    var summaryPath = "../assets/files/summary.R";
+    fs.readFile(summaryPath, 'utf8', function(err, data) {
+      if (err) {
+        throw err;
+        console.log(err);
+      }
+
+      var execCommand = "Rscript " + data + " irace.Rdata " +  " output.txt ";
+      console.log(execCommand);
+
+      child = exec(execCommand,
+              function (error, stdout, stderr) {
+                console.log("exec");
+                if(stderr) {
+                  // dialog.showErrorBox("Error", stderr);
+                  console.log('stderr: ' + stderr);
+                }
+              });
+    });
+
     var resultsPath = workingPath + "/output.txt";
     console.log(resultsPath);
 
-    // VALIDATE if path were created
-    $scope.results = scanResultsData(resultsPath);
+    if (fs.existsSync(resultsPath)) {
+      // VALIDATE if path were created
+      $scope.results = scanResultsData(resultsPath);
 
-    // CANDIDATES
-    scanFileReturnPath(workingPath, resultsPath);
-    // table
-    scanDataTable(workingPath + "/task-candidates_result.txt");
-    // parallel candidates
-    $scope.d3ParallelCoordinatesPlotData = workingPath + "/task-candidates_result.txt";
+      // CANDIDATES
+      console.log(workingPath);
+      console.log(resultsPath);
+      scanFileReturnPath(workingPath, resultsPath);
+      // table
+      var pathCandidateResults = workingPath + "/task-candidates_result.txt";
+      // parallel candidates
+      if (fs.existsSync(pathCandidateResults)) {
+        scanDataTable(workingPath + "/task-candidates_result.txt");
+        $scope.d3ParallelCoordinatesPlotData = pathCandidateResults;
+      }
 
-    // task frequency
-    // scanFileReturnTaskFrequencyPath(workingPath, resultsPath);
-    var path_freq = workingPath + "/task-frequency_result.txt";
-    $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
-    // console.log($scope.d3Candidates);
-    // BarPlot for Categorical and Ordinal
-    $scope.d3BarPlotDataV = $scope.d3Candidates.co;
-    // Kernel Density Estimation
-    $scope.d3DensityPlotDataV = $scope.d3Candidates.ir;
-    // console.log($scope.d3Candidates.ir);
-    $scope.d3DensityPlotDataV = help();
-    console.log($scope.d3DensityPlotDataV);
+      // task frequency
+      // scanFileReturnTaskFrequencyPath(workingPath, resultsPath);
+      var path_freq = workingPath + "/task-frequency_result.txt";
+      if (fs.existsSync(path_freq)) {
+        $scope.d3Candidates = FileParser.parseIraceFrequencyFile(path_freq);
+        // BarPlot for Categorical and Ordinal
+        $scope.d3BarPlotDataV = $scope.d3Candidates.co;
+        // Kernel Density Estimation
+        $scope.d3DensityPlotDataV = $scope.d3Candidates.ir;
+        $scope.d3DensityPlotDataV = help();
+      }
 
-    // # Iteration configurations
-    // scanFileIterationsResults(workingPath, resultsPath);
-
+      // # Iteration configurations
+      // scanFileIterationsResults(workingPath, resultsPath);
+    }
   };
 
   function scanResultsData(filename) {
@@ -153,6 +185,7 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
         workingPathC = workingPath + "/task-candidates_result.txt";
         // write new file
         fs.writeFile(workingPathC, contentC, function(err) {
+          console.log("created path: " + workingPathC);
           if(err) alert(err);
         });
 
@@ -161,10 +194,10 @@ app.controller('ResultsController', ['$rootScope', '$scope', '$mdDialog', 'FileP
         output_freq.forEach(function(o) {
           contentF += o + "\n";
         });
-
         workingPathF = workingPath + "/task-frequency_result.txt";
         // write new file
         fs.writeFile(workingPathF, contentF, function(err) {
+          console.log("created path: " + workingPathF);
           if(err) alert(err);
         });
 
